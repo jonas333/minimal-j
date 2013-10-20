@@ -4,11 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,8 +30,8 @@ import ch.openech.mj.model.test.ModelTest;
 public class DbPersistence {
 	private static final Logger logger = Logger.getLogger(DbPersistence.class.getName());
 	
-	private static final String DEFAULT_URL = "jdbc:derby:memory:TempDB;create=true";
-	// public static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/openech?user=APP&password=APP"; 
+	 private static final String DEFAULT_URL = "jdbc:derby:memory:TempDB;create=true";
+//	public static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/openech?user=APP&password=APP"; 
 
 	private static final String USER = "APP";
 	private static final String PASSWORD = "APP";
@@ -46,7 +44,6 @@ public class DbPersistence {
 	private boolean isMySqlDb; 
 	
 	private final Map<Class<?>, AbstractTable<?>> tables = new LinkedHashMap<Class<?>, AbstractTable<?>>();
-	private final Set<Class<?>> immutables = new HashSet<>();
 	
 	/**
 	 * Only creates the persistence. Does not yet connect to the DB.
@@ -76,7 +73,7 @@ public class DbPersistence {
 				if (isDerbyMemoryDb) {
 					DriverManager.registerDriver(new EmbeddedDriver());
 				} else if (isMySqlDb) {
-					DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+					DriverManager.registerDriver(new org.mariadb.jdbc.Driver());
 				}
 				
 				connection = DriverManager.getConnection(connectionUrl, user, password);
@@ -224,15 +221,10 @@ public class DbPersistence {
 		return table;
 	}
 	
-	public <U> ImmutableTable<U> addImmutableClass(Class<U> clazz) {
-		immutables.add(clazz);
+	protected <U> ImmutableTable<U> addImmutableClass(Class<U> clazz) {
 		ImmutableTable<U> table = new ImmutableTable<U>(this, clazz);
 		tables.put(table.getClazz(), table);
 		return table;
-	}
-	
-	public boolean isImmutable(Class<?> clazz) {
-		return immutables.contains(clazz);
 	}
 	
 	protected void initializeTables() {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.openech.mj.edit.value.EqualsHelper;
+import ch.openech.mj.model.annotation.NonNull;
 
 @SuppressWarnings("unchecked")
 public class EmptyObjects {
@@ -22,6 +23,7 @@ public class EmptyObjects {
 		}
 	}
 	
+	@NonNull
 	public static <T> T getEmptyObject(Class<T> clazz) {
 		if (!emptyObjects.containsKey(clazz)) {
 			try {
