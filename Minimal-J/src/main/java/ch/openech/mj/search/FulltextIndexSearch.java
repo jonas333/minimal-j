@@ -8,7 +8,7 @@ import ch.openech.mj.db.Index;
 public class FulltextIndexSearch<T> implements Search<T> {
 
 	private final Index<T> index;
-	private final WeakHashMap<Integer, T> cache = new WeakHashMap<>();
+	private final WeakHashMap<Integer, T> cache = new WeakHashMap<Integer,T>();
 	
 	public FulltextIndexSearch(Index<T> index) {
 		this.index = index;

@@ -113,7 +113,7 @@ public class VaadinTable<T> extends Table implements ITable<T> {
 	}
 
 	public List<Integer> getSelectedIds() {
-		List<Integer> selectedIds = new ArrayList<>();
+		List<Integer> selectedIds = new ArrayList<Integer>();
 		for (Object itemId : getItemIds()) {
 			if (isSelected(itemId)) {
 				selectedIds.add((Integer) itemId);

@@ -65,8 +65,8 @@ public class SwingGridFormLayout extends JPanel implements GridFormLayout {
 		private final int columns;
 		private final int minColumnWidth;
 		private final int ins;
-		private final List<List<Component>> rows = new LinkedList<>();
-		private final Map<Component, GridFormLayoutConstraint> constraints = new HashMap<>();
+		private final List<List<Component>> rows = new LinkedList<List<Component>>();
+		private final Map<Component, GridFormLayoutConstraint> constraints = new HashMap<Component, GridFormLayoutConstraint>();
 		
 		private Dimension size;
 		private Rectangle lastParentBounds = null;
@@ -157,7 +157,7 @@ public class SwingGridFormLayout extends JPanel implements GridFormLayout {
 			constraints.put(comp, formConstraint);
 			List<Component> row;
 			if (column >= columns) {
-				row = new ArrayList<>();
+				row = new ArrayList<Component>();
 				rows.add(row);
 				column = 0;
 			} else {

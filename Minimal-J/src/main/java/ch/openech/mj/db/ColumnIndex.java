@@ -20,7 +20,7 @@ public class ColumnIndex<T> extends AbstractIndex<T> {
 	}
 
 	private List<Integer> findIds(List<Integer> ids) throws SQLException {
-		List<Integer> result = new ArrayList<>(ids.size());
+		List<Integer> result = new ArrayList<Integer>(ids.size());
 		for (Integer i : ids) {
 			helper.setParameter(selectByColumnStatement, 1, i, property);
 			result.addAll(executeSelectIds(selectByColumnStatement));
@@ -46,7 +46,7 @@ public class ColumnIndex<T> extends AbstractIndex<T> {
 
 	public List<T> findObjects(Object query) {
 		List<Integer> ids = findIds(query);
-		List<T> result = new ArrayList<>(ids.size());
+		List<T> result = new ArrayList<T>(ids.size());
 		for (Integer id : ids) {
 			result.add(lookup(id));
 		}
@@ -54,10 +54,20 @@ public class ColumnIndex<T> extends AbstractIndex<T> {
 	}
 	
 	private List<Integer> executeSelectIds(PreparedStatement preparedStatement) throws SQLException {
-		List<Integer> result = new ArrayList<>();
-		try (ResultSet resultSet = preparedStatement.executeQuery()) {
+		List<Integer> result = new ArrayList<Integer>();
+		ResultSet resultSet = null;
+		try {
+			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				result.add(resultSet.getInt(1));
+			}
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return result;

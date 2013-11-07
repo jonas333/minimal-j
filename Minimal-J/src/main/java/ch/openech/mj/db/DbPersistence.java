@@ -32,8 +32,8 @@ import ch.openech.mj.model.test.ModelTest;
 public class DbPersistence {
 	private static final Logger logger = Logger.getLogger(DbPersistence.class.getName());
 	
-	// private static final String DEFAULT_URL = "jdbc:derby:memory:TempDB;create=true";
-	public static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/openech?user=APP&password=APP"; 
+	private static final String DEFAULT_URL = "jdbc:derby:memory:TempDB;create=true";
+	// public static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/openech?user=APP&password=APP"; 
 
 	private static final String USER = "APP";
 	private static final String PASSWORD = "APP";
@@ -46,7 +46,7 @@ public class DbPersistence {
 	private boolean isMySqlDb; 
 	
 	private final Map<Class<?>, AbstractTable<?>> tables = new LinkedHashMap<Class<?>, AbstractTable<?>>();
-	private final Set<Class<?>> immutables = new HashSet<>();
+	private final Set<Class<?>> immutables = new HashSet<Class<?>>();
 	
 	/**
 	 * Only creates the persistence. Does not yet connect to the DB.
@@ -263,7 +263,7 @@ public class DbPersistence {
 	}
 	
 	private void testModel() {
-		List<Class<?>> mainModelClasses = new ArrayList<>();
+		List<Class<?>> mainModelClasses = new ArrayList<Class<?>>();
 		for (Map.Entry<Class<?>, AbstractTable<?>> entry : tables.entrySet()) {
 			if (!(entry.getValue() instanceof ImmutableTable)) {
 				mainModelClasses.add(entry.getKey());

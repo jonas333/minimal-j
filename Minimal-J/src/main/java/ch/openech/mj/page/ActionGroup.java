@@ -11,7 +11,7 @@ import ch.openech.mj.toolkit.ResourceAction;
 
 public class ActionGroup extends ResourceAction {
 
-	private final List<IAction> items = new ArrayList<>();
+	private final List<IAction> items = new ArrayList<IAction>();
 
 	public ActionGroup(String resourceName) {
 		super(resourceName);

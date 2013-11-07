@@ -139,7 +139,7 @@ public class DbPersistenceHelper {
 			if (value instanceof Boolean) {
 				return (Boolean) value;
 			} else if (value instanceof Integer) {
-				value = Boolean.valueOf(((int) value) == 1);
+				value = Boolean.valueOf(((Integer) value) == 1);
 			} else if (value != null) {
 				throw new IllegalArgumentException(value.getClass().getSimpleName());
 			}

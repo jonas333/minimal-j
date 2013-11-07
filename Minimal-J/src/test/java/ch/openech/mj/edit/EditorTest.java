@@ -152,7 +152,7 @@ public class EditorTest {
 	private class TestEditor extends Editor<TestEditorObjectClass> {
 		@Override
 		protected IForm<TestEditorObjectClass> createForm() {
-			Form<TestEditorObjectClass> form = new Form<>();
+			Form<TestEditorObjectClass> form = new Form<TestEditorObjectClass>();
 			form.line(TestEditorObjectClass.KEYS.field);
 			return form;
 		}

@@ -63,11 +63,21 @@ public abstract class AbstractIndex<T> implements Index<T> {
 	}
 	
 	protected Integer executeSelectId(PreparedStatement preparedStatement) throws SQLException {
-		try (ResultSet resultSet = preparedStatement.executeQuery()) {
+		ResultSet resultSet = null;
+		try  {
+			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				return resultSet.getInt(1);
 			} else {
 				return null;
+			}
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

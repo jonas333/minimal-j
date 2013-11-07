@@ -57,7 +57,9 @@ class ImmutableTable<T> extends AbstractTable<T> {
 		Integer result;
 		
 		selectIdByHashStatement.setInt(1, hash);
-		try (ResultSet resultSet = selectIdByHashStatement.executeQuery()) {
+		ResultSet resultSet = null; 
+		try  {
+			resultSet = selectIdByHashStatement.executeQuery();
 			if (!resultSet.next()) {
 				return null;
 			}
@@ -66,13 +68,31 @@ class ImmutableTable<T> extends AbstractTable<T> {
 			if (resultByHashUnique) {
 				return result;
 			}
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		int parameterPos = setParameters(selectIdStatement, object, true, false);
 		selectIdStatement.setInt(parameterPos, hash);
-		try (ResultSet resultSet = selectIdStatement.executeQuery()) {
+		resultSet = null;
+		try  {
+			resultSet = selectIdStatement.executeQuery();
 			result = resultSet.next() ? resultSet.getInt(1) : null;
 			return result;
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

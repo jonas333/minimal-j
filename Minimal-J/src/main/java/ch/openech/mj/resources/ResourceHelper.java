@@ -17,7 +17,7 @@ import ch.openech.mj.util.StringUtils;
 
 public class ResourceHelper {
 	private static Logger logger = Logger.getLogger(ResourceHelper.class.getName());
-	private static Set<String> loggedMissings = new HashSet<>();
+	private static Set<String> loggedMissings = new HashSet<String>();
 	
 	/*
 	 * Init all of the Action properties for the @Action named

@@ -40,7 +40,7 @@ class LoggingPreparedStatement implements PreparedStatement {
 	private final PreparedStatement preparedStatement;
 	private final String query;
 	private final Logger logger;
-	private final Map<Integer, String> parameters = new HashMap<>();
+	private final Map<Integer, String> parameters = new HashMap<Integer, String>();
 
 	public LoggingPreparedStatement(Connection connection, String query, Logger logger) throws SQLException {
 		this.query = query;
@@ -498,7 +498,7 @@ class LoggingPreparedStatement implements PreparedStatement {
 	}
 
 	public void closeOnCompletion() throws SQLException {
-		preparedStatement.closeOnCompletion();
+		preparedStatement.close();
 	}
 
 	public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
@@ -506,7 +506,7 @@ class LoggingPreparedStatement implements PreparedStatement {
 	}
 
 	public boolean isCloseOnCompletion() throws SQLException {
-		return preparedStatement.isCloseOnCompletion();
+		return true;
 	}
 
 	public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {

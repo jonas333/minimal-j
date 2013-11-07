@@ -21,7 +21,7 @@ public abstract class HistoryPage<T> extends AbstractPage implements Refreshable
 	
 	public HistoryPage(PageContext pageContext) {
 		super(pageContext);
-		lookup = new ListLookup<>();
+		lookup = new ListLookup<HistoryVersion<T>>();
 		table = ClientToolkit.getToolkit().createTable(lookup, new Object[]{HistoryVersion.HISTORY_VERSION.time, HistoryVersion.HISTORY_VERSION.description});
 		table.setClickListener(new TableActionListener() {
 			@Override

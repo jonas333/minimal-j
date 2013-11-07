@@ -11,7 +11,9 @@ public class EqualsHelper {
 	public static boolean equals(Object from, Object to) {
 		try {
 			return _equals(from, to);
-		} catch (IllegalAccessException | IllegalArgumentException x) {
+		} catch (IllegalAccessException x) {
+			throw new RuntimeException(x);
+		} catch (IllegalArgumentException x) {
 			throw new RuntimeException(x);
 		}
 	}

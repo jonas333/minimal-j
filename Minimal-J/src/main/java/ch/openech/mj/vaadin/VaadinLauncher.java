@@ -47,7 +47,11 @@ public class VaadinLauncher extends Application {
 				Class<? extends MjApplication> applicationClass = (Class<? extends MjApplication>) Class.forName(applicationClassName);
 				MjApplication application = applicationClass.newInstance();
 				application.init();
-			} catch (IllegalAccessException | InstantiationException | ClassNotFoundException x) {
+			} catch (IllegalAccessException x) {
+				throw new RuntimeException(x);
+			} catch (InstantiationException x) {
+				throw new RuntimeException(x);
+			} catch ( ClassNotFoundException x) {
 				throw new RuntimeException(x);
 			}
 			applicationInitialized = true;

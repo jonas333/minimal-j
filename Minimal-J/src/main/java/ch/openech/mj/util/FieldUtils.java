@@ -78,7 +78,9 @@ public class FieldUtils {
 	public static void setValue(Object object, Object value) {
 		try {
 			getValueField(object.getClass()).set(object, value);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(e);
+		}  catch ( IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -86,7 +88,9 @@ public class FieldUtils {
 	public static Object getValue(Object object) {
 		try {
 			return getValueField(object.getClass()).get(object);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException  e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}

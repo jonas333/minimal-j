@@ -142,11 +142,21 @@ public class HistorizedTable<T> extends Table<T> {
 	private int findMaxVersion(int id) throws SQLException {
 		int result = 0;
 		selectMaxVersionStatement.setInt(1, id);
-		try (ResultSet resultSet = selectMaxVersionStatement.executeQuery()) {
+		ResultSet resultSet = null;
+		try  {
+			resultSet = selectMaxVersionStatement.executeQuery();
 			if (resultSet.next()) {
 				result = resultSet.getInt(1);
 			} 
 			return result;
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

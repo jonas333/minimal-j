@@ -2,18 +2,12 @@
 <classpath>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/derby/derby/10.8.2.2/derby-10.8.2.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/org/apache/derby/derbyclient/10.8.2.2/derbyclient-10.8.2.2.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="var" path="M2_REPO/com/vaadin/vaadin/6.8.13/vaadin-6.8.13.jar" sourcepath="M2_REPO/com/vaadin/vaadin/6.8.13/vaadin-6.8.13-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -39,5 +33,11 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="M2_REPO/com/vaadin/vaadin/6.8.13/vaadin-6.8.13.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -13,7 +13,7 @@ public class MultiIndex<T> implements Index<T> {
 	}
 
 	public List<T> findObjects(Object query) {
-		List<T> result = new ArrayList<>(50);
+		List<T> result = new ArrayList<T>(50);
 		for (ColumnIndex<T> index : indexes) {
 			List<T> objects = index.findObjects(query);
 			for (T object : objects) {
@@ -26,7 +26,7 @@ public class MultiIndex<T> implements Index<T> {
 	}
 	
 	public List<Integer> findIds(Object query) {
-		List<Integer> result = new ArrayList<>(50);
+		List<Integer> result = new ArrayList<Integer>(50);
 		for (ColumnIndex<T> index : indexes) {
 			List<Integer> ids = index.findIds(query);
 			for (Integer id : ids) {

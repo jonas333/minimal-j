@@ -37,24 +37,44 @@ public class DbCreator {
 	
 	public void create(AbstractTable<?> table) throws SQLException {
 		if (existTable(table)) return;
-		
-		try (Statement statement = dbPersistence.getConnection().createStatement()) {
+		Statement statement = null; 
+		try  {
+			statement = dbPersistence.getConnection().createStatement();
 			List<String> createStatements = getCreateStatements(table);
 			for (String createStatement : createStatements) {
 				AbstractTable.sqlLogger.fine(createStatement);
 				statement.execute(createStatement);
 			}
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
 	private boolean existTable(AbstractTable<?> table) throws SQLException {
-		try (Statement statement = dbPersistence.getConnection().createStatement()) {
+		Statement statement = null;
+		try  {
+			statement = dbPersistence.getConnection().createStatement();
 			String query = "select * from " + table.getTableName();
 			AbstractTable.sqlLogger.fine(query);
 			statement.execute(query);
 		} catch (SQLException x) {
 			return false;
-		} 
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
 		return true;
 	}
 
@@ -136,7 +156,7 @@ public class DbCreator {
 	}
 	
 	private void appendIndexes(StringBuilder s, AbstractTable<?> table) {
-		Set<String> indexed = new TreeSet<>();
+		Set<String> indexed = new TreeSet<String>();
 		for (Index<?> index : table.getIndexes()) {
 			String column = index.getColumn();
 			if (column != null) {
@@ -164,7 +184,7 @@ public class DbCreator {
 	
 	private void createIndexStatements(List<String> createStatements, AbstractTable<?> table) {
 		// CREATE INDEX OrigIndex ON Flights(orig_airport);
-		Set<String> indexed = new TreeSet<>();
+		Set<String> indexed = new TreeSet<String>();
 		for (Index<?> index : table.getIndexes()) {
 			String column = index.getColumn();
 			if (column != null) {

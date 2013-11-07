@@ -74,11 +74,11 @@ public class Form<T> implements IForm<T>, DemoEnabled {
 	private boolean changeFromOutsite;
 	private boolean showWarningIfValidationForUnsuedField = true;
 	
-	private final Map<PropertyInterface, String> propertyValidations = new HashMap<>();
+	private final Map<PropertyInterface, String> propertyValidations = new HashMap<PropertyInterface, String>();
 
-	private final Map<PropertyInterface, List<PropertyInterface>> dependencies = new HashMap<>();
+	private final Map<PropertyInterface, List<PropertyInterface>> dependencies = new HashMap<PropertyInterface, List<PropertyInterface>>();
 	@SuppressWarnings("rawtypes")
-	private final Map<PropertyInterface, Map<PropertyInterface, PropertyUpdater>> propertyUpdater = new HashMap<>();
+	private final Map<PropertyInterface, Map<PropertyInterface, PropertyUpdater>> propertyUpdater = new HashMap<PropertyInterface, Map<PropertyInterface, PropertyUpdater>>();
 	
 	private T object;
 
@@ -549,7 +549,7 @@ public class Form<T> implements IForm<T>, DemoEnabled {
 	// Validation
 	
 	private void updateValidation() {
-		List<ValidationMessage> validationMessages = new ArrayList<>();
+		List<ValidationMessage> validationMessages = new ArrayList<ValidationMessage>();
 		if (object instanceof Validation) {
 			((Validation) object).validate(validationMessages);
 		}

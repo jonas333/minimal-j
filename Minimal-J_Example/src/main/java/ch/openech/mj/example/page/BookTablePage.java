@@ -27,7 +27,7 @@ public class BookTablePage extends TablePage<Book> implements RefreshablePage {
 	};
 	
 	public BookTablePage(PageContext context, String text) {
-		super(context, new FulltextIndexSearch<>(ExamplePersistence.getInstance().bookIndex()), FIELDS, text);
+		super(context, new FulltextIndexSearch<Book>(ExamplePersistence.getInstance().bookIndex()), FIELDS, text);
 		this.text = text;
 	}
 	

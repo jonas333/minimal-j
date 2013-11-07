@@ -45,7 +45,7 @@ public abstract class AbstractTable<T> {
 	
 	protected final String name;
 
-	protected final List<Index<T>> indexes = new ArrayList<>();
+	protected final List<Index<T>> indexes = new ArrayList<Index<T>>();
 	
 	protected PreparedStatement selectByIdStatement;
 	protected PreparedStatement insertStatement;
@@ -136,7 +136,9 @@ public abstract class AbstractTable<T> {
 	}
 
 	public int getMaxId() {
-		try (ResultSet resultSet = selectMaxIdStatement.executeQuery()) {
+		ResultSet resultSet  = null;
+		try {
+			resultSet = selectMaxIdStatement.executeQuery();
 			if (resultSet.next()) {
 				return resultSet.getInt(1);
 			} else {
@@ -145,6 +147,14 @@ public abstract class AbstractTable<T> {
 		} catch (SQLException x) {
 			sqlLogger.log(Level.SEVERE, "Couldn't get max Id of " + getTableName(), x);
 			throw new RuntimeException("Couldn't get max Id of " + getTableName());
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -239,11 +249,22 @@ public abstract class AbstractTable<T> {
 	protected int executeInsertWithAutoIncrement(PreparedStatement statement, T object, Integer hash) throws SQLException {
 		setParameters(statement, object, false, true, hash);
 		statement.execute();
-		try (ResultSet autoIncrementResultSet = statement.getGeneratedKeys()) {
+		ResultSet autoIncrementResultSet = null;
+		try  {
+			autoIncrementResultSet = statement.getGeneratedKeys();
 			autoIncrementResultSet.next();
 			int id = autoIncrementResultSet.getInt(1);
 			if (sqlLogger.isLoggable(Level.FINE)) sqlLogger.fine("AutoIncrement is " + id);
 			return id;
+		} finally {
+			if (autoIncrementResultSet != null)
+			{
+				try {
+					autoIncrementResultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -257,21 +278,41 @@ public abstract class AbstractTable<T> {
 	}
 	
 	protected T executeSelect(PreparedStatement preparedStatement, Integer time) throws SQLException {
-		try (ResultSet resultSet = preparedStatement.executeQuery()) {
+		ResultSet resultSet = null;
+		try  {
+			resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				return readResultSetRow(resultSet, time).object;
 			} else {
 				return null;
+			}
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	protected List<T> executeSelectAll(PreparedStatement preparedStatement) throws SQLException {
 		List<T> result = new ArrayList<T>();
-		try (ResultSet resultSet = preparedStatement.executeQuery()) {
+		ResultSet resultSet = null;
+		try  {
+			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				T object = readResultSetRow(resultSet, null).object;
 				result.add(object);
+			}
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return result;
@@ -287,7 +328,7 @@ public abstract class AbstractTable<T> {
 	}
 	
 	protected ObjectWithId<T> readResultSetRow(ResultSet resultSet, Integer time) throws SQLException {
-		ObjectWithId<T> result = new ObjectWithId<>();
+		ObjectWithId<T> result = new ObjectWithId<T>();
 		result.object = CloneHelper.newInstance(clazz);
 		
 		for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
@@ -309,7 +350,7 @@ public abstract class AbstractTable<T> {
 				} else if (Set.class == fieldClass) {
 					Set<?> set = (Set<?>) property.getValue(result.object);
 					Class<?> enumClass = GenericUtils.getGenericClass(property.getType());
-					EnumUtils.fillSet((int) value, enumClass, set);
+					EnumUtils.fillSet((Integer) value, enumClass, set);
 					continue; // skip setValue, it's final
 				} else {
 					value = helper.convertToFieldClass(fieldClass, value);

@@ -45,7 +45,9 @@ public class TextFormatField extends AbstractEditField<StringLimitation> impleme
 		if (value == null) {
 			try {
 				value = textFormat.getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (InstantiationException e) {
+				throw new RuntimeException(e);
+			} catch ( IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}

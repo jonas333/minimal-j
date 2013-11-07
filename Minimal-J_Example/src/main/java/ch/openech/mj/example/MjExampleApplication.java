@@ -19,7 +19,7 @@ public class MjExampleApplication extends MjApplication {
 
 	@Override
 	public List<IAction> getActionsNew(PageContext context) {
-		List<IAction> items = new ArrayList<>();
+		List<IAction> items = new ArrayList<IAction>();
 		items.add(new EditorPageAction(new AddBookEditor()));
 		items.add(new EditorPageAction(new AddCustomerEditor()));
 		items.add(new EditorPageAction(new AddLendEditor()));

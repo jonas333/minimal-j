@@ -85,7 +85,7 @@ public class PropertyAccessTest {
 		
 		Assert.assertEquals("After set a final list field with its existing values the content must be the same", 1, testClass3.list.size());
 		
-		List<TestClass1> list2 = new ArrayList<>();
+		List<TestClass1> list2 = new ArrayList<TestClass1>();
 		list2.add(new TestClass1());
 		list2.add(new TestClass1());
 		property.setValue(testClass3, list2);
@@ -149,7 +149,7 @@ public class PropertyAccessTest {
 	public static class TestClass3 {
 		public static final TestClass3 KEYS = Keys.of(TestClass3.class);
 		
-		public final List<TestClass1> list = new ArrayList<>();
+		public final List<TestClass1> list = new ArrayList<TestClass1>();
 	}
 	
 }

@@ -19,7 +19,7 @@ public class Book implements DemoEnabled {
 
 	@Required @Size(ExampleFormats.NAME) 
 	public String title;
-	public final Set<Media> media = new HashSet<>();
+	public final Set<Media> media = new HashSet<Media>();
 	@Size(ExampleFormats.NAME)
 	public String author;
 	public Boolean available;

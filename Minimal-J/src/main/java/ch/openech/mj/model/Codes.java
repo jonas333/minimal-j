@@ -10,10 +10,10 @@ import java.util.TreeSet;
 
 public class Codes {
 
-	private static Map<String, Code> codes = new HashMap<>();
+	private static Map<String, Code> codes = new HashMap<String, Code>();
 	
 	public static void addCodes(ResourceBundle resources) {
-		Set<String> codeNames = new TreeSet<>();
+		Set<String> codeNames = new TreeSet<String>();
 		Enumeration<String> keys = resources.getKeys();
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();

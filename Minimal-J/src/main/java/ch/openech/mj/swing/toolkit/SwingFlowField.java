@@ -61,7 +61,7 @@ public class SwingFlowField extends JPanel implements FlowField {
 	
 	private static class FlowLayoutManager implements LayoutManager {
 
-		private final List<Component> components = new LinkedList<>();
+		private final List<Component> components = new LinkedList<Component>();
 		private Dimension size;
 		private Rectangle lastParentBounds = null;
 		

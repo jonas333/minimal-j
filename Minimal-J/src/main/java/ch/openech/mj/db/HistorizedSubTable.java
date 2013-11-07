@@ -109,12 +109,22 @@ public class HistorizedSubTable extends AbstractTable {
 	
 	public void readVersions(int parentId, List<Integer> result) throws SQLException {
 		readVersionsStatement.setInt(1, parentId);
-		try (ResultSet resultSet = readVersionsStatement.executeQuery()) {
+		ResultSet resultSet = null;
+		try  {
+			resultSet = readVersionsStatement.executeQuery();
 			while (resultSet.next()) {
 				int version = resultSet.getInt(1);
 				if (!result.contains(version)) result.add(version);
 				int endVersion = resultSet.getInt(2);
 				if (!result.contains(version)) result.add(endVersion);
+			}
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

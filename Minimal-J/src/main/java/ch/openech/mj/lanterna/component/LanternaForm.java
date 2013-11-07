@@ -16,11 +16,11 @@ import com.googlecode.lanterna.terminal.TerminalSize;
 
 public class LanternaForm extends AbstractContainer implements GridFormLayout {
 
-	private final List<List<Component>> rows = new ArrayList<>();
+	private final List<List<Component>> rows = new ArrayList<List<Component>>();
 	private final Map<Component, Integer> spans = new HashMap<Component, Integer>();
 	private final int columns;
 	
-	private List<Component> actualRow = new ArrayList<>();
+	private List<Component> actualRow = new ArrayList<Component>();
 	private int actualColumn;
 	private boolean hasArea;
 	
@@ -31,7 +31,7 @@ public class LanternaForm extends AbstractContainer implements GridFormLayout {
     }
     
 	private void createNewRow() {
-		actualRow = new ArrayList<>();
+		actualRow = new ArrayList<Component>();
 		rows.add(actualRow);
 		actualColumn = 0;
 	}
