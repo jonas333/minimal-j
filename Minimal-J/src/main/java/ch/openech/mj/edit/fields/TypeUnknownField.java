@@ -19,7 +19,7 @@ public class TypeUnknownField implements ch.openech.mj.edit.fields.FormField<Obj
 		this.property = property;
 		
 		textField = ClientToolkit.getToolkit().createReadOnlyTextField();
-		textField.setText("No Field for found:" + property.getFieldName());
+		textField.setInput("No Field for found:" + property.getFieldName());
 	}
 
 	@Override

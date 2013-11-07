@@ -29,7 +29,7 @@ public class CodeEditField extends AbstractEditField<String> implements Enable, 
 		comboBox.setObjects(code.getCodeItems());
 		
 		textFieldDisabled = ClientToolkit.getToolkit().createReadOnlyTextField();
-		textFieldDisabled.setText("-");
+		textFieldDisabled.setInput("-");
 		
 		switchLayout = ClientToolkit.getToolkit().createSwitchLayout();
 		switchLayout.show(comboBox);

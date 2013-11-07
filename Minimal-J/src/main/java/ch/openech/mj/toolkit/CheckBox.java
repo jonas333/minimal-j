@@ -3,9 +3,9 @@ package ch.openech.mj.toolkit;
 
 public interface CheckBox extends IComponent {
 	
-	public void setSelected(boolean selected);
+	public void setChecked(boolean selected);
 
-	public boolean isSelected();
+	public boolean isChecked();
 
 	public void setEditable(boolean editable);
 

@@ -1,6 +1,5 @@
 package ch.openech.mj.edit.fields;
 
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
 import org.joda.time.LocalDate;
@@ -17,6 +16,7 @@ import ch.openech.mj.model.PropertyInterface;
 import ch.openech.mj.model.annotation.Size;
 import ch.openech.mj.toolkit.ClientToolkit;
 import ch.openech.mj.toolkit.IComponent;
+import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.TextField;
 import ch.openech.mj.util.DateUtils;
 import ch.openech.mj.util.StringUtils;
@@ -54,14 +54,22 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 	public abstract void setObject(T value);
 		
 	private void installFocusLostListener() {
-        textField.setFocusListener(new FocusAdapter() {
+        textField.setFocusListener(new IFocusListener() {
+			
 			@Override
-			public void focusLost(FocusEvent e) {
+			public void onFocusLost() {
 				// Formattierung auslösen
 				T value = getObject();
 				if (value != null && !InvalidValues.isInvalid(value)) {
 					setObject(value);
 				}
+				
+			}
+			
+			@Override
+			public void onFocusGained() {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}
@@ -93,7 +101,7 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 
 		@Override
 		public ReadablePartial getObject() {
-			String text = textField.getText();
+			String text = textField.getInput();
 			text = DateUtils.parseCH(text, true);
 			boolean fieldTextWasEmpty = text == null;
 			if (fieldTextWasEmpty) return null;
@@ -107,14 +115,14 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 		public void setObject(ReadablePartial value) {
 			if (InvalidValues.isInvalid(value)) {
 				String text = InvalidValues.getInvalidValue(value);
-				textField.setText(text);
+				textField.setInput(text);
 			} else if (value != null) {
 				String text = DateUtils.formatPartialCH(value);
-				if (!StringUtils.equals(textField.getText(), text)) {
-					textField.setText(text);
+				if (!StringUtils.equals(textField.getInput().toString(), text)) {
+					textField.setInput(text);
 				}
 			} else {
-				textField.setText(null);
+				textField.setInput(null);
 			}
 		}
 
@@ -144,7 +152,7 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 
 		@Override
 		public LocalDate getObject() {
-			String fieldText = textField.getText();
+			String fieldText = textField.getInput();
 			// TODO DateField doesn't handle date locals other than CH/DE
 			String text = DateUtils.parseCH(fieldText, false);
 			boolean fieldTextWasEmpty = text == null;
@@ -163,14 +171,14 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 		public void setObject(LocalDate value) {
 			if (InvalidValues.isInvalid(value)) {
 				String text = InvalidValues.getInvalidValue(value);
-				textField.setText(text);
+				textField.setInput(text);
 			} else if (value != null) {
 				String text = DateTimeFormat.mediumDate().print(value);
-				if (!StringUtils.equals(textField.getText(), text)) {
-					textField.setText(text);
+				if (!StringUtils.equals(textField.getInput(), text)) {
+					textField.setInput(text);
 				}
 			} else {
-				textField.setText(null);
+				textField.setInput(null);
 			}
 		}
 		
@@ -220,7 +228,7 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 
 		@Override
 		public LocalTime getObject() {
-			String text = textField.getText();
+			String text = textField.getInput();
 			if (text != null) {
 				try {
 					return formatter.parseLocalTime(text);
@@ -236,14 +244,14 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 		public void setObject(LocalTime value) {
 			if (InvalidValues.isInvalid(value)) {
 				String text = InvalidValues.getInvalidValue(value);
-				textField.setText(text);
+				textField.setInput(text);
 			} else if (value != null) {
 				String text = formatter.print(value);
-				if (!StringUtils.equals(textField.getText(), text)) {
-					textField.setText(text);
+				if (!StringUtils.equals(textField.getInput(), text)) {
+					textField.setInput(text);
 				}
 			} else {
-				textField.setText(null);
+				textField.setInput(null);
 			}
 		}
 

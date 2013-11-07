@@ -21,12 +21,12 @@ public class CheckBoxStringField extends AbstractEditField<Boolean> {
 	
 	@Override
 	public Boolean getObject() {
-		return checkBox.isSelected();
+		return checkBox.isChecked();
 	}		
 	
 	@Override
 	public void setObject(Boolean value) {
-		checkBox.setSelected(Boolean.TRUE.equals(value));
+		checkBox.setChecked(Boolean.TRUE.equals(value));
 	}
 
 }

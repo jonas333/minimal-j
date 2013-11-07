@@ -1,17 +1,16 @@
 package ch.openech.mj.toolkit;
 
-import java.awt.event.FocusListener;
 
 
 public interface TextField extends IComponent {
 	
-	public void setText(String text);
+	public void setInput(String text);
 
-	public String getText();
+	public String getInput();
 
 	public void setEditable(boolean editable);
 	
-	public void setFocusListener(FocusListener focusListener);
+	public void setFocusListener(IFocusListener focusListener);
 	
 	public void setCommitListener(Runnable runnable);
 

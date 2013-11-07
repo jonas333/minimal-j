@@ -38,7 +38,7 @@ public class EnumEditField<E extends Enum<E>> extends AbstractEditField<E> imple
 		comboBox.setObjects(allowedValues != null ? EnumUtils.itemList(allowedValues) : EnumUtils.itemList(enumClass));
 		
 		textFieldDisabled = ClientToolkit.getToolkit().createReadOnlyTextField();
-		textFieldDisabled.setText("-");
+		textFieldDisabled.setInput("-");
 		
 		switchLayout = ClientToolkit.getToolkit().createSwitchLayout();
 		switchLayout.show(comboBox);

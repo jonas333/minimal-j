@@ -37,12 +37,12 @@ public class TextEditField implements EditField<String>, Enable {
 				string = string.substring(0, maxLength);
 			}
 		}
-		textField.setText(string);
+		textField.setInput(string);
 	}
 
 	@Override
 	public String getObject() {
-		return textField.getText();
+		return textField.getInput();
 	}
 
 	@Override

@@ -24,12 +24,12 @@ public class BigDecimalEditField extends NumberEditField<BigDecimal> implements 
 				text = number.toString();
 			}
 		}
-		textField.setText(text);
+		textField.setInput(text);
 	}
 
 	@Override
 	public BigDecimal getObject() {
-		String text = textField.getText();
+		String text = textField.getInput();
 		if (text != null) {
 			try {
 				return new BigDecimal(text);

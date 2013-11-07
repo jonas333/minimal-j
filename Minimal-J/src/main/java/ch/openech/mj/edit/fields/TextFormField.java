@@ -28,7 +28,7 @@ public class TextFormField implements FormField<String> {
 
 	@Override
 	public void setObject(String string) {
-		textField.setText(string);
+		textField.setInput(string);
 	}
 
 	public void setEnabled(boolean enabled) {

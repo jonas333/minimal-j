@@ -53,13 +53,13 @@ public class JUnitClientToolkit extends ClientToolkit {
 		return new TextField() {
 			
 			@Override
-			public void setText(String text) {
+			public void setInput(String text) {
 				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
-			public void setFocusListener(FocusListener focusListener) {
+			public void setFocusListener(IFocusListener focusListener) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -77,7 +77,7 @@ public class JUnitClientToolkit extends ClientToolkit {
 			}
 			
 			@Override
-			public String getText() {
+			public String getInput() {
 				// TODO Auto-generated method stub
 				return null;
 			}

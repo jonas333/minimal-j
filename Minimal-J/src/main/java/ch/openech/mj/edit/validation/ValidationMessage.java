@@ -106,5 +106,24 @@ public class ValidationMessage {
 		s.append("</html>");
 		return s.toString();
 	}
+	
+	public static String formatText(List<String> validationMessages) {
+		if (!validationMessages.isEmpty())
+		{
+			StringBuilder result = new StringBuilder();
+			for (String validationMessage : validationMessages) {
+				result.append(validationMessage + "\n");
+			}
+			if (result.length() > 0) {
+				result.deleteCharAt(result.length()-1);
+			}
+			return result.toString();
+		} else
+		{
+			return null;
+		}
+		
+	}
+	
 
 }
