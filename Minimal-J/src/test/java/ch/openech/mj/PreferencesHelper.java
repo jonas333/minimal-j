@@ -1,4 +1,4 @@
-package ch.openech.mj.swing;
+package ch.openech.mj;
 
 import java.util.Map.Entry;
 import java.util.logging.Logger;
