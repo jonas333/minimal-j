@@ -36,5 +36,15 @@ public class SwingCheckBox extends JCheckBox implements CheckBox {
 		}
 	}
 
+	@Override
+	public void setChecked(boolean selected) {
+		setSelected(selected);
+	}
+
+	@Override
+	public boolean isChecked() {
+		return isSelected();
+	}
+
 }
 

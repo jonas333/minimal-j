@@ -1,7 +1,6 @@
 package ch.openech.mj.vaadin.toolkit;
 
-import java.awt.event.FocusListener;
-
+import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.TextField;
 import ch.openech.mj.util.StringUtils;
 
@@ -16,8 +15,8 @@ public class VaadinReadOnlyTextField extends Label implements TextField {
 	}
 
 	@Override
-	public void setText(String text) {
-		if (!StringUtils.isEmpty(getText())) {
+	public void setInput(String text) {
+		if (!StringUtils.isEmpty(getInput())) {
 			setReadOnly(false);
 		}
 		if (!StringUtils.isEmpty(text)) {
@@ -31,7 +30,7 @@ public class VaadinReadOnlyTextField extends Label implements TextField {
 	}
 
 	@Override
-	public String getText() {
+	public String getInput() {
 		// not possible
 		return (String) super.getValue();
 	}
@@ -42,7 +41,7 @@ public class VaadinReadOnlyTextField extends Label implements TextField {
 	}
 
 	@Override
-	public void setFocusListener(FocusListener focusListener) {
+	public void setFocusListener(IFocusListener focusListener) {
 		// read only field cannot be focused
 	}
 
