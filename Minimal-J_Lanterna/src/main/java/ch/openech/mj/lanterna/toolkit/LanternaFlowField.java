@@ -11,7 +11,7 @@ import com.googlecode.lanterna.gui.component.Panel;
 import com.googlecode.lanterna.gui.layout.VerticalLayout;
 
 public class LanternaFlowField extends Panel implements FlowField {
-	private List<Component> components = new ArrayList<Component>();
+	private List<Component> components = new ArrayList<>();
 	
 	public LanternaFlowField() {
 		setLayoutManager(new VerticalLayout());

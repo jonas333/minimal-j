@@ -19,18 +19,6 @@ public class VaadinCheckBox extends VerticalLayout implements ch.openech.mj.tool
 		checkBox.addListener(new CheckBoxChangeListener());
 	}
 
-	@Override
-	public void setChecked(boolean selected) {
-		boolean readOnly = checkBox.isReadOnly();
-		checkBox.setReadOnly(false);
-		checkBox.setValue(selected);
-		checkBox.setReadOnly(readOnly);
-	}
-
-	@Override
-	public boolean isChecked() {
-		return Boolean.TRUE.equals(checkBox.getValue());
-	}
 	
 	@Override
 	public void setEditable(boolean editable) {
@@ -45,6 +33,19 @@ public class VaadinCheckBox extends VerticalLayout implements ch.openech.mj.tool
 		public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 			listener.changed(VaadinCheckBox.this);
 		}
+	}
+
+	@Override
+	public void setChecked(boolean selected) {
+		boolean readOnly = checkBox.isReadOnly();
+		checkBox.setReadOnly(false);
+		checkBox.setValue(selected);
+		checkBox.setReadOnly(readOnly);
+	}
+
+	@Override
+	public boolean isChecked() {
+		return Boolean.TRUE.equals(checkBox.getValue());		
 	}
 	
 }

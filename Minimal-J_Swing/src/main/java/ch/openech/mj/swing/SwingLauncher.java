@@ -4,7 +4,6 @@ import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
 
-import ch.openech.mj.PreferencesHelper;
 import ch.openech.mj.application.ApplicationContext;
 import ch.openech.mj.application.MjApplication;
 import ch.openech.mj.swing.toolkit.SwingClientToolkit;

@@ -14,13 +14,6 @@ public class LanternaCheckBox extends CheckBox implements ch.openech.mj.toolkit.
 		this.changeListener = changeListener;
 	}
 
-	@Override
-	public void setChecked(boolean selected) {
-		if (isScrollable() != selected) {
-			select();
-		}
-	}
-
 	private void fireChangeEvent() {
 		changeListener.changed(LanternaCheckBox.this);
 	}
@@ -37,6 +30,13 @@ public class LanternaCheckBox extends CheckBox implements ch.openech.mj.toolkit.
 	@Override
 	public void setEditable(boolean enabled) {
 		// not supported
+	}
+
+	@Override
+	public void setChecked(boolean selected) {
+		if (isScrollable() != selected) {
+			select();
+		}
 	}
 
 	@Override

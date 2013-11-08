@@ -159,7 +159,7 @@ public class VaadinEditorLayout extends VaadinBorderLayout implements IComponent
  	}
 	
 	private static int[] convertSwingModifierToVaadin(int modifier) {
-		List<Integer> modifiers = new ArrayList<Integer>(4);
+		List<Integer> modifiers = new ArrayList<>(4);
 		if ((modifier & InputEvent.SHIFT_DOWN_MASK) > 0) {
 			modifiers.add(ShortcutAction.ModifierKey.SHIFT);
 		}

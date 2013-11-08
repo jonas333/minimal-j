@@ -21,8 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import ch.openech.mj.application.ApplicationContext;
-import ch.openech.mj.component.History;
-import ch.openech.mj.component.History.HistoryListener;
 import ch.openech.mj.edit.Editor;
 import ch.openech.mj.edit.Editor.EditorListener;
 import ch.openech.mj.edit.form.IForm;
@@ -31,6 +29,8 @@ import ch.openech.mj.page.PageContext;
 import ch.openech.mj.page.PageLink;
 import ch.openech.mj.page.RefreshablePage;
 import ch.openech.mj.swing.component.EditablePanel;
+import ch.openech.mj.swing.component.History;
+import ch.openech.mj.swing.component.History.HistoryListener;
 import ch.openech.mj.swing.toolkit.SwingClientToolkit;
 import ch.openech.mj.swing.toolkit.SwingClientToolkit.SwingLink;
 import ch.openech.mj.swing.toolkit.SwingEditorDialog;

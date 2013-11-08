@@ -16,7 +16,7 @@ import com.googlecode.lanterna.terminal.TerminalSize;
 public class LanternaEditorLayout extends AbstractContainer implements IComponent {
 	
 	private final Component content;
-	private final List<Button> buttons = new ArrayList<Button>();
+	private final List<Button> buttons = new ArrayList<>();
 	
 	public LanternaEditorLayout(IComponent content, IAction[] actions) {
 		this.content = (Component) content;

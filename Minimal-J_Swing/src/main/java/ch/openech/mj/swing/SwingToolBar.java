@@ -24,7 +24,7 @@ public class SwingToolBar extends JToolBar implements IComponent {
 	private static final long serialVersionUID = 1L;
 	
 	private final SwingTab tab;
-	private JComboBox comboBoxSearchObject;
+	private JComboBox<Class<?>> comboBoxSearchObject;
 	private JTextField textFieldSearch;
 	private SearchAction searchAction;
 
@@ -68,7 +68,7 @@ public class SwingToolBar extends JToolBar implements IComponent {
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.TRAILING);
 		flowLayout.setAlignOnBaseline(true);
 		JPanel panel = new JPanel(flowLayout);
-		comboBoxSearchObject = new JComboBox(MjApplication.getApplication().getSearchClasses());
+		comboBoxSearchObject = new JComboBox<>(MjApplication.getApplication().getSearchClasses());
 		comboBoxSearchObject.setRenderer(new SearchCellRenderer());
 		panel.add(comboBoxSearchObject);
 		textFieldSearch = new JTextField();

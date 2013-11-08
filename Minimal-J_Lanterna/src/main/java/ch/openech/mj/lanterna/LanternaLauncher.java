@@ -52,7 +52,7 @@ public class LanternaLauncher {
 	private static String applicationName;
 	private static ApplicationContext applicationContext;
 
-	private Editor<?> editor; 
+	private Editor<?> editor;
 	
 	private LanternaLauncher() {
 		// private
@@ -185,7 +185,7 @@ public class LanternaLauncher {
 		private class ActionSelection implements com.googlecode.lanterna.gui.Action {
 
 			private final String item;
-			private final List<com.googlecode.lanterna.gui.Action> actions = new ArrayList<com.googlecode.lanterna.gui.Action>();
+			private final List<com.googlecode.lanterna.gui.Action> actions = new ArrayList<>();
 			
 			public ActionSelection(String item) {
 				this.item = item;
@@ -216,14 +216,14 @@ public class LanternaLauncher {
 			panel.setLayoutManager(new HorisontalLayout());
 			
 			Class<?>[] searchClasses = MjApplication.getApplication().getSearchClasses();
-			List<String> objectNameList = new ArrayList<String>();
+			List<String> objectNameList = new ArrayList<>();
 			for (Class<?> searchClass : searchClasses) {
 				String objectName = Resources.getString("Search." + searchClass.getSimpleName());
 				objectNameList.add(objectName);
 				searchClassesByObjectName.put(objectName, searchClass);
 			}
 
-			comboBoxSearchObject = new Select<String>();
+			comboBoxSearchObject = new Select<>();
 			comboBoxSearchObject.setObjects(objectNameList);
 			panel.addComponent(comboBoxSearchObject);
 			

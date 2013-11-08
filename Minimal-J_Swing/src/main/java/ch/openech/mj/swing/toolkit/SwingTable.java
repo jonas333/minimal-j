@@ -114,7 +114,7 @@ public class SwingTable<T> extends JScrollPane implements ITable<T> {
 	}
 
 	public List<Integer> getSelectedIds() {
-		List<Integer> selectedIds = new ArrayList<Integer>(table.getSelectedRowCount());
+		List<Integer> selectedIds = new ArrayList<>(table.getSelectedRowCount());
 		for (int row : table.getSelectedRows()) {
 			int rowInModel = table.convertRowIndexToModel(row);
 			selectedIds.add(tableModel.getId(rowInModel));

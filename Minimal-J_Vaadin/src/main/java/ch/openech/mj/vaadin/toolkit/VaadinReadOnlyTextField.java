@@ -14,6 +14,17 @@ public class VaadinReadOnlyTextField extends Label implements TextField {
 		setWidth("100%");
 	}
 
+	
+	@Override
+	public void setEditable(boolean editable) {
+		// read only field cannot be enabled
+	}
+
+	@Override
+	public void setCommitListener(Runnable listener) {
+		// read only field cannot get commit command
+	}
+
 	@Override
 	public void setInput(String text) {
 		if (!StringUtils.isEmpty(getInput())) {
@@ -26,28 +37,18 @@ public class VaadinReadOnlyTextField extends Label implements TextField {
 			super.setValue("&nbsp;");
 			setContentMode(CONTENT_XHTML);
 		}
-		setReadOnly(true);
+		setReadOnly(true);		
 	}
 
 	@Override
 	public String getInput() {
-		// not possible
 		return (String) super.getValue();
 	}
 
 	@Override
-	public void setEditable(boolean editable) {
-		// read only field cannot be enabled
-	}
-
-	@Override
 	public void setFocusListener(IFocusListener focusListener) {
-		// read only field cannot be focused
-	}
-
-	@Override
-	public void setCommitListener(Runnable listener) {
-		// read only field cannot get commit command
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
