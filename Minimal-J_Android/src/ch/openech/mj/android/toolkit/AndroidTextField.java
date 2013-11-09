@@ -1,8 +1,12 @@
 package ch.openech.mj.android.toolkit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
@@ -25,7 +29,16 @@ public class AndroidTextField extends EditText implements TextField {
 	public AndroidTextField(Context ctx, InputComponentListener changeListener, int maxLength, String allowedCharacters) {
 		super(ctx);
 		addTextChangedListener(new AndroidTextWatcher(changeListener));
+		setFilters(createFilters(maxLength, allowedCharacters));
 	}
+	
+	private InputFilter[] createFilters(int maxLength, String allowedChars) {
+		List<InputFilter> filters = new ArrayList<InputFilter>();
+		filters.add(new InputFilter.LengthFilter(maxLength));
+		return filters.toArray(new InputFilter[filters.size()]);
+		
+	}
+	
 	
 	@Override
 	public void setCommitListener(Runnable commitListener) {
