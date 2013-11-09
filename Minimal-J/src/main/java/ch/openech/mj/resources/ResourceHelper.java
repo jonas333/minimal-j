@@ -86,7 +86,7 @@ public class ResourceHelper {
 	public static Icon getIcon(ResourceBundle resourceBundle, String key) {
 		String filename = getStringOptional(resourceBundle, key);
 		if (!StringUtils.isBlank(filename)) {
-			URL url = ResourceHelper.class.getClassLoader().getResource(filename);
+			URL url = getClassLoader(ResourceHelper.class).getResource(filename);
 			if (url != null) {
 				return new ImageIcon(url);
 			}
@@ -96,7 +96,7 @@ public class ResourceHelper {
 	
 	public static Icon getIcon(String key) {
 		key = "ch/openech/mj/resources/icons/" + key;
-		URL url = ResourceHelper.class.getClassLoader().getResource(key);
+		URL url = getClassLoader(ResourceHelper.class).getResource(key);
 		if (url != null) {
 			return new ImageIcon(url);
 		} else {
@@ -170,5 +170,15 @@ public class ResourceHelper {
 	public static String getApplicationVersion() {
 		return ResourceHelper.getString(Resources.getResourceBundle(), "Application.version");
 	}
+	
+	private static ClassLoader getClassLoader(Class<?> clazz) {
+		ClassLoader cl = clazz.getClassLoader();
+		if (cl == null) {
+			cl = ClassLoader.getSystemClassLoader();
+		}
+		return cl;
+	}
+	
+	
 
 }
