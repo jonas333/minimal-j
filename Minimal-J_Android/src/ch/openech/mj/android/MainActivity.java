@@ -62,7 +62,14 @@ public class MainActivity extends Activity {
 		gridLayout.addView(l2);
 		gridLayout.addView((View) ClientToolkit.getToolkit().createLabel(new AndroidDummyAction()));
 		
-		TextField textField = ClientToolkit.getToolkit().createTextField(null, 0);
+		
+		
+		TextField textField = ClientToolkit.getToolkit().createTextField(new InputComponentListener() {
+			@Override
+			public void changed(IComponent component) {
+				ClientToolkit.getToolkit().showMessage(null, ((TextField) component).getInput() );
+			}
+		}, 0);
 		textField.setFocusListener(new IFocusListener() {
 
 			@Override
@@ -80,6 +87,7 @@ public class MainActivity extends Activity {
 		TextView l3 = new TextView(this);
 		l3.setText("TextField");
 		gridLayout.addView(l3);
+		
 		gridLayout.addView((View ) textField);
 		
 		

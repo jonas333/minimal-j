@@ -2,6 +2,8 @@ package ch.openech.mj.android.toolkit;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.EditText;
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
 import ch.openech.mj.toolkit.IFocusListener;
@@ -9,7 +11,6 @@ import ch.openech.mj.toolkit.TextField;
 
 public class AndroidTextField extends EditText implements TextField {
 
-	private final InputComponentListener changeListener;
 	private IFocusListener focusListener;
 	private Runnable commitListener;
 	
@@ -23,7 +24,7 @@ public class AndroidTextField extends EditText implements TextField {
 	
 	public AndroidTextField(Context ctx, InputComponentListener changeListener, int maxLength, String allowedCharacters) {
 		super(ctx);
-		this.changeListener = changeListener;
+		addTextChangedListener(new AndroidTextWatcher(changeListener));
 	}
 	
 	@Override
@@ -65,10 +66,34 @@ public class AndroidTextField extends EditText implements TextField {
 	public String getInput() {
 		return getText().toString();
 	}
+	
+	public class AndroidTextWatcher implements TextWatcher {
 
-	
-	
-	
-	
+		InputComponentListener componentListener;
+		
+		public AndroidTextWatcher(InputComponentListener componentListener) {
+			super();
+			this.componentListener = componentListener;
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			// we are not interested
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// we are not interested
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			if (componentListener != null) {
+				componentListener.changed(AndroidTextField.this);
+			}
+		}
+	}
 
 }
