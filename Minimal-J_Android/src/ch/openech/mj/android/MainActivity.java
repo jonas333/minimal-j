@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
 			public void changed(IComponent component) {
 				ClientToolkit.getToolkit().showMessage(null, ((TextField) component).getInput() );
 			}
-		}, 2);
+		}, 2, "aAa");
 		textField.setFocusListener(new IFocusListener() {
 
 			@Override
