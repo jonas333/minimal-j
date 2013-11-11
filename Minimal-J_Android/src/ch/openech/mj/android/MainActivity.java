@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import ch.openech.mj.android.toolkit.AndroidCaption;
 import ch.openech.mj.android.toolkit.AndroidClientToolkit;
@@ -26,7 +29,9 @@ import ch.openech.mj.toolkit.ClientToolkit.DialogListener;
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
 import ch.openech.mj.toolkit.ComboBox;
 import ch.openech.mj.toolkit.FlowField;
+import ch.openech.mj.toolkit.IAction;
 import ch.openech.mj.toolkit.IComponent;
+import ch.openech.mj.toolkit.IDialog;
 import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.SwitchLayout;
 import ch.openech.mj.toolkit.TextField;
@@ -46,42 +51,20 @@ public class MainActivity extends Activity {
 		gridLayout.setColumnCount(2);
 		gridLayout.setRowCount(5);
 		
-		//gridLayout.setPadding(10, 10, 10, 10);
 		
-		
-		TextView l1 = new TextView(this);
-		l1.setText("Label");
-		gridLayout.addView(l1);
-		gridLayout.addView((View) ClientToolkit.getToolkit().createLabel("Android Launcher"));
-		
-		
-		
-		
-		TextView l2 = new TextView(this);
-		l2.setText("Action Label");
-		gridLayout.addView(l2);
-		gridLayout.addView((View) ClientToolkit.getToolkit().createLabel(new AndroidDummyAction()));
-		
-		TextField textField = ClientToolkit.getToolkit().createTextField(null, 0);
-		textField.setFocusListener(new IFocusListener() {
-
-			@Override
-			public void onFocusGained() {
-				System.out.println("onFocusGained()");
-			}
-
-			@Override
-			public void onFocusLost() {
-				System.out.println("onFocusLost()");
-			}
-			
-		});
-		
-		TextView l3 = new TextView(this);
-		l3.setText("TextField");
-		gridLayout.addView(l3);
-		gridLayout.addView((View ) textField);
-		
+		createLabel(gridLayout);
+		createActionLabel(gridLayout);
+		createTitle(gridLayout);
+		createLink(gridLayout);
+		createTextField(gridLayout);
+		createReadOnlyTextfield(gridLayout);
+		createComboBox(gridLayout);
+		createCheckBox(gridLayout);
+		createComponentAndCaption(gridLayout);
+		createErrorDialog(gridLayout);
+		createMessageDialog(gridLayout);
+		createConfirmationDialog(gridLayout);
+		createDialog(gridLayout);
 		
 		TextView l4 = new TextView(this);
 		l4.setText("FlowField");
@@ -95,35 +78,6 @@ public class MainActivity extends Activity {
 		
 		gridLayout.addView((View) flowField);
 		
-		TextView l5 = new TextView(this);
-		l5.setText("Combobox");
-		gridLayout.addView(l5);
-		
-		String[] names = {"Müller", "Schmidt", "Musolf", "Schneider"};
-		ComboBox<String> comboBox = ClientToolkit.getToolkit().createComboBox(null);
-		comboBox.setObjects(Arrays.asList(names));
-		gridLayout.addView((View) comboBox  );
-		
-		TextView l6 = new TextView(this);
-		l6.setText("Checkbox");
-		gridLayout.addView(l6);
-		InputComponentListener l = new InputComponentListener() {
-			
-			@Override
-			public void changed(IComponent checkbox) {
-				CheckBox cb = (CheckBox) checkbox;
-				System.out.println("checked : " + cb.isChecked());
-			}
-		};
-		gridLayout.addView((View) ClientToolkit.getToolkit().createCheckBox(l, "Check me"));
-		
-		
-		TextView l7 = new TextView(this);
-		l7.setText("Component with Caption");
-		gridLayout.addView(l7);
-		
-		IComponent et = ClientToolkit.getToolkit().createTextField(null, 10);
-		gridLayout.addView((View) new AndroidSampleCaption(this, "Eingabe", (View) et));
 		
 		TextView l8 = new TextView(this);
 		l8.setText("HorizonalLayout");
@@ -133,24 +87,13 @@ public class MainActivity extends Activity {
 		
 		gridLayout.addView((View) ClientToolkit.getToolkit().createHorizontalLayout(components));
 		
-		TextView l9 = new TextView(this);
-		l9.setText("Ueberschrift");
-		gridLayout.addView(l9);
-		gridLayout.addView( (View) ClientToolkit.getToolkit().createTitle("Dies ist eine Ueberschrift"));
-		
-		
-		TextView l10 = new TextView(this);
-		l10.setText("ReadOnly Textfeld");
-		gridLayout.addView(l10);
-		gridLayout.addView( (View) ClientToolkit.getToolkit().createReadOnlyTextField());
-		
 		
 		TextView l14 = new TextView(this);
 		l14.setText("GridLayout");
 		gridLayout.addView(l14);
 		
 		
-		AndroidGridLayout gl = new AndroidGridLayout(this, 2);
+		final AndroidGridLayout gl = new AndroidGridLayout(this, 2);
 		for (int i = 0; i < 2; i++)
 		{
 			for (int j = 0; j < 4; j++) {
@@ -162,13 +105,6 @@ public class MainActivity extends Activity {
 		gridLayout.addView(gl);
 		
 		
-
-		TextView l15 = new TextView(this);
-		l15.setText("Link");
-		gridLayout.addView(l15);
-		gridLayout.addView((View) ClientToolkit.getToolkit().createLink("", "http://www.google.de"));
-		
-		
 		TextView l16 = new TextView(this);
 		l16.setText("Switchlayout");
 		gridLayout.addView(l16);
@@ -177,36 +113,95 @@ public class MainActivity extends Activity {
 		
 		gridLayout.addView((View) switchLayout);
 		
+		setContentView(gridLayout);
+	}
+	
+	
+	
+	private void createComboBox(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Combobox");
+		content.addView(label);
 		
-		TextView l11 = new TextView(this);
-		l11.setText("Error Dialog");
-		gridLayout.addView(l11);
-		Button errorDialog = new Button(this);
-		errorDialog.setText("Error Dialog");
-		errorDialog.setOnClickListener(new View.OnClickListener() {
-		    public void onClick(View v) {
-		    	ClientToolkit.getToolkit().showError(this, "Es ist ein Fehler aufgetreten !");
-		    }
+		String[] names = {"Müller", "Schmidt", "Musolf", "Schneider"};
+		final ComboBox<String> comboBox = ClientToolkit.getToolkit().createComboBox(null);
+		comboBox.setObjects(Arrays.asList(names));
+		
+		LinearLayout comboLayout = new LinearLayout(this);
+		comboLayout.setOrientation(LinearLayout.HORIZONTAL);
+		comboLayout.addView((View) comboBox);
+		Button bSelect = new Button(this);
+		bSelect.setText("Set Selected Musolf");
+		bSelect.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				comboBox.setSelectedObject("Musolf");
+			}
 		});
-		gridLayout.addView(errorDialog);
+        comboLayout.addView(bSelect);
 		
-		
-		TextView l12 = new TextView(this);
-		l12.setText("Message Dialog");
-		gridLayout.addView(l12);
-		Button messageDialog = new Button(this);
-		messageDialog.setText("Message Dialog");
-		messageDialog.setOnClickListener(new View.OnClickListener() {
-		    public void onClick(View v) {
-		    	ClientToolkit.getToolkit().showMessage(this, "Hier könnte Ihre Information stehen");
-		    }
+		final Button bGetSelect = new Button(this);
+		bGetSelect.setText("Get Selected");
+		bGetSelect.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				 bGetSelect.setText(comboBox.getSelectedObject());
+			}
 		});
-		gridLayout.addView(messageDialog);
 		
-		
-		TextView l13 = new TextView(this);
-		l13.setText("Confirmation Dialog");
-		gridLayout.addView(l13);
+		comboLayout.addView(bGetSelect);
+		content.addView(comboLayout);
+	}
+
+	
+	private void createCheckBox(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Checkbox");
+		content.addView(label);
+		InputComponentListener l = new InputComponentListener() {
+			
+			@Override
+			public void changed(IComponent checkbox) {
+				CheckBox cb = (CheckBox) checkbox;
+				System.out.println("checked : " + cb.isChecked());
+			}
+		};
+		content.addView((View) ClientToolkit.getToolkit().createCheckBox(l, "Check me"));
+	}
+	
+	
+	private void createDialog(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Dialog");
+		content.addView(label);
+		Button bDialog = new Button(this);
+		bDialog.setText("Show/Hide Dialog");
+		bDialog.setOnClickListener(new OnClickListener() {
+			
+			boolean visible = false;
+			IDialog dlg;
+			
+			@Override
+			public void onClick(View v) {
+				if (!visible) {
+					dlg = ClientToolkit.getToolkit().createDialog(null, "Ein Beispieldialog", ClientToolkit.getToolkit().createTextField(null, 10, null), (IAction[]) null);
+					dlg.openDialog();
+				} else {
+					dlg.closeDialog();
+				}
+				visible = !visible;
+			}
+		});
+		content.addView(bDialog);
+	}
+	
+	
+	private void createConfirmationDialog(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Confirmation Dialog");
+		content.addView(label);
 		Button confirmationDialog = new Button(this);
 		confirmationDialog.setText("Confirmation Dialog");
 		confirmationDialog.setOnClickListener(new View.OnClickListener() {
@@ -218,15 +213,113 @@ public class MainActivity extends Activity {
 		    	});
 		    }
 		});
-		gridLayout.addView(confirmationDialog);
-		
-		
-		
-		
-		
-		setContentView(gridLayout);
+		content.addView(confirmationDialog);
+	}
+	
+	private void createMessageDialog(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Message Dialog");
+		content.addView(label);
+		Button messageDialog = new Button(this);
+		messageDialog.setText("Message Dialog");
+		messageDialog.setOnClickListener(new View.OnClickListener() {
+		    public void onClick(View v) {
+		    	ClientToolkit.getToolkit().showMessage(this, "Hier könnte Ihre Information stehen");
+		    }
+		});
+		content.addView(messageDialog);
+	}
+	
+	private void createErrorDialog(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Error Dialog");
+		content.addView(label);
+		Button errorDialog = new Button(this);
+		errorDialog.setText("Error Dialog");
+		errorDialog.setOnClickListener(new View.OnClickListener() {
+		    public void onClick(View v) {
+		    	ClientToolkit.getToolkit().showError(this, "Es ist ein Fehler aufgetreten !");
+		    }
+		});
+		content.addView(errorDialog);
+	}
+	
+	private void createLink(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Link");
+		content.addView(label);
+		content.addView((View) ClientToolkit.getToolkit().createLink("", "http://www.google.de"));
+	}
+	
+	
+	private void createTitle(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Ueberschrift");
+		content.addView(label);
+		content.addView( (View) ClientToolkit.getToolkit().createTitle("Dies ist eine Ueberschrift"));
+	}
+	
+	
+	private void createComponentAndCaption(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("Component with Caption");
+		content.addView(label);
+		IComponent et = ClientToolkit.getToolkit().createTextField(null, 10);
+		content.addView((View) new AndroidSampleCaption(this, "Eingabe", (View) et));
+	}
+	
+	private void createReadOnlyTextfield(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("ReadOnly Textfeld");
+		content.addView(label);
+		content.addView( (View) ClientToolkit.getToolkit().createReadOnlyTextField());
+	}
+	
+	private void createActionLabel(GridLayout content) {
+		TextView label = new TextView(this);
+		label.setText("Action Label");
+		content.addView(label);
+		content.addView((View) ClientToolkit.getToolkit().createLabel(new AndroidDummyAction()));
 	}
 
+	private void createTextField(ViewGroup content) {
+		TextView label = new TextView(this);
+		label.setText("TextField");
+		content.addView(label);
+		TextField textField = ClientToolkit.getToolkit().createTextField(new InputComponentListener() {
+			@Override
+			public void changed(IComponent component) {
+				ClientToolkit.getToolkit().showMessage(null, ((TextField) component).getInput() );
+			}
+		}, 2, "aAa");
+		textField.setFocusListener(new IFocusListener() {
+
+			@Override
+			public void onFocusGained() {
+				System.out.println("onFocusGained()");
+			}
+
+			@Override
+			public void onFocusLost() {
+				System.out.println("onFocusLost()");
+			}
+			
+		});
+		content.addView((View) textField);
+		
+	}
+	
+	
+	private void createLabel(ViewGroup contentView) {
+		TextView label = new TextView(this);
+		label.setText("Label");
+		contentView.addView(label);
+		IComponent actionLabel = ClientToolkit.getToolkit().createLabel("Android Action Label");
+		contentView.addView((View) actionLabel);
+	}
+	
+	
+	
 	@SuppressWarnings("unchecked")
 	private void initApplication() {
 		Class<? extends MjApplication> applicationClass;

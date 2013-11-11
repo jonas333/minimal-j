@@ -4,6 +4,7 @@ import ch.openech.mj.lanterna.component.Select;
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
 import ch.openech.mj.toolkit.ComboBox;
 
+import com.googlecode.lanterna.gui.Interactable.Result;
 import com.googlecode.lanterna.input.Key;
 
 public class LanternaComboBox<T> extends Select<T> implements ComboBox<T> {

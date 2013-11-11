@@ -1,7 +1,5 @@
 package ch.openech.mj.lanterna.toolkit;
 
-import java.awt.event.FocusListener;
-
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
 import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.TextField;

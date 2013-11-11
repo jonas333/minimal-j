@@ -2,7 +2,7 @@ package ch.openech.mj.android.toolkit;
 
 import java.io.InputStream;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import ch.openech.mj.android.AndroidHelper;
 import ch.openech.mj.search.Lookup;
@@ -25,9 +25,9 @@ import ch.openech.mj.toolkit.TextField;
 
 public class AndroidClientToolkit extends ClientToolkit {
 	
-	private Context ctx;
+	private Activity ctx;
 	
-	public AndroidClientToolkit(Context ctx) {
+	public AndroidClientToolkit(Activity ctx) {
 		super();
 		this.ctx = ctx;
 	}
@@ -48,15 +48,18 @@ public class AndroidClientToolkit extends ClientToolkit {
 	}
 
 	@Override
-	public <T> ComboBox<T> createComboBox(InputComponentListener arg0) {
-		return new AndroidComboBox<T>(ctx);
+	public <T> ComboBox<T> createComboBox(InputComponentListener listener) {
+		return new AndroidComboBox<T>(ctx, listener);
 	}
 
 	@Override
-	public IDialog createDialog(IComponent arg0, String arg1, IComponent arg2,
-			IAction... arg3) {
-		// TODO Auto-generated method stub
-		return null;
+	public IDialog createDialog(IComponent parent, String title, IComponent content,
+			IAction... actions) {
+		AndroidDialog dlg = new AndroidDialog();
+		dlg.setTitle(title);
+		dlg.setContent(content);
+		dlg.setFragmentManager(ctx.getFragmentManager());
+		return dlg;
 	}
 
 	@Override
