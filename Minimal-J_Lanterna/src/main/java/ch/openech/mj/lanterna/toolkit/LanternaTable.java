@@ -3,14 +3,13 @@ package ch.openech.mj.lanterna.toolkit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.joda.time.ReadablePartial;
 
 import ch.openech.mj.lanterna.component.HighContrastLanternaTheme;
-import ch.openech.mj.model.Keys;
 import ch.openech.mj.model.PropertyInterface;
+import ch.openech.mj.model.properties.Properties;
 import ch.openech.mj.resources.Resources;
 import ch.openech.mj.search.Lookup;
 import ch.openech.mj.toolkit.ITable;
@@ -41,7 +40,7 @@ public class LanternaTable<T> extends AbstractInteractableComponent implements I
 	public LanternaTable(Lookup<T> lookup, Object[] keys) {
 		this.lookup = lookup;
 		this.keys = keys;
-		this.properties = convert(keys);
+		this.properties = Properties.convert(keys);
 		selectedIds = new ArrayList<Integer>();
 		
 		columnTitleArray = new String[keys.length];
@@ -65,33 +64,6 @@ public class LanternaTable<T> extends AbstractInteractableComponent implements I
 		}
 	}
 	
-//	public static <T> LanternaTable<T> create(Class<T> clazz, Object[] keys) {
-//		int[] columnWidthArray = new int[keys.length];
-//		String[] columnTitleArray = new String[keys.length];
-//		List<PropertyInterface> properties = convert(keys);
-//		for (int i = 0; i<properties.size(); i++) {
-//			PropertyInterface property = properties.get(i);
-//			columnWidthArray[i] = Math.max(AnnotationUtil.getSize(property), 5);
-//			columnTitleArray[i] = Resources.getObjectFieldName(Resources.getResourceBundle(), property);
-//		}
-//		return new LanternaTable<T>(properties, columnWidthArray, columnTitleArray);
-//	}
-	
-	private static List<PropertyInterface> convert(Object[] keys) {
-		List<PropertyInterface> properties = new ArrayList<PropertyInterface>(keys.length);
-		for (Object key : keys) {
-			PropertyInterface property = Keys.getProperty(key);
-			if (property != null) {
-				properties.add(property);
-			} else {
-				logger.log(Level.WARNING, "Key not a property: " + key);
-			}
-		}
-		if (properties.size() == 0) {
-			logger.log(Level.SEVERE, "PropertyTable without valid keys");
-		}
-		return properties;
-	}
 	
 	@Override
 	public void repaint(TextGraphics graphics) {

@@ -3,14 +3,17 @@ package ch.openech.mj.model.properties;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.openech.mj.db.EmptyObjects;
 import ch.openech.mj.edit.value.CloneHelper;
+import ch.openech.mj.model.Keys;
 import ch.openech.mj.model.PropertyInterface;
 import ch.openech.mj.util.FieldUtils;
 
@@ -52,6 +55,23 @@ public class Properties {
 		Map<String, PropertyInterface> propertiesForClass = properties.get(clazz);
 		return propertiesForClass;
 	}
+
+	public static List<PropertyInterface> convert(Object[] keys) {
+		List<PropertyInterface> properties = new ArrayList<PropertyInterface>(keys.length);
+		for (Object key : keys) {
+			PropertyInterface property = Keys.getProperty(key);
+			if (property != null) {
+				properties.add(property);
+			} else {
+				logger.log(Level.WARNING, "Key not a property: " + key);
+			}
+		}
+		if (properties.size() == 0) {
+			logger.log(Level.SEVERE, "table without valid keys");
+		}
+		return properties;
+	}	
+	
 	
 	private static Map<String, PropertyInterface> properties(Class<?> clazz) {
 		Map<String, PropertyInterface> properties = new LinkedHashMap<String, PropertyInterface>();

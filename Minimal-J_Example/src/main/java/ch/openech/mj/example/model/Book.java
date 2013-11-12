@@ -40,4 +40,14 @@ public class Book implements DemoEnabled {
 		price = new BigDecimal(3990).divide(new BigDecimal(100));
 	}
 
+	@Override
+	public String toString() {
+		return "Book [title=" + title + ", media=" + media + ", author="
+				+ author + ", available=" + available + ", date=" + date
+				+ ", pages=" + pages + ", price=" + price + "]";
+	}
+	
+	
+	
+
 }

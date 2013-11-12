@@ -152,9 +152,8 @@ public class AndroidClientToolkit extends ClientToolkit {
 	}
 
 	@Override
-	public <T> ITable<T> createTable(Lookup<T> lookup, Object[] fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> ITable<T> createTable(Lookup<T> lookup, Object[] keys) {
+		return new AndroidTable<T>(ctx, lookup, keys);
 	}
 
 	@Override
