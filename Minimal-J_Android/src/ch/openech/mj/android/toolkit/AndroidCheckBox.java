@@ -24,11 +24,9 @@ public class AndroidCheckBox extends CheckBox implements ch.openech.mj.toolkit.C
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		listener.changed(this);
+		if (listener != null) {
+			listener.changed(this);
+		}
 	}
-	
-	
-	
-	
 
 }

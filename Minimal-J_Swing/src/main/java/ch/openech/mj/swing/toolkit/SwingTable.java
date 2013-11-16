@@ -29,6 +29,7 @@ import org.joda.time.ReadablePartial;
 
 import ch.openech.mj.model.Keys;
 import ch.openech.mj.model.PropertyInterface;
+import ch.openech.mj.model.properties.Properties;
 import ch.openech.mj.resources.Resources;
 import ch.openech.mj.search.Lookup;
 import ch.openech.mj.toolkit.ITable;
@@ -49,7 +50,7 @@ public class SwingTable<T> extends JScrollPane implements ITable<T> {
 	public SwingTable(Lookup<T> lookup, Object[] keys) {
 		this.lookup = lookup;
 		this.keys = keys;
-		this.properties = convert(keys);
+		this.properties = Properties.convert(keys);
 		
 		tableModel = new ItemTableModel();
 		table = new JTable(tableModel);
@@ -73,21 +74,7 @@ public class SwingTable<T> extends JScrollPane implements ITable<T> {
 		table.addMouseListener(new SwingTableMouseListener());
 	}
 
-	private List<PropertyInterface> convert(Object[] keys) {
-		List<PropertyInterface> properties = new ArrayList<PropertyInterface>(keys.length);
-		for (Object key : keys) {
-			PropertyInterface property = Keys.getProperty(key);
-			if (property != null) {
-				properties.add(property);
-			} else {
-				logger.log(Level.WARNING, "Key not a property: " + key);
-			}
-		}
-		if (properties.size() == 0) {
-			logger.log(Level.SEVERE, "table without valid keys");
-		}
-		return properties;
-	}
+	
 	
 	private void bindRowHeightToFont() {
 		table.addPropertyChangeListener("UI", new PropertyChangeListener() {

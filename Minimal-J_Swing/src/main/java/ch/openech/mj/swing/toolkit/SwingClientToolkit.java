@@ -376,23 +376,6 @@ public class SwingClientToolkit extends ClientToolkit {
 		return swingAction;
 	}
 	
-	// @Override
-	// public InputStream importField(Object parent, String buttonText) {
-	// JFileChooser chooser = new JFileChooser();
-	// chooser.setMultiSelectionEnabled(false);
-	// chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-	// if (JFileChooser.APPROVE_OPTION == chooser.showDialog(null, buttonText))
-	// {
-	// File inputFile = chooser.getSelectedFile();
-	// try {
-	// return new FileInputStream(inputFile);
-	// } catch (FileNotFoundException e) {
-	// e.printStackTrace();
-	// return null;
-	// }
-	// } else {
-	// return null;
-	// }
-	// }
+	
 
 }

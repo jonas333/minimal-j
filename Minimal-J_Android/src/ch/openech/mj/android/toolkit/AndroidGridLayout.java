@@ -17,9 +17,9 @@ public class AndroidGridLayout extends GridLayout implements GridFormLayout {
 	@Override
 	public void add(IComponent component, int span) {
 		View child = (View) component;
-		GridLayout.LayoutParams childLP = new GridLayout.LayoutParams();
-		childLP.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, span);
-		child.setLayoutParams(childLP);
+		GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
+		layoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, span);
+		child.setLayoutParams(layoutParams);
 		addView((View) component);
 	}
 

@@ -2,6 +2,9 @@ package ch.openech.mj.android;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
+import org.joda.time.LocalDate;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,16 +12,24 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.GridLayout;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import ch.openech.mj.android.toolkit.AndroidCaption;
 import ch.openech.mj.android.toolkit.AndroidClientToolkit;
 import ch.openech.mj.android.toolkit.AndroidDummyAction;
-import ch.openech.mj.android.toolkit.AndroidGridLayout;
-import ch.openech.mj.android.toolkit.AndroidLabel;
 import ch.openech.mj.application.ApplicationContext;
 import ch.openech.mj.application.MjApplication;
+import ch.openech.mj.example.model.Book;
+import ch.openech.mj.example.page.BookTablePage;
+import ch.openech.mj.search.Lookup;
+import ch.openech.mj.search.Search;
 import ch.openech.mj.toolkit.CheckBox;
 import ch.openech.mj.toolkit.ClientToolkit;
 import ch.openech.mj.toolkit.ClientToolkit.ConfirmDialogType;
@@ -26,50 +37,285 @@ import ch.openech.mj.toolkit.ClientToolkit.DialogListener;
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
 import ch.openech.mj.toolkit.ComboBox;
 import ch.openech.mj.toolkit.FlowField;
+import ch.openech.mj.toolkit.GridFormLayout;
+import ch.openech.mj.toolkit.HorizontalLayout;
+import ch.openech.mj.toolkit.IAction;
 import ch.openech.mj.toolkit.IComponent;
 import ch.openech.mj.toolkit.IFocusListener;
+import ch.openech.mj.toolkit.ITable;
+import ch.openech.mj.toolkit.ITable.TableActionListener;
 import ch.openech.mj.toolkit.SwitchLayout;
 import ch.openech.mj.toolkit.TextField;
 
 public class MainActivity extends Activity {
 
+	private final String[] WIDGETS = { "Label", "ActionLabel", "Title", "Link",
+			"TextField", "ReadOnlyTextField", "ComboBox", "CheckBox",
+			"ComponentAndCaption", "ErrorDialog", "MessageDialog",
+			"ConfirmationDialog", "Dialog", "Table", "FlowLayout", "GridLayout", "HorizontalLayout",
+			"SwitchLayout", "FormAlignLayout", "SearchPanel"};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initApplication();
-		initActivity();
-		
+		setContentView(R.layout.activity_main);
+		ListView listView = (ListView) findViewById(R.id.mainList);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, Arrays.asList(WIDGETS));
+		listView.setAdapter(adapter);
+		listView.setItemsCanFocus(false);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				if (view instanceof TextView) {
+					String title = ((TextView) view).getText().toString();
+					switch (position) {
+					case 0:
+						showLabel(title);
+						break;
+					case 1:
+						showActionLabel(title);
+						break;
+					case 2:
+						showTitle(title);
+						break;
+					case 3:
+						showLink(title);
+						break;
+					case 4:
+						showTextField(title);
+						break;
+					case 5:
+						showReadOnlyTextfield(title);
+						break;
+					case 6:
+						showComboBox(title);
+						break;
+					case 7:
+						showCheckBox(title);
+						break;
+					case 8:
+						showComponentAndCaption(title);
+						break;
+					case 9:
+						showErrorDialog(title);
+						break;
+					case 10:
+						showMessageDialog(title);
+						break;
+					case 11:
+						showConfirmationDialog(title);
+						break;
+					case 13:
+						showTable(title);
+						break;
+					case 14:
+						showFlowField(title);
+						break;
+					case 15:
+						showGrid(title);
+						break;
+					case 16:
+						showHorizontalLayout(title);
+						break;
+					case 17:
+						showSwitchLayout(title);
+						break;
+					case 18:
+						showFormAlignLayout(title);
+						break;
+					case 19:
+						showSearchPanel(title);
+						break;
+					}
+				}
+			}
+		});
 	}
 
-	private void initActivity() {
-		GridLayout gridLayout = new GridLayout(this);
-		gridLayout.setColumnCount(2);
-		gridLayout.setRowCount(5);
-		
-		//gridLayout.setPadding(10, 10, 10, 10);
-		
-		
-		TextView l1 = new TextView(this);
-		l1.setText("Label");
-		gridLayout.addView(l1);
-		gridLayout.addView((View) ClientToolkit.getToolkit().createLabel("Android Launcher"));
-		
-		
-		
-		
-		TextView l2 = new TextView(this);
-		l2.setText("Action Label");
-		gridLayout.addView(l2);
-		gridLayout.addView((View) ClientToolkit.getToolkit().createLabel(new AndroidDummyAction()));
-		
-		
-		
-		TextField textField = ClientToolkit.getToolkit().createTextField(new InputComponentListener() {
+	
+	private void showSearchPanel(String title) {
+		AndroidClientToolkit.getToolkit().createSearchDialog(null, new DummyLookup(), BookTablePage.FIELDS, null).openDialog();
+	}
+	
+	
+	private void showFormAlignLayout(String title) {
+		FlowField hl  =ClientToolkit.getToolkit().createFlowField();
+		for (int i = 0; i < 9; i++)
+		{
+			hl.add(ClientToolkit.getToolkit().createLabel("Eintrag" + i));
+		}
+		IComponent c = ClientToolkit.getToolkit().createFormAlignLayout(hl);
+		showDialog(c, title);
+	}
+	
+	private void showSwitchLayout(String title) {
+		SwitchLayout sl = ClientToolkit.getToolkit().createSwitchLayout();
+		sl.show(ClientToolkit.getToolkit().createTitle("A Title within a switch layout"));
+		showDialog(sl, title);
+	}
+
+	private void showTable(String title) {
+		Integer[] ids = { 1, 2 };
+		ITable<Book> table = ClientToolkit.getToolkit().createTable(new DummyLookup(),
+				BookTablePage.FIELDS);
+		table.setClickListener(new TableActionListener() {
+			
 			@Override
-			public void changed(IComponent component) {
-				ClientToolkit.getToolkit().showMessage(null, ((TextField) component).getInput() );
+			public void action(int id, List<Integer> selectedIds) {
+				System.out.println("selectedId : " + id + " selectedIds : " + selectedIds);
 			}
-		}, 2, "aAa");
+		});
+		table.setIds(Arrays.asList(ids));
+		showDialog(table, title);
+	}
+
+	private void showComboBox(String title) {
+
+		String[] names = { "Müller", "Schmidt", "Musolf", "Schneider" };
+		final ComboBox<String> comboBox = ClientToolkit.getToolkit()
+				.createComboBox(null);
+		comboBox.setObjects(Arrays.asList(names));
+
+		AndroidLinearLayout comboLayout = new AndroidLinearLayout(this);
+		comboLayout.setOrientation(LinearLayout.HORIZONTAL);
+		comboLayout.addView((View) comboBox);
+		Button bSelect = new Button(this);
+		bSelect.setText("Set Selected Musolf");
+		bSelect.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				comboBox.setSelectedObject("Musolf");
+			}
+		});
+		comboLayout.addView(bSelect);
+
+		final Button bGetSelect = new Button(this);
+		bGetSelect.setText("Get Selected");
+		bGetSelect.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(getBaseContext(), comboBox.getSelectedObject(), Toast.LENGTH_LONG).show();
+			}
+		});
+
+		comboLayout.addView(bGetSelect);
+		showDialog(comboLayout, title);
+	}
+	
+	
+	private void showHorizontalLayout(String title) {
+		IComponent[] components = {ClientToolkit.getToolkit().createLabel("a label"), ClientToolkit.getToolkit().createLabel("another label"), ClientToolkit.getToolkit().createLabel("once again a label")};
+		HorizontalLayout hl  =ClientToolkit.getToolkit().createHorizontalLayout(components);
+		showDialog(hl, title);
+	}
+	
+	private void showGrid(String title) {
+		
+		GridFormLayout grid = ClientToolkit.getToolkit().createGridLayout(4, 20);
+		
+		grid.add(ClientToolkit.getToolkit().createLabel("1 zeile, 1 spalte"), 1);
+		grid.add(ClientToolkit.getToolkit().createLabel("1 zeile, 2 spalte"), 1);
+		grid.add(ClientToolkit.getToolkit().createLabel("1 zeile, 3 spalte"), 1);
+		grid.add(ClientToolkit.getToolkit().createLabel("1 zeile, 4 spalte"), 1);
+		
+		grid.add(ClientToolkit.getToolkit().createLabel("2 zeile, span=2 blablabla"), 2);
+		grid.add(ClientToolkit.getToolkit().createLabel("2 zeile, span=2 xxxxxxxxx"), 2);
+		
+		grid.add(ClientToolkit.getToolkit().createLabel("3 zeile, span=1"), 1);
+		grid.add(ClientToolkit.getToolkit().createLabel("3 zeile, span=3 yyyyyyyyyy"), 3);
+		
+		
+		
+		showDialog(grid, title);
+		
+		
+	}
+	
+
+	private void showCheckBox(String title) {
+		InputComponentListener l = new InputComponentListener() {
+
+			@Override
+			public void changed(IComponent checkbox) {
+				CheckBox cb = (CheckBox) checkbox;
+				System.out.println("checked : " + cb.isChecked());
+			}
+		};
+		IComponent checkbox = ClientToolkit.getToolkit().createCheckBox(l,
+				"Check me");
+		showDialog(checkbox, title);
+	}
+
+
+	private void showConfirmationDialog(String title) {
+		ClientToolkit.getToolkit().showConfirmDialog(null, title,
+				"Wollen Sie wirklich den Rechner herunterfahren ?",
+				ConfirmDialogType.YES_NO_CANCEL, new DialogListener() {
+					public void close(Object result) {
+						System.out.println(result);
+					}
+				});
+	}
+
+	private void showMessageDialog(String title) {
+		ClientToolkit.getToolkit().showMessage(this, title);
+	}
+
+	private void showErrorDialog(String title) {
+		ClientToolkit.getToolkit().showError(this, title);
+	}
+
+	private void showLink(String title) {
+		IComponent link = ClientToolkit.getToolkit().createLink("",
+				"http://www.google.de");
+		showDialog(link, title);
+
+	}
+
+	private void showTitle(String title) {
+		IComponent androidTitle = ClientToolkit.getToolkit().createTitle(
+				"Dies ist eine Ueberschrift");
+		showDialog(androidTitle, title);
+
+	}
+
+	private void showComponentAndCaption(String title) {
+		IComponent et = ClientToolkit.getToolkit().createTextField(null, 10);
+		IComponent compWithCaption = new AndroidSampleCaption(this, "Eingabe",
+				(View) et);
+		showDialog(compWithCaption, title);
+
+	}
+
+	private void showReadOnlyTextfield(String title) {
+		IComponent readonlyTextField = ClientToolkit.getToolkit()
+				.createReadOnlyTextField();
+		showDialog(readonlyTextField, title);
+	}
+
+	private void showActionLabel(String title) {
+		IComponent actionLabel = ClientToolkit.getToolkit().createLabel(
+				new AndroidDummyAction());
+		showDialog(actionLabel, title);
+
+	}
+
+	private void showTextField(String title) {
+
+		TextField textField = ClientToolkit.getToolkit().createTextField(
+				new InputComponentListener() {
+					@Override
+					public void changed(IComponent component) {
+						ClientToolkit.getToolkit().showMessage(null,
+								((TextField) component).getInput());
+					}
+				}, 2, "aAa");
 		textField.setFocusListener(new IFocusListener() {
 
 			@Override
@@ -81,170 +327,44 @@ public class MainActivity extends Activity {
 			public void onFocusLost() {
 				System.out.println("onFocusLost()");
 			}
-			
-		});
-		
-		TextView l3 = new TextView(this);
-		l3.setText("TextField");
-		gridLayout.addView(l3);
-		
-		gridLayout.addView((View ) textField);
-		
-		
-		TextView l4 = new TextView(this);
-		l4.setText("FlowField");
-		gridLayout.addView(l4);
-		
-		FlowField flowField = ClientToolkit.getToolkit().createFlowField();
-		for (int i = 0; i < 50; i++)
-		{
-			flowField.add(ClientToolkit.getToolkit().createLabel("Label" + i));
-		}
-		
-		gridLayout.addView((View) flowField);
-		
-		TextView l5 = new TextView(this);
-		l5.setText("Combobox");
-		gridLayout.addView(l5);
-		
-		String[] names = {"Müller", "Schmidt", "Musolf", "Schneider"};
-		ComboBox<String> comboBox = ClientToolkit.getToolkit().createComboBox(null);
-		comboBox.setObjects(Arrays.asList(names));
-		gridLayout.addView((View) comboBox  );
-		
-		TextView l6 = new TextView(this);
-		l6.setText("Checkbox");
-		gridLayout.addView(l6);
-		InputComponentListener l = new InputComponentListener() {
-			
-			@Override
-			public void changed(IComponent checkbox) {
-				CheckBox cb = (CheckBox) checkbox;
-				System.out.println("checked : " + cb.isChecked());
-			}
-		};
-		gridLayout.addView((View) ClientToolkit.getToolkit().createCheckBox(l, "Check me"));
-		
-		
-		TextView l7 = new TextView(this);
-		l7.setText("Component with Caption");
-		gridLayout.addView(l7);
-		
-		IComponent et = ClientToolkit.getToolkit().createTextField(null, 10);
-		gridLayout.addView((View) new AndroidSampleCaption(this, "Eingabe", (View) et));
-		
-		TextView l8 = new TextView(this);
-		l8.setText("HorizonalLayout");
-		gridLayout.addView(l8);
-		
-		IComponent[] components = {new AndroidLabel(this, "Erster Eintrag"), new AndroidLabel(this, "Zweiter Eintrag")};
-		
-		gridLayout.addView((View) ClientToolkit.getToolkit().createHorizontalLayout(components));
-		
-		TextView l9 = new TextView(this);
-		l9.setText("Ueberschrift");
-		gridLayout.addView(l9);
-		gridLayout.addView( (View) ClientToolkit.getToolkit().createTitle("Dies ist eine Ueberschrift"));
-		
-		
-		TextView l10 = new TextView(this);
-		l10.setText("ReadOnly Textfeld");
-		gridLayout.addView(l10);
-		gridLayout.addView( (View) ClientToolkit.getToolkit().createReadOnlyTextField());
-		
-		
-		TextView l14 = new TextView(this);
-		l14.setText("GridLayout");
-		gridLayout.addView(l14);
-		
-		
-		AndroidGridLayout gl = new AndroidGridLayout(this, 2);
-		for (int i = 0; i < 2; i++)
-		{
-			for (int j = 0; j < 4; j++) {
-				gl.add(ClientToolkit.getToolkit().createTitle(AndroidHelper.createRandomString("GRID", 25)), 1);
-			}
-		}
-		gl.add(ClientToolkit.getToolkit().createTitle(AndroidHelper.createRandomString("GRID", 50)), 2);
-		
-		gridLayout.addView(gl);
-		
-		
 
-		TextView l15 = new TextView(this);
-		l15.setText("Link");
-		gridLayout.addView(l15);
-		gridLayout.addView((View) ClientToolkit.getToolkit().createLink("", "http://www.google.de"));
-		
-		
-		TextView l16 = new TextView(this);
-		l16.setText("Switchlayout");
-		gridLayout.addView(l16);
-		SwitchLayout switchLayout = ClientToolkit.getToolkit().createSwitchLayout();
-		switchLayout.show(ClientToolkit.getToolkit().createLabel("A SwitchLayout Label"));
-		
-		gridLayout.addView((View) switchLayout);
-		
-		
-		TextView l11 = new TextView(this);
-		l11.setText("Error Dialog");
-		gridLayout.addView(l11);
-		Button errorDialog = new Button(this);
-		errorDialog.setText("Error Dialog");
-		errorDialog.setOnClickListener(new View.OnClickListener() {
-		    public void onClick(View v) {
-		    	ClientToolkit.getToolkit().showError(this, "Es ist ein Fehler aufgetreten !");
-		    }
 		});
-		gridLayout.addView(errorDialog);
-		
-		
-		TextView l12 = new TextView(this);
-		l12.setText("Message Dialog");
-		gridLayout.addView(l12);
-		Button messageDialog = new Button(this);
-		messageDialog.setText("Message Dialog");
-		messageDialog.setOnClickListener(new View.OnClickListener() {
-		    public void onClick(View v) {
-		    	ClientToolkit.getToolkit().showMessage(this, "Hier könnte Ihre Information stehen");
-		    }
-		});
-		gridLayout.addView(messageDialog);
-		
-		
-		TextView l13 = new TextView(this);
-		l13.setText("Confirmation Dialog");
-		gridLayout.addView(l13);
-		Button confirmationDialog = new Button(this);
-		confirmationDialog.setText("Confirmation Dialog");
-		confirmationDialog.setOnClickListener(new View.OnClickListener() {
-		    public void onClick(View v) {
-		    	ClientToolkit.getToolkit().showConfirmDialog(null, "Bestätigen", "Wollen Sie wirklich den Rechner herunterfahren ?", ConfirmDialogType.YES_NO_CANCEL, new DialogListener() {
-		    		public void close(Object result) {
-		    			System.out.println(result);
-		    		}
-		    	});
-		    }
-		});
-		gridLayout.addView(confirmationDialog);
-		
-		
-		
-		
-		
-		setContentView(gridLayout);
+		showDialog(textField, title);
+	}
+	
+	
+	private void showFlowField(String title) {
+		FlowField ff = ClientToolkit.getToolkit().createFlowField();
+		ff.add(ClientToolkit.getToolkit().createLabel("A label in a flow field"));
+		ff.add(ClientToolkit.getToolkit().createLabel("Another label in a flow field"));
+		ff.addGap();
+		ff.add(ClientToolkit.getToolkit().createLabel("A label after a gap in a flow field"));
+		showDialog(ff, title);
+	}
+
+	private void showLabel(String title) {
+		IComponent actionLabel = ClientToolkit.getToolkit().createLabel(
+				"Android Label");
+		showDialog(actionLabel, title);
+	}
+
+	private void showDialog(IComponent component, String title) {
+		ClientToolkit.getToolkit()
+				.createDialog(null, title, component, (IAction[]) null)
+				.openDialog();
 	}
 
 	@SuppressWarnings("unchecked")
 	private void initApplication() {
 		Class<? extends MjApplication> applicationClass;
 		try {
-			applicationClass = (Class<? extends MjApplication>) Class.forName("ch.openech.mj.example.MjExampleApplication");
+			applicationClass = (Class<? extends MjApplication>) Class
+					.forName("ch.openech.mj.example.MjExampleApplication");
 			MjApplication application = applicationClass.newInstance();
 			ClientToolkit.setToolkit(new AndroidClientToolkit(this));
 			ApplicationContext applicationContext = new AndroidApplicationContext();
 			application.init();
-			
+
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -260,15 +380,12 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.main, menu);
+		// getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
-	
 	public class AndroidApplicationContext extends ApplicationContext {
 		private String user;
-
-		
 
 		@Override
 		public void setUser(String user) {
@@ -279,40 +396,79 @@ public class MainActivity extends Activity {
 		public String getUser() {
 			return user;
 		}
-		
+
 		@Override
 		public void savePreferences(Object preferences) {
-			//PreferencesHelper.save(Preferences.userNodeForPackage(SwingLauncher.this.getClass()), preferences);
+			// PreferencesHelper.save(Preferences.userNodeForPackage(SwingLauncher.this.getClass()),
+			// preferences);
 		}
 
 		@Override
 		public void loadPreferences(Object preferences) {
-			//PreferencesHelper.load(Preferences.userNodeForPackage(SwingLauncher.this.getClass()), preferences);
+			// PreferencesHelper.load(Preferences.userNodeForPackage(SwingLauncher.this.getClass()),
+			// preferences);
 		}
 	}
-	
+
 	private static class AndroidSampleCaption extends AndroidCaption {
 
-		
-		private static final String[] validationMsg = {"Sie haben eine falsche Eingabe gemacht !", "Bitte korrigieren"};
+		private static final String[] validationMsg = {
+				"Sie haben eine falsche Eingabe gemacht !", "Bitte korrigieren" };
 		private boolean toggle = true;
-		
+
 		public AndroidSampleCaption(Context context, String text, View view) {
 			super(context, text, view);
 		}
 
-
 		@Override
 		public boolean onTouchEvent(MotionEvent event) {
-			toggle = !toggle;
 			if (toggle) {
 				setValidationMessages(Arrays.asList(validationMsg));
 			} else {
-				setValidationMessages(Collections.<String>emptyList());
+				setValidationMessages(Collections.<String> emptyList());
 			}
+			toggle = !toggle;
 			return super.onTouchEvent(event);
+		}
+
+	}
+
+	private static class AndroidLinearLayout extends LinearLayout implements
+			IComponent {
+
+		public AndroidLinearLayout(Context context) {
+			super(context);
+		}
+	}
+	
+	public class DummyLookup implements Search<Book> {
+
+		@Override
+		public Book lookup(int id) {
+			if (id == 1) {
+				Book book = new Book();
+				book.title = "Der dunkle Turm";
+				book.author = "Stephen King";
+				book.pages = 999;
+				book.date = new LocalDate(2009, 1, 1);
+				return book;
+			} else {
+				Book book = new Book();
+				book.title = "Nichts ausgelassen";
+				book.author = "Heiner Lauterbach";
+				book.pages = 234;
+				book.date = new LocalDate(2009, 1, 1);
+				return book;
+			}			
+		}
+
+		@Override
+		public List<Integer> search(String searchString) {
+			Integer[] ids = {1,2};
+			return Arrays.asList(ids);
 		}
 		
 	}
 	
+
 }

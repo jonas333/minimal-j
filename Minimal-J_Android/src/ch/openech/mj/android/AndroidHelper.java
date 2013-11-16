@@ -10,6 +10,7 @@ import android.widget.Space;
 import ch.openech.mj.toolkit.ClientToolkit.ConfirmDialogType;
 import ch.openech.mj.toolkit.ClientToolkit.DialogListener;
 import ch.openech.mj.toolkit.ClientToolkit.DialogListener.DialogResult;
+import ch.openech.mj.util.StringUtils;
 
 public class AndroidHelper {
 
@@ -80,6 +81,15 @@ public class AndroidHelper {
 	
 	public static String createRandomString(String prefix, int length) {
 		return prefix + createRandomString(length);
+	}
+	
+	public static String camelCase(String s) {
+		
+		if (!StringUtils.isBlank(s)) {
+			return s.substring(0, 1).toUpperCase() + s.substring(1);
+		}
+		return s;
+		
 	}
 	
 	

@@ -2,8 +2,10 @@ package ch.openech.mj.android.toolkit;
 
 import java.io.InputStream;
 
-import android.content.Context;
+import android.app.Activity;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.ScrollView;
 import ch.openech.mj.android.AndroidHelper;
 import ch.openech.mj.search.Lookup;
 import ch.openech.mj.search.Search;
@@ -25,9 +27,9 @@ import ch.openech.mj.toolkit.TextField;
 
 public class AndroidClientToolkit extends ClientToolkit {
 	
-	private Context ctx;
+	private Activity ctx;
 	
-	public AndroidClientToolkit(Context ctx) {
+	public AndroidClientToolkit(Activity ctx) {
 		super();
 		this.ctx = ctx;
 	}
@@ -48,26 +50,28 @@ public class AndroidClientToolkit extends ClientToolkit {
 	}
 
 	@Override
-	public <T> ComboBox<T> createComboBox(InputComponentListener arg0) {
-		return new AndroidComboBox<T>(ctx);
+	public <T> ComboBox<T> createComboBox(InputComponentListener listener) {
+		return new AndroidComboBox<T>(ctx, listener);
 	}
 
 	@Override
-	public IDialog createDialog(IComponent arg0, String arg1, IComponent arg2,
-			IAction... arg3) {
-		// TODO Auto-generated method stub
-		return null;
+	public IDialog createDialog(IComponent parent, String title, IComponent content,
+			IAction... actions) {
+		AndroidDialog dlg = new AndroidDialog();
+		dlg.setTitle(title);
+		dlg.setContent(content);
+		dlg.setFragmentManager(ctx.getFragmentManager());
+		return dlg;
 	}
 
 	@Override
 	public FlowField createFlowField() {
-		return new AndroidFlowLayout(ctx);
+		return new AndroidFlowField(ctx);
 	}
 
 	@Override
-	public IComponent createFormAlignLayout(IComponent arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public IComponent createFormAlignLayout(IComponent component) {
+		return new AndroidScrollView(ctx, component);
 	}
 
 	@Override
@@ -90,7 +94,6 @@ public class AndroidClientToolkit extends ClientToolkit {
 	public TextField createReadOnlyTextField() {
 		return new AndroidReadonlyTextField(ctx);
 	}
-
 
 
 	@Override
@@ -149,19 +152,14 @@ public class AndroidClientToolkit extends ClientToolkit {
 	}
 
 	@Override
-	public <T> ITable<T> createTable(Lookup<T> lookup, Object[] fields) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> ITable<T> createTable(Lookup<T> lookup, Object[] keys) {
+		return new AndroidTable<T>(ctx, lookup, keys);
 	}
 
 	@Override
 	public <T> IDialog createSearchDialog(IComponent parent, Search<T> search,
 			Object[] keys, TableActionListener listener) {
-		// TODO Auto-generated method stub
-		return null;
+		return createDialog(null, "Suchen", new AndroidSearchPanel<T>(ctx, search, keys, listener), (IAction[]) null);
 	}
-	
-	
-	
 
 }
