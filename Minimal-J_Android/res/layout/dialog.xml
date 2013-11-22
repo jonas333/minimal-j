@@ -19,15 +19,13 @@
                 style="?android:attr/buttonBarButtonStyle" 
                 android:layout_width="0dp"
                 android:layout_weight="1.0"
-                android:layout_height="wrap_content"
-                android:text="@string/button_ok" />
+                android:layout_height="wrap_content" />
         
         <Button android:id="@+id/button_cancel"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_weight="1.0" 
-                android:layout_height="wrap_content"
-                android:text="@string/button_cancel" />
+                android:layout_height="wrap_content" />
         
     </LinearLayout>
 </LinearLayout>

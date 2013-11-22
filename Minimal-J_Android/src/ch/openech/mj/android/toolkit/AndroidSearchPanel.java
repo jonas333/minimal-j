@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import ch.openech.mj.android.AndroidHelper;
 import ch.openech.mj.resources.ResourceHelper;
 import ch.openech.mj.resources.Resources;
 import ch.openech.mj.search.Search;
@@ -25,12 +26,12 @@ public class AndroidSearchPanel<T> extends AndroidTablePanel<T>  {
 		searchPanel.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		
 		final EditText searchText = new EditText(getContext());
-	    searchText.setHint(ResourceHelper.getString(Resources.getResourceBundle(), "search.hint"));
+	    searchText.setHint(ResourceHelper.getString(Resources.getResourceBundle(), AndroidHelper.KEY_SEARCH_HINT));
 	    searchText.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	    searchPanel.addView(searchText);
 		
         Button searchButton = new Button(getContext());
-        searchButton.setText(ResourceHelper.getString(Resources.getResourceBundle(), "search"));
+        searchButton.setText(ResourceHelper.getString(Resources.getResourceBundle(), AndroidHelper.KEY_SEARCH));
         searchButton.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         searchButton.setOnClickListener(new OnClickListener() {
 			

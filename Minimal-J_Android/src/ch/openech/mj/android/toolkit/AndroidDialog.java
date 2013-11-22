@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import ch.openech.mj.android.AndroidHelper;
 import ch.openech.mj.android.R;
+import ch.openech.mj.resources.ResourceHelper;
+import ch.openech.mj.resources.Resources;
 import ch.openech.mj.toolkit.IComponent;
 import ch.openech.mj.toolkit.IDialog;
 
@@ -59,6 +62,7 @@ public class AndroidDialog extends Dialog implements IDialog {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog);
         Button buttonOk = (Button) findViewById(R.id.button_ok);
+        buttonOk.setText(ResourceHelper.getString(Resources.getResourceBundle(), AndroidHelper.KEY_BUTTON_OK));
         buttonOk.setOnClickListener(new android.view.View.OnClickListener() {
 			
 			@Override
@@ -67,6 +71,7 @@ public class AndroidDialog extends Dialog implements IDialog {
 			}
 		});			
         Button buttonCancel = (Button) findViewById(R.id.button_cancel);
+        buttonCancel.setText(ResourceHelper.getString(Resources.getResourceBundle(), AndroidHelper.KEY_BUTTON_CANCEL));
         buttonCancel.setOnClickListener(new android.view.View.OnClickListener() {
 			
 			@Override

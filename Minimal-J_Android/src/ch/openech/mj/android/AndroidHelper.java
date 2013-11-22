@@ -16,6 +16,13 @@ import ch.openech.mj.util.StringUtils;
 
 public class AndroidHelper {
 
+	public static final String KEY_BUTTON_CANCEL = "button.cancel";
+	public static final String KEY_BUTTON_NO = "button.no";
+	public static final String KEY_BUTTON_YES = "button.yes";
+	public static final String KEY_BUTTON_OK = "button.ok";
+	public static final String KEY_SEARCH_HINT = "search.hint";
+	public static final String KEY_SEARCH = "search";
+
 	public static Space createSpace(Context context, int width) {
 		Space space = new Space(context);
 		space.setMinimumWidth(width);
@@ -27,7 +34,7 @@ public class AndroidHelper {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title);
 		builder.setMessage(message);
-		builder.setPositiveButton("OK", null);
+		builder.setPositiveButton(ResourceHelper.getString(Resources.getResourceBundle(), KEY_BUTTON_OK), null);
 		return builder.create();
 	}
 
@@ -45,7 +52,7 @@ public class AndroidHelper {
 	public static void updateAlertDialogOptions(AlertDialog.Builder builder,
 			ConfirmDialogType dialogType, final DialogListener listener) {
 
-		builder.setPositiveButton(ResourceHelper.getString(Resources.getResourceBundle(), "button.yes"), new OnClickListener() {
+		builder.setPositiveButton(ResourceHelper.getString(Resources.getResourceBundle(), KEY_BUTTON_YES), new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -53,7 +60,7 @@ public class AndroidHelper {
 			}
 		});
 
-		builder.setNegativeButton(ResourceHelper.getString(Resources.getResourceBundle(), "button.no"), new OnClickListener() {
+		builder.setNegativeButton(ResourceHelper.getString(Resources.getResourceBundle(), KEY_BUTTON_NO), new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -62,7 +69,7 @@ public class AndroidHelper {
 		});
 
 		if (dialogType == ConfirmDialogType.YES_NO_CANCEL) {
-			builder.setNeutralButton(ResourceHelper.getString(Resources.getResourceBundle(), "button.cancel"), new OnClickListener() {
+			builder.setNeutralButton(ResourceHelper.getString(Resources.getResourceBundle(), KEY_BUTTON_CANCEL), new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					listener.close(DialogResult.CANCEL);
@@ -91,5 +98,6 @@ public class AndroidHelper {
 		}
 		return s;
 	}
+
 
 }

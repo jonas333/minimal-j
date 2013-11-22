@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import ch.openech.mj.android.toolkit.AndroidClientToolkit;
@@ -24,6 +25,7 @@ import ch.openech.mj.edit.form.IForm;
 import ch.openech.mj.page.Page;
 import ch.openech.mj.page.PageContext;
 import ch.openech.mj.page.PageLink;
+import ch.openech.mj.resources.ResourceHelper;
 import ch.openech.mj.resources.Resources;
 import ch.openech.mj.toolkit.ClientToolkit;
 import ch.openech.mj.toolkit.IAction;
@@ -33,14 +35,19 @@ import ch.openech.mj.toolkit.IDialog.CloseListener;
 
 public class AndroidActivity extends Activity implements PageContext {
 
+	private static final String KEY_MENU_NEW_TEXT = "Menu.new.text";
 	private static final String SEARCH_KEY_PREFIX = "Search.";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main_activity);
+		init();
+	}
+
+	private void init() {
 		((AndroidClientToolkit) ClientToolkit.getToolkit()).setCtx(this);
 		setTitle(MjApplication.getApplication().getWindowTitle(this));
-		setContentView(R.layout.main_activity);
 
 		final Spinner searchComboBox = (Spinner) findViewById(R.id.main_search_combo);
 		List<SearchEntity> searchEntities = createSearchEntities(MjApplication
@@ -48,6 +55,7 @@ public class AndroidActivity extends Activity implements PageContext {
 		searchComboBox.setAdapter(new ArrayAdapter<SearchEntity>(this,
 				android.R.layout.simple_dropdown_item_1line, searchEntities));
 		Button buttonSearch = (Button) findViewById(R.id.main_button_search);
+		buttonSearch.setText(ResourceHelper.getString(Resources.getResourceBundle(), AndroidHelper.KEY_SEARCH));
 		buttonSearch.setOnClickListener(new OnClickListener() {
 
 			@SuppressWarnings("unchecked")
@@ -60,10 +68,12 @@ public class AndroidActivity extends Activity implements PageContext {
 				search((Class<? extends Page>) searchEntity.getClazz(),
 						searchText);
 			}
-		});
-
+		});		
+		EditText searchText = (EditText) findViewById(R.id.main_search_text);
+		searchText.setHint(ResourceHelper.getString(Resources.getResourceBundle(), AndroidHelper.KEY_SEARCH_HINT));
 	}
-
+	
+	
 	public void search(Class<? extends Page> searchClass, String text) {
 		show(PageLink.link(searchClass, text));
 	}
@@ -72,11 +82,14 @@ public class AndroidActivity extends Activity implements PageContext {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 
-		Menu newMenu = menu.findItem(R.id.menu_new).getSubMenu();
-		newMenu.clear();
+		
+		MenuItem newMenu = menu.findItem(R.id.menu_new);
+		newMenu.setTitle(ResourceHelper.getString(Resources.getResourceBundle(), KEY_MENU_NEW_TEXT));
+		Menu subMenu = newMenu.getSubMenu();
+		subMenu.clear();
 		for (final IAction action : MjApplication.getApplication()
 				.getActionsNew(null)) {
-			MenuItem newItem = newMenu.add(action.getName());
+			MenuItem newItem = subMenu.add(action.getName());
 			newItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 				@Override
