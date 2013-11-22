@@ -1,7 +1,5 @@
 package ch.openech.mj.edit.fields;
 
-import java.awt.event.FocusEvent;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.ReadablePartial;

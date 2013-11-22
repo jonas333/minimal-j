@@ -11,7 +11,7 @@ import ch.openech.mj.application.MjApplication;
 import ch.openech.mj.page.ActionGroup;
 import ch.openech.mj.page.Page;
 import ch.openech.mj.page.Separator;
-import ch.openech.mj.resources.ResourceHelper;
+import ch.openech.mj.swing.resources.SwingResourceHelper;
 import ch.openech.mj.resources.Resources;
 import ch.openech.mj.swing.lookAndFeel.LookAndFeelAction;
 import ch.openech.mj.swing.lookAndFeel.PrintLookAndFeel;
@@ -61,9 +61,9 @@ public class SwingMenuBar extends JMenuBar implements IComponent {
 	
 	private JMenu createEditMenu() {
 		JMenu menu = menu("edit");
-		menu.add(new JMenuItem(ResourceHelper.initProperties(new DefaultEditorKit.CutAction(), Resources.getResourceBundle(), "cut")));
-		menu.add(new JMenuItem(ResourceHelper.initProperties(new DefaultEditorKit.CutAction(), Resources.getResourceBundle(), "copy")));
-		menu.add(new JMenuItem(ResourceHelper.initProperties(new DefaultEditorKit.CutAction(), Resources.getResourceBundle(), "paste")));
+		menu.add(new JMenuItem(SwingResourceHelper.initProperties(new DefaultEditorKit.CutAction(), Resources.getResourceBundle(), "cut")));
+		menu.add(new JMenuItem(SwingResourceHelper.initProperties(new DefaultEditorKit.CutAction(), Resources.getResourceBundle(), "copy")));
+		menu.add(new JMenuItem(SwingResourceHelper.initProperties(new DefaultEditorKit.CutAction(), Resources.getResourceBundle(), "paste")));
 		return menu;
 	}
 	

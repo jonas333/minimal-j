@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 import javax.swing.plaf.LabelUI;
 
 import ch.openech.mj.edit.validation.ValidationMessage;
-import ch.openech.mj.resources.ResourceHelper;
+import ch.openech.mj.swing.resources.SwingResourceHelper;
 import ch.openech.mj.toolkit.Caption;
 import ch.openech.mj.toolkit.IComponent;
 
@@ -37,7 +37,7 @@ public class SwingCaption extends JPanel implements Caption, IComponent {
 	@Override
 	public void setValidationMessages(List<String> validationMessages) {
 		if (!validationMessages.isEmpty()) {
-			captionLabel.setIcon(ResourceHelper.getIcon("field_error.png"));
+			captionLabel.setIcon(SwingResourceHelper.getIcon("field_error.png"));
 			String validationMessage = ValidationMessage.formatHtmlString(validationMessages);
 			captionLabel.setToolTipText(validationMessage);
 		} else {

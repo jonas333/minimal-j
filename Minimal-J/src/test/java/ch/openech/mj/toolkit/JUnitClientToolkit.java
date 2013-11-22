@@ -1,6 +1,5 @@
 package ch.openech.mj.toolkit;
 
-import java.awt.event.FocusListener;
 import java.io.InputStream;
 import java.util.List;
 

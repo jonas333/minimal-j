@@ -4,15 +4,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.Icon;
-
 import ch.openech.mj.application.DevMode;
 import ch.openech.mj.autofill.DemoEnabled;
 import ch.openech.mj.edit.form.IForm;
 import ch.openech.mj.edit.validation.Indicator;
 import ch.openech.mj.edit.validation.ValidationMessage;
 import ch.openech.mj.edit.value.CloneHelper;
-import ch.openech.mj.resources.ResourceHelper;
 import ch.openech.mj.resources.Resources;
 import ch.openech.mj.toolkit.ClientToolkit;
 import ch.openech.mj.toolkit.ClientToolkit.ConfirmDialogType;
@@ -315,9 +312,6 @@ public abstract class Editor<T> {
 				iconKey = getClass().getSimpleName() + ".icon.Error";
 				description = ValidationMessage.formatHtml(validationMessages);
 			}
-			
-			Icon icon = ResourceHelper.getIcon(Resources.getResourceBundle(), iconKey);
-//			putValue(LARGE_ICON_KEY, icon);
 			this.description = description;
 			fireChange();
 		}

@@ -3,7 +3,7 @@
  * subject to license terms.
  */
 
-package ch.openech.mj.resources;
+package ch.openech.mj.swing.resources;
 
 import java.awt.event.KeyEvent;
 import java.text.CharacterIterator;
