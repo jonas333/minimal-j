@@ -1,53 +1,42 @@
 package ch.openech.mj.android.toolkit;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import ch.openech.mj.android.R;
 import ch.openech.mj.toolkit.IComponent;
 import ch.openech.mj.toolkit.IDialog;
 
-public class AndroidDialog extends DialogFragment implements IDialog {
+public class AndroidDialog extends Dialog implements IDialog {
 
-	private String title;
 	private IComponent content;
-	private FragmentManager fragmentManager;
 	private CloseListener listener;
 
 	
-	public AndroidDialog() {
-		super();
-	}
-	
-	public void setFragmentManager(FragmentManager fragmentManager) {
-		this.fragmentManager = fragmentManager;
-	}
-
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(title);
-		builder.setView((View) content);
-		builder.setPositiveButton("OK", null);
-		builder.setNegativeButton("Abbrechen", null);
-		Dialog dlg = builder.create();
-		dlg.setOnDismissListener(new OnDismissListener() {
+	public AndroidDialog(Context context, String title, IComponent content) {
+		super(context);
+		this.content = content;
+		setTitle(title);
+		setOnDismissListener(new OnDismissListener() {
 			
 			@Override
 			public void onDismiss(DialogInterface dialog) {
-				if (listener != null)
-				{
-					listener.close();
-				}
+				fireCloseEvent();
 			}
 		});
-		return builder.create();
-		
+		setOnCancelListener(new OnCancelListener() {
+			
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				fireCloseEvent();
+			}
+		});
 	}
+	
 
 	@Override
 	public void closeDialog() {
@@ -56,20 +45,44 @@ public class AndroidDialog extends DialogFragment implements IDialog {
 
 	@Override
 	public void openDialog() {
-		show(fragmentManager, "RANDOM");
+		show();
 	}
 
 	@Override
 	public void setCloseListener(CloseListener listener) {
 		this.listener = listener;
 	}
-	
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	
-	public void setContent(IComponent content) {
-		this.content = content;
-	}
 
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+        setContentView(R.layout.dialog);
+        Button buttonOk = (Button) findViewById(R.id.button_ok);
+        buttonOk.setOnClickListener(new android.view.View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});			
+        Button buttonCancel = (Button) findViewById(R.id.button_cancel);
+        buttonCancel.setOnClickListener(new android.view.View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				cancel();
+			}
+		});
+        ViewGroup dialogContent = (ViewGroup) findViewById(R.id.dialog_content);
+        dialogContent.addView((View) content);
+	}
+	
+	private void fireCloseEvent() {
+		if (listener != null) {
+			listener.close();
+		}
+	}
+	
+	
 }

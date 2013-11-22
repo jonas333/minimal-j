@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.widget.Space;
+import ch.openech.mj.resources.ResourceHelper;
+import ch.openech.mj.resources.Resources;
 import ch.openech.mj.toolkit.ClientToolkit.ConfirmDialogType;
 import ch.openech.mj.toolkit.ClientToolkit.DialogListener;
 import ch.openech.mj.toolkit.ClientToolkit.DialogListener.DialogResult;
@@ -43,7 +45,7 @@ public class AndroidHelper {
 	public static void updateAlertDialogOptions(AlertDialog.Builder builder,
 			ConfirmDialogType dialogType, final DialogListener listener) {
 
-		builder.setPositiveButton("Yes", new OnClickListener() {
+		builder.setPositiveButton(ResourceHelper.getString(Resources.getResourceBundle(), "button.yes"), new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -51,7 +53,7 @@ public class AndroidHelper {
 			}
 		});
 
-		builder.setNegativeButton("No", new OnClickListener() {
+		builder.setNegativeButton(ResourceHelper.getString(Resources.getResourceBundle(), "button.no"), new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -60,7 +62,7 @@ public class AndroidHelper {
 		});
 
 		if (dialogType == ConfirmDialogType.YES_NO_CANCEL) {
-			builder.setNeutralButton("Cancel", new OnClickListener() {
+			builder.setNeutralButton(ResourceHelper.getString(Resources.getResourceBundle(), "button.cancel"), new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					listener.close(DialogResult.CANCEL);
@@ -84,15 +86,10 @@ public class AndroidHelper {
 	}
 	
 	public static String camelCase(String s) {
-		
 		if (!StringUtils.isBlank(s)) {
 			return s.substring(0, 1).toUpperCase() + s.substring(1);
 		}
 		return s;
-		
 	}
-	
-	
-	
 
 }

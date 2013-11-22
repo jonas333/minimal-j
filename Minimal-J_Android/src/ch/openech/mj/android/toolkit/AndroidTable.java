@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Space;
 import android.widget.TextView;
-import ch.openech.mj.android.AndroidHelper;
 import ch.openech.mj.model.PropertyInterface;
-import ch.openech.mj.model.properties.Properties;
 import ch.openech.mj.search.Lookup;
 import ch.openech.mj.toolkit.ITable;
 
@@ -38,16 +35,15 @@ public class AndroidTable<T> extends ListView implements ITable<T>, android.widg
 	
 	
 	
-	public AndroidTable(Context context, Lookup<T> lookup, Object[] keys) {
+	public AndroidTable(Context context, Lookup<T> lookup, Object[] keys, List<PropertyInterface> properties) {
 		super(context);
 		this.lookup = lookup;
 		this.keys = keys;
-		properties = Properties.convert(keys);
+		this.properties = properties;
 		setChoiceMode(CHOICE_MODE_SINGLE);
 		setDividerHeight(1);
+		setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		adapter = new AndroidTableAdapter(context, android.R.layout.simple_list_item_1);
-		addHeaderView(createHeader(), properties, false);
-		
 		setAdapter(adapter);
 		setOnItemClickListener(this);
 	}
@@ -105,28 +101,15 @@ public class AndroidTable<T> extends ListView implements ITable<T>, android.widg
 		return adapter.getId(position);
 	}
 	
-	private View createHeader() {
-		ViewGroup header = createRowLayout(getContext());
-		for (PropertyInterface prop : properties)
-		{
-			header.addView(createTableHeader(getContext(), prop.getFieldName()));
-		}
-		return header;
-	}
+
 	
 	public static ViewGroup createRowLayout(Context context) {
 		LinearLayout rowLayout = new LinearLayout(context);
 		ListView.LayoutParams lp = new ListView.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		rowLayout.setLayoutParams(lp);
 		rowLayout.setPadding(0, 6, 0, 4);
+		rowLayout.setOrientation(LinearLayout.HORIZONTAL);
 		return rowLayout;
-	}
-	
-	public static View createTableHeader(Context context, Object value) {
-		TextView header = createTableColumn(context, value);
-		header.setText( AndroidHelper.camelCase(header.getText().toString()));
-		header.setTypeface(null, Typeface.BOLD);
-		return header;
 	}
 	
 	
@@ -172,13 +155,11 @@ public class AndroidTable<T> extends ListView implements ITable<T>, android.widg
 		}
 	
 		
-		
 		private View createColumn(int position, PropertyInterface property)
 		{
 			T row = lookup.lookup(ids.get(position));
 			return createTableColumn(getContext(), property.getValue(row));
 		}
-		
 		
 		private View createSpace(int width) {
 			Space space = new Space(getContext());
@@ -192,11 +173,7 @@ public class AndroidTable<T> extends ListView implements ITable<T>, android.widg
 		}
 
 		public int getId(int position) {
-			if (position >= 0) {
-				return ids.get(position-1);
-			} else {
-				return -1;
-			}
+			return ids.get(position);
 		}
 	}
 	

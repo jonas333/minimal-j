@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.derby.jdbc.EmbeddedDriver;
+import org.hsqldb.jdbcDriver;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,11 +33,13 @@ import ch.openech.mj.model.test.ModelTest;
 public class DbPersistence {
 	private static final Logger logger = Logger.getLogger(DbPersistence.class.getName());
 	
-	private static final String DEFAULT_URL = "jdbc:derby:memory:TempDB;create=true";
+	
+	private static final String DEFAULT_URL = "jdbc:hsqldb:mem:tempDB";
+	// private static final String DEFAULT_URL = "jdbc:derby:memory:TempDB;create=true";
 	// public static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/openech?user=APP&password=APP"; 
 
-	private static final String USER = "APP";
-	private static final String PASSWORD = "APP";
+	private static final String USER = "sa";
+	private static final String PASSWORD = "";
 
 	private boolean initialized = false;
 	
@@ -44,6 +47,7 @@ public class DbPersistence {
 	private boolean isDerbyDb;
 	private boolean isDerbyMemoryDb;
 	private boolean isMySqlDb; 
+	private boolean isHSQLDb;
 	
 	private final Map<Class<?>, AbstractTable<?>> tables = new LinkedHashMap<Class<?>, AbstractTable<?>>();
 	private final Set<Class<?>> immutables = new HashSet<Class<?>>();
@@ -61,7 +65,7 @@ public class DbPersistence {
 	public void connect(String connectionUrl, String user, String password) {
 		testModel();
 		try {
-			connectToCloudFoundry();
+			// connectToCloudFoundry();
 		} catch (Exception x) {
 			// There is normally no exception if not on cloudfoundry, only the connection stays null
 			logger.log(Level.SEVERE, "Exception whe try to connect to CloudFoundry", x);
@@ -72,11 +76,15 @@ public class DbPersistence {
 				this.isDerbyDb = connectionUrl.startsWith("jdbc:derby");
 				this.isMySqlDb = connectionUrl.startsWith("jdbc:mysql");
 				this.isDerbyMemoryDb = connectionUrl.startsWith("jdbc:derby:memory");
+				this.isHSQLDb = connectionUrl.startsWith("jdbc:hsqldb:");
 				
 				if (isDerbyMemoryDb) {
 					DriverManager.registerDriver(new EmbeddedDriver());
 				} else if (isMySqlDb) {
 					DriverManager.registerDriver(new org.mariadb.jdbc.Driver());
+				} else if (isHSQLDb)
+				{
+					DriverManager.registerDriver(new jdbcDriver());
 				}
 				
 				connection = DriverManager.getConnection(connectionUrl, user, password);
@@ -187,6 +195,10 @@ public class DbPersistence {
 
 	public boolean isMySqlDb() {
 		return isMySqlDb;
+	}
+	
+	public boolean isHSQLDb() {
+		return isHSQLDb;
 	}
 	
 	protected Connection getConnection() {

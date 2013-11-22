@@ -4,50 +4,44 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import ch.openech.mj.resources.ResourceHelper;
+import ch.openech.mj.resources.Resources;
 import ch.openech.mj.search.Search;
-import ch.openech.mj.toolkit.IComponent;
-import ch.openech.mj.toolkit.ITable.TableActionListener;
 
-public class AndroidSearchPanel<T> extends GridLayout implements IComponent {
+public class AndroidSearchPanel<T> extends AndroidTablePanel<T>  {
 
-	private EditText editText;
-	private Button searchButton;
-	private AndroidTable<T> table;
-	
+	private final Search<T> search;
 	
 	public AndroidSearchPanel(Context context, final Search<T> search, Object[] keys, TableActionListener listener) {
-		super(context);
-		init(search, keys, listener);
+		super(context, search, keys);
+		this.search = search;
 	}
-	
-	private void init(final Search<T> search, Object[] keys, TableActionListener listener) {
-		setColumnCount(1);
-		setRowCount(2);
-		LinearLayout top = new LinearLayout(getContext());
-		
-		editText = new EditText(getContext());
-		top.addView(editText);
 
-		searchButton = new Button(getContext());
-		searchButton.setText("Suchen");
-		searchButton.setOnClickListener(new OnClickListener() {
+
+	@Override
+	protected View beforeTableHeader() {
+		LinearLayout searchPanel = new LinearLayout(getContext());
+		searchPanel.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		
+		final EditText searchText = new EditText(getContext());
+	    searchText.setHint(ResourceHelper.getString(Resources.getResourceBundle(), "search.hint"));
+	    searchText.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+	    searchPanel.addView(searchText);
+		
+        Button searchButton = new Button(getContext());
+        searchButton.setText(ResourceHelper.getString(Resources.getResourceBundle(), "search"));
+        searchButton.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        searchButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				table.setIds(search.search(editText.getText().toString()));
+				setIds(search.search(searchText.getText().toString()));
 			}
 		});
-		
-		top.addView(searchButton);
-		addView(top);
-		
-		table = new AndroidTable<T>(getContext(), search, keys);
-		table.setClickListener(listener);
-		addView(table);
-		
+        searchPanel.addView(searchButton);
+        
+        return searchPanel;
 	}
-	
 
 }

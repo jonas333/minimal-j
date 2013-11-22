@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <LinearLayout 
+        android:id="@+id/dialog_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
+    
+    <LinearLayout 
+        style="?android:attr/buttonBarStyle"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        
+        <Button android:id="@+id/button_ok"
+                style="?android:attr/buttonBarButtonStyle" 
+                android:layout_width="0dp"
+                android:layout_weight="1.0"
+                android:layout_height="wrap_content"
+                android:text="@string/button_ok" />
+        
+        <Button android:id="@+id/button_cancel"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1.0" 
+                android:layout_height="wrap_content"
+                android:text="@string/button_cancel" />
+        
+    </LinearLayout>
+</LinearLayout>

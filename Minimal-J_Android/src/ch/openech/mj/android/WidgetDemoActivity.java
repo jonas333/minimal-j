@@ -10,6 +10,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,9 +28,11 @@ import ch.openech.mj.android.toolkit.AndroidClientToolkit;
 import ch.openech.mj.android.toolkit.AndroidDummyAction;
 import ch.openech.mj.application.ApplicationContext;
 import ch.openech.mj.application.MjApplication;
+import ch.openech.mj.edit.Editor;
+import ch.openech.mj.edit.form.IForm;
 import ch.openech.mj.example.model.Book;
 import ch.openech.mj.example.page.BookTablePage;
-import ch.openech.mj.search.Lookup;
+import ch.openech.mj.page.PageContext;
 import ch.openech.mj.search.Search;
 import ch.openech.mj.toolkit.CheckBox;
 import ch.openech.mj.toolkit.ClientToolkit;
@@ -47,8 +51,8 @@ import ch.openech.mj.toolkit.ITable.TableActionListener;
 import ch.openech.mj.toolkit.SwitchLayout;
 import ch.openech.mj.toolkit.TextField;
 
-public class MainActivity extends Activity {
-
+public class WidgetDemoActivity extends Activity implements PageContext {
+	
 	private final String[] WIDGETS = { "Label", "ActionLabel", "Title", "Link",
 			"TextField", "ReadOnlyTextField", "ComboBox", "CheckBox",
 			"ComponentAndCaption", "ErrorDialog", "MessageDialog",
@@ -58,8 +62,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		initApplication();
-		setContentView(R.layout.activity_main);
+		((AndroidClientToolkit) ClientToolkit.getToolkit()).setCtx(this);
+		setContentView(R.layout.widget_demo_activity);
 		ListView listView = (ListView) findViewById(R.id.mainList);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, Arrays.asList(WIDGETS));
@@ -272,7 +276,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void showLink(String title) {
-		IComponent link = ClientToolkit.getToolkit().createLink("",
+		IComponent link = ClientToolkit.getToolkit().createLink("Suchen",
 				"http://www.google.de");
 		showDialog(link, title);
 
@@ -354,61 +358,33 @@ public class MainActivity extends Activity {
 				.openDialog();
 	}
 
-	@SuppressWarnings("unchecked")
-	private void initApplication() {
-		Class<? extends MjApplication> applicationClass;
-		try {
-			applicationClass = (Class<? extends MjApplication>) Class
-					.forName("ch.openech.mj.example.MjExampleApplication");
-			MjApplication application = applicationClass.newInstance();
-			ClientToolkit.setToolkit(new AndroidClientToolkit(this));
-			ApplicationContext applicationContext = new AndroidApplicationContext();
-			application.init();
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		// getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
+        
+		Menu newMenu = menu.findItem(R.id.menu_new).getSubMenu();
+		newMenu.clear();
+		for (final IAction action : MjApplication.getApplication().getActionsNew(null)) {
+			MenuItem newItem = newMenu.add(action.getName());
+			newItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					action.action(WidgetDemoActivity.this);
+					return false;
+				}
+			});
+		}
 		return true;
 	}
+	
 
-	public class AndroidApplicationContext extends ApplicationContext {
-		private String user;
-
-		@Override
-		public void setUser(String user) {
-			this.user = user;
-		}
-
-		@Override
-		public String getUser() {
-			return user;
-		}
-
-		@Override
-		public void savePreferences(Object preferences) {
-			// PreferencesHelper.save(Preferences.userNodeForPackage(SwingLauncher.this.getClass()),
-			// preferences);
-		}
-
-		@Override
-		public void loadPreferences(Object preferences) {
-			// PreferencesHelper.load(Preferences.userNodeForPackage(SwingLauncher.this.getClass()),
-			// preferences);
-		}
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		return super.onMenuItemSelected(featureId, item);
 	}
+
 
 	private static class AndroidSampleCaption extends AndroidCaption {
 
@@ -468,6 +444,33 @@ public class MainActivity extends Activity {
 			return Arrays.asList(ids);
 		}
 		
+	}
+
+	@Override
+	public void show(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void show(Editor<?> editor) {
+		IForm<?> form = editor.startEditor();
+		IComponent component = form.getComponent();
+		ClientToolkit.getToolkit().createDialog(null, editor.getTitle(), component, null).openDialog();
+	}
+
+
+	@Override
+	public void show(List<String> arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public ApplicationContext getAppContext() {
+		return ((AndroidApplication) getApplication()).getAppContext();
 	}
 	
 

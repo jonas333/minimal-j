@@ -377,8 +377,10 @@ public class SwingTab extends EditablePanel implements IComponent, PageContext {
 		replace(pageLinks.get(++indexInPageLinks));
 	}
 
+	
+
 	@Override
-	public ApplicationContext getApplicationContext() {
+	public ApplicationContext getAppContext() {
 		return SwingLauncher.getApplicationContext();
 	}
 

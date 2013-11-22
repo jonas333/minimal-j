@@ -1,6 +1,7 @@
 package ch.openech.mj.android.toolkit;
 
 import android.content.Context;
+import android.text.InputType;
 import android.widget.EditText;
 import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.TextField;
@@ -13,14 +14,12 @@ public class AndroidReadonlyTextField extends EditText implements TextField {
 	public AndroidReadonlyTextField(Context context) {
 		super(context);
 		setEditable(false);
+		setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 	}
 
 	@Override
 	public void setEditable(boolean editable) {
-		if (isFirst) {
-			isFirst = !isFirst;
-			setEnabled(editable);
-		}
+		
 	}
 	
 	@Override

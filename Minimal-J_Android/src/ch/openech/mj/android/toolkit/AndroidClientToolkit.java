@@ -1,11 +1,10 @@
 package ch.openech.mj.android.toolkit;
 
+
 import java.io.InputStream;
 
-import android.app.Activity;
-import android.text.method.ScrollingMovementMethod;
+import android.content.Context;
 import android.view.View;
-import android.widget.ScrollView;
 import ch.openech.mj.android.AndroidHelper;
 import ch.openech.mj.search.Lookup;
 import ch.openech.mj.search.Search;
@@ -27,10 +26,14 @@ import ch.openech.mj.toolkit.TextField;
 
 public class AndroidClientToolkit extends ClientToolkit {
 	
-	private Activity ctx;
+	private Context ctx;
 	
-	public AndroidClientToolkit(Activity ctx) {
+	public AndroidClientToolkit() {
 		super();
+	}
+
+
+	public void setCtx(Context ctx) {
 		this.ctx = ctx;
 	}
 
@@ -57,11 +60,7 @@ public class AndroidClientToolkit extends ClientToolkit {
 	@Override
 	public IDialog createDialog(IComponent parent, String title, IComponent content,
 			IAction... actions) {
-		AndroidDialog dlg = new AndroidDialog();
-		dlg.setTitle(title);
-		dlg.setContent(content);
-		dlg.setFragmentManager(ctx.getFragmentManager());
-		return dlg;
+		return new AndroidDialog(ctx, title, content);
 	}
 
 	@Override
@@ -153,7 +152,7 @@ public class AndroidClientToolkit extends ClientToolkit {
 
 	@Override
 	public <T> ITable<T> createTable(Lookup<T> lookup, Object[] keys) {
-		return new AndroidTable<T>(ctx, lookup, keys);
+		return new AndroidTablePanel<T>(ctx, lookup, keys);
 	}
 
 	@Override

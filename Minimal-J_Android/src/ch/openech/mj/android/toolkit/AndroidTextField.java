@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -22,6 +23,7 @@ public class AndroidTextField extends EditText implements TextField {
 
 	public AndroidTextField(Context context) {
 		this(context, null, Integer.MAX_VALUE);
+		setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 	}
 
 	public AndroidTextField(Context ctx, InputComponentListener changeListener,
@@ -53,7 +55,6 @@ public class AndroidTextField extends EditText implements TextField {
 	@Override
 	public void setEditable(boolean editable) {
 		setEnabled(editable);
-
 	}
 
 	@Override

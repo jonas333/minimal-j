@@ -272,8 +272,9 @@ public class VaadinWindow extends Window implements PageContext {
 		}
 	}
 
+
 	@Override
-	public ApplicationContext getApplicationContext() {
+	public ApplicationContext getAppContext() {
 		return ((VaadinLauncher) getApplication()).getApplicationContext();
 	}
 	

@@ -33,10 +33,12 @@ public interface PageContext extends IComponent {
 	 */
 	void show(Editor<?> editor);
 	
+	
+
 	/**
 	 * 
 	 * @return ApplicationContext
 	 */
-	ApplicationContext getApplicationContext();
+	ApplicationContext getAppContext();
 	
 }
