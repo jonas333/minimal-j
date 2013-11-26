@@ -75,7 +75,7 @@ public class AndroidActivity extends Activity implements PageContext {
 		Menu newMenu = menu.findItem(R.id.menu_new).getSubMenu();
 		newMenu.clear();
 		for (final IAction action : MjApplication.getApplication()
-				.getActionsNew(null)) {
+				.getActionsNew(this)) {
 			MenuItem newItem = newMenu.add(action.getName());
 			newItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
@@ -92,8 +92,7 @@ public class AndroidActivity extends Activity implements PageContext {
 
 	@Override
 	public ApplicationContext getAppContext() {
-		// TODO Auto-generated method stub
-		return null;
+		return ((AndroidApplication) getApplication()).getAppContext();
 	}
 
 	@Override

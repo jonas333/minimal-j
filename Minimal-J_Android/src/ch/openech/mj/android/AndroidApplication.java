@@ -1,7 +1,6 @@
 package ch.openech.mj.android;
 
 import android.app.Application;
-import android.content.Context;
 import ch.openech.mj.android.toolkit.AndroidClientToolkit;
 import ch.openech.mj.application.ApplicationContext;
 import ch.openech.mj.application.MjApplication;

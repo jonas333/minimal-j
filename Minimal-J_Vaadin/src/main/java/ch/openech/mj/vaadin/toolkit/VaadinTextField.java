@@ -1,7 +1,5 @@
 package ch.openech.mj.vaadin.toolkit;
 
-import java.awt.event.FocusListener;
-
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
 import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.TextField;
@@ -77,7 +75,7 @@ public class VaadinTextField extends com.vaadin.ui.TextField implements TextFiel
 	}
 
 	@Override
-	public void setInput(String text) {
+	public void setText(String text) {
 		boolean readOnly = isReadOnly();
 		if (readOnly) {
 			setReadOnly(false);
@@ -89,7 +87,7 @@ public class VaadinTextField extends com.vaadin.ui.TextField implements TextFiel
 	}
 
 	@Override
-	public String getInput() {
+	public String getText() {
 		if (event != null) {
 			return event.getText();
 		} else {

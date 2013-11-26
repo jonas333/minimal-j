@@ -4,7 +4,8 @@
     <string name="app_name">Minimal-J Android Sample App</string>
     <string name="search_hint">Suchtext eingeben</string>
     <string name="search">Suchen</string>
-    <string name="minimalj_application">ch.openech.mj.example.MjExampleApplication</string>
+<!--     <string name="minimalj_application">ch.openech.mj.example.MjExampleApplication</string> -->
+    <string name="minimalj_application">ch.openech.client.OpenEchApplication</string> 
     <string name="menu_new">Neu</string>
     <string name="dummy"></string>
     <string name="button_ok">OK</string>

@@ -15,6 +15,7 @@ import java.util.Set;
 
 public class EnumUtils {
 
+	@SuppressWarnings("unchecked")
 	public static <T extends Enum<T>> T createEnum(Class<T> clazz, String name) {
 		try {
 			@SuppressWarnings("rawtypes")
@@ -42,14 +43,18 @@ public class EnumUtils {
 					ca = f.get(con);
 				}
 			}
+			if (ca != null) {
 			Method m = ca.getClass().getMethod("newInstance",
 					new Class[] { Object[].class });
 			m.setAccessible(true);
 			
-			@SuppressWarnings("unchecked")
 			T v = (T) m.invoke(ca, new Object[] { new Object[] { name,
 					Integer.MAX_VALUE } });
 			return v;
+			} else {
+				con.setAccessible(true);
+				return (T) con.newInstance(new Object[] {name,Integer.MAX_VALUE});
+			}
 		} catch (Exception x) {
 			throw new RuntimeException(x);
 		}

@@ -5,7 +5,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,7 +24,7 @@ public class AndroidCaption extends LinearLayout implements Caption, IComponent 
 		setOrientation(VERTICAL);
 		addView(createCaption(context, text));
 		if (view instanceof AndroidTextField) {
-			((EditText) view).setHint(text);
+			((AndroidTextField) view).setHint(text);
 		}
 		addView(view);
 	}

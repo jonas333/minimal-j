@@ -298,8 +298,8 @@ public class WidgetDemoActivity extends Activity implements PageContext {
 	}
 
 	private void showReadOnlyTextfield(String title) {
-		IComponent readonlyTextField = ClientToolkit.getToolkit()
-				.createReadOnlyTextField();
+		TextField readonlyTextField = ClientToolkit.getToolkit().createReadOnlyTextField();
+		readonlyTextField.setText("Ein nicht editierbarer Text");
 		showDialog(readonlyTextField, title);
 	}
 
@@ -317,9 +317,9 @@ public class WidgetDemoActivity extends Activity implements PageContext {
 					@Override
 					public void changed(IComponent component) {
 						ClientToolkit.getToolkit().showMessage(null,
-								((TextField) component).getInput());
+								((TextField) component).getText());
 					}
-				}, 2, "aAa");
+				}, 2, "aABb");
 		textField.setFocusListener(new IFocusListener() {
 
 			@Override
