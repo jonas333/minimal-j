@@ -49,6 +49,13 @@
 										<include>*.jar</include>
 									</includes>
 								</resource>
+								<resource>
+									<targetPath>${basedir}/libs</targetPath>
+									<directory>${basedir}/../../open-ech/OpenEch/target</directory>
+									<includes>
+										<include>*.jar</include>
+									</includes>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>

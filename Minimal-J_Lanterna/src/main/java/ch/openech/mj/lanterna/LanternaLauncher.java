@@ -312,7 +312,7 @@ public class LanternaLauncher {
 		
 
 		@Override
-		public ApplicationContext getAppContext() {
+		public ApplicationContext getApplicationContext() {
 			return applicationContext;
 		}
 		

@@ -1,6 +1,7 @@
 package ch.openech.mj.android.toolkit;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.GridLayout;
 import ch.openech.mj.toolkit.GridFormLayout;
@@ -19,9 +20,11 @@ public class AndroidGridLayout extends GridLayout implements GridFormLayout {
 		View child = (View) component;
 		GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
 		layoutParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, span);
+		layoutParams.setGravity(Gravity.FILL_HORIZONTAL);
 		child.setLayoutParams(layoutParams);
 		child.setPadding(5, 5, 5, 5);
 		addView((View) component);
 	}
+
 
 }

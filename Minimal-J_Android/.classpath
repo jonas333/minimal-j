@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="libs/Minimal-J_Example-0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.0.jar"/>
 	<classpathentry kind="lib" path="libs/hsqldb-2.3.1.jar"/>
+	<classpathentry kind="lib" path="libs/OpenEch-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
