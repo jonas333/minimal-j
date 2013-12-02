@@ -32,5 +32,10 @@ public class SwingProgressInternalFrame extends JInternalFrame implements Progre
 			progressBar.setValue(value);
 		}
 	}
+
+	@Override
+	public boolean isCanceled() {
+		return false;
+	}
 	
 }

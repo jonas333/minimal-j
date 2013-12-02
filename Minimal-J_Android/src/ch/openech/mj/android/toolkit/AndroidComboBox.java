@@ -43,7 +43,7 @@ public class AndroidComboBox<T> extends Spinner implements ComboBox<T> {
 
 	@Override
 	public T getSelectedObject() {
-		if (data != null) 
+		if (data != null && !data.isEmpty()) 
 		{
 			return data.getItem(getSelectedItemPosition());
 		}

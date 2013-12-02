@@ -26,4 +26,10 @@ public class SwingProgressComponent extends JPanel implements ProgressListener {
 		progressBar.setValue(value);
 	}
 
+	@Override
+	public boolean isCanceled() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -37,4 +37,10 @@ public class VaadinProgressDialog extends Window implements ProgressListener {
 		}
 	}
 
+
+	@Override
+	public boolean isCanceled() {
+		return false;
+	}
+
 }

@@ -35,5 +35,10 @@ public class SwingProgressDialog extends JDialog implements ProgressListener {
 			progressBar.setValue(value);
 		}
 	}
+
+	@Override
+	public boolean isCanceled() {
+		return false;
+	}
 	
 }
