@@ -30,14 +30,14 @@ public class TextFormatField extends AbstractEditField<StringLimitation> impleme
 
 	@Override
 	public StringLimitation getObject() {
-		FieldUtils.setValue(value, textField.getInput());
+		FieldUtils.setValue(value, textField.getText());
 		return value;
 	}		
 	
 	@Override
 	public void setObject(StringLimitation value) {
 		this.value = value;
-		textField.setInput((String) FieldUtils.getValue(value));
+		textField.setText((String) FieldUtils.getValue(value));
 	}
 
 	@Override

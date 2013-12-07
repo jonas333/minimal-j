@@ -35,13 +35,10 @@ public class LanternaReadOnlyTextField extends Label implements TextField {
 		super.setText(text);
 	}
 
-	@Override
-	public void setInput(String text) {
-		setText(text);
-	}
+	
 
 	@Override
-	public String getInput() {
+	public String getText() {
 		return getText();
 	}
 

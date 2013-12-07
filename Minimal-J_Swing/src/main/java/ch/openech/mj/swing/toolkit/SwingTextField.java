@@ -129,15 +129,7 @@ public class SwingTextField extends JTextField implements TextField, FocusListen
 		this.commitListener = commitListener;
 	}
 
-	@Override
-	public void setInput(String text) {
-		setText(text);
-	}
-
-	@Override
-	public String getInput() {
-		return getText();
-	}
+	
 
 	@Override
 	public void focusGained(FocusEvent e) {

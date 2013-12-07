@@ -23,12 +23,12 @@ public class IntegerEditField extends NumberEditField<Integer> implements DemoEn
 				text = number.toString();
 			}
 		}
-		textField.setInput(text);
+		textField.setText(text);
 	}
 
 	@Override
 	public Integer getObject() {
-		String text = textField.getInput();
+		String text = textField.getText();
 		if (text != null) {
 			try {
 				return Integer.parseInt(text);

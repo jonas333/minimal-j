@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -33,21 +34,34 @@ import ch.openech.mj.toolkit.IComponent;
 import ch.openech.mj.toolkit.IDialog;
 import ch.openech.mj.toolkit.IDialog.CloseListener;
 
-public class AndroidActivity extends Activity implements PageContext {
+public class AndroidActivity extends Activity {
 
 	private static final String KEY_MENU_NEW_TEXT = "Menu.new.text";
 	private static final String SEARCH_KEY_PREFIX = "Search.";
+	private PageContextDelegate pageContext = new PageContextDelegate();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+<<<<<<< HEAD
 		setContentView(R.layout.main_activity);
 		init();
 	}
 
 	private void init() {
+=======
+		
+		StrictMode.ThreadPolicy policy = 
+		        new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+>>>>>>> refs/remotes/origin/android
 		((AndroidClientToolkit) ClientToolkit.getToolkit()).setCtx(this);
+<<<<<<< HEAD
 		setTitle(MjApplication.getApplication().getWindowTitle(this));
+=======
+		setTitle(MjApplication.getApplication().getWindowTitle(pageContext));
+		setContentView(R.layout.main_activity);
+>>>>>>> refs/remotes/origin/android
 
 		final Spinner searchComboBox = (Spinner) findViewById(R.id.main_search_combo);
 		List<SearchEntity> searchEntities = createSearchEntities(MjApplication
@@ -75,7 +89,7 @@ public class AndroidActivity extends Activity implements PageContext {
 	
 	
 	public void search(Class<? extends Page> searchClass, String text) {
-		show(PageLink.link(searchClass, text));
+		pageContext.show(PageLink.link(searchClass, text));
 	}
 
 	@Override
@@ -88,13 +102,18 @@ public class AndroidActivity extends Activity implements PageContext {
 		Menu subMenu = newMenu.getSubMenu();
 		subMenu.clear();
 		for (final IAction action : MjApplication.getApplication()
+<<<<<<< HEAD
 				.getActionsNew(null)) {
 			MenuItem newItem = subMenu.add(action.getName());
+=======
+				.getActionsNew(pageContext)) {
+			MenuItem newItem = newMenu.add(action.getName());
+>>>>>>> refs/remotes/origin/android
 			newItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
-					action.action(AndroidActivity.this);
+					action.action(pageContext);
 					return false;
 				}
 			});
@@ -103,18 +122,7 @@ public class AndroidActivity extends Activity implements PageContext {
 		return true;
 	}
 
-	@Override
-	public ApplicationContext getAppContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void show(String pageLink) {
-		Page page = PageLink.createPage(this, pageLink);
-		clearMainPanel();
-		getMainPanel().addView((View) page.getComponent());
-	}
+	
 
 	private void clearMainPanel() {
 		ViewGroup mainPanel = getMainPanel();
@@ -127,43 +135,6 @@ public class AndroidActivity extends Activity implements PageContext {
 		return (ViewGroup) findViewById(R.id.main_panel);
 	}
 
-	@Override
-	public void show(final Editor<?> editor) {
-		IForm<?> form = editor.startEditor();
-		IComponent component = form.getComponent();
-		final IDialog dlg = ClientToolkit.getToolkit().createDialog(null,
-				editor.getTitle(), component, editor.getActions());
-		dlg.setCloseListener(new CloseListener() {
-
-			@Override
-			public boolean close() {
-				editor.checkedClose();
-				return editor.isFinished();
-			}
-		});
-		editor.setEditorListener(new EditorListener() {
-
-			@Override
-			public void canceled() {
-				dlg.closeDialog();
-			}
-
-			@Override
-			public void saved(Object saveResult) {
-				dlg.closeDialog();
-				if (saveResult instanceof String) {
-					show((String) saveResult);
-				}
-			}
-		});
-		dlg.openDialog();
-	}
-
-	@Override
-	public void show(List<String> arg0, int arg1) {
-		// TODO Auto-generated method stub
-
-	}
 
 	private List<SearchEntity> createSearchEntities(Class<?>[] classes) {
 		List<SearchEntity> result = new ArrayList<SearchEntity>();
@@ -191,7 +162,66 @@ public class AndroidActivity extends Activity implements PageContext {
 		public String toString() {
 			return name;
 		}
-
 	}
+	
+	private class PageContextDelegate implements PageContext {
+		
+		
+		private ApplicationContext applicationContext = new AndroidApplicationContext();
+
+		@Override
+		public ApplicationContext getApplicationContext() {
+			return applicationContext;
+		}
+
+		@Override
+		public void show(String pageLink) {
+			Page page = PageLink.createPage(this, pageLink);
+			clearMainPanel();
+			getMainPanel().addView((View) page.getComponent());			
+		}
+
+		@Override
+		public void show(final Editor<?> editor) {
+			IForm<?> form = editor.startEditor();
+			IComponent component = form.getComponent();
+			final IDialog dlg = ClientToolkit.getToolkit().createDialog(null,
+					editor.getTitle(), component, editor.getActions());
+			dlg.setCloseListener(new CloseListener() {
+
+				@Override
+				public boolean close() {
+					editor.checkedClose();
+					return editor.isFinished();
+				}
+			});
+			editor.setEditorListener(new EditorListener() {
+
+				@Override
+				public void canceled() {
+					dlg.closeDialog();
+				}
+
+				@Override
+				public void saved(Object saveResult) {
+					dlg.closeDialog();
+					if (saveResult instanceof String) {
+						show((String) saveResult);
+					}
+				}
+			});
+			dlg.openDialog();			
+		}
+
+		@Override
+		public void show(List<String> arg0, int arg1) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	
+	
 
 }

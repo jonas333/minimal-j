@@ -39,6 +39,6 @@ public interface PageContext extends IComponent {
 	 * 
 	 * @return ApplicationContext
 	 */
-	ApplicationContext getAppContext();
+	ApplicationContext getApplicationContext();
 	
 }

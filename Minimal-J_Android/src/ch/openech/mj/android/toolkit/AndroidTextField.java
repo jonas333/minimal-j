@@ -4,26 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import ch.openech.mj.toolkit.ClientToolkit.InputComponentListener;
 import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.TextField;
 import ch.openech.mj.util.StringUtils;
 
-public class AndroidTextField extends EditText implements TextField {
+public class AndroidTextField extends LinearLayout implements TextField {
 
 	private IFocusListener focusListener;
 	private Runnable commitListener;
+	private EditText editText;
 
 	public AndroidTextField(Context context) {
 		this(context, null, Integer.MAX_VALUE);
-		setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 	}
 
 	public AndroidTextField(Context ctx, InputComponentListener changeListener,
@@ -34,8 +35,25 @@ public class AndroidTextField extends EditText implements TextField {
 	public AndroidTextField(Context ctx, InputComponentListener changeListener,
 			int maxLength, String allowedCharacters) {
 		super(ctx);
-		addTextChangedListener(new AndroidTextWatcher(changeListener));
-		setFilters(createFilters(maxLength, allowedCharacters));
+		editText = new EditText(ctx);
+		editText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		editText.addTextChangedListener(new AndroidTextWatcher(changeListener));
+		editText.setFilters(createFilters(maxLength, allowedCharacters));
+		editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (focusListener != null)
+				{
+					if (hasFocus) {
+						focusListener.onFocusGained();
+					} else {
+						focusListener.onFocusLost();
+					}
+				}
+			}
+		});
+		addView(editText);
 	}
 
 	private InputFilter[] createFilters(int maxLength, String allowedChars) {
@@ -54,7 +72,7 @@ public class AndroidTextField extends EditText implements TextField {
 
 	@Override
 	public void setEditable(boolean editable) {
-		setEnabled(editable);
+		editText.setEnabled(editable);
 	}
 
 	@Override
@@ -63,27 +81,19 @@ public class AndroidTextField extends EditText implements TextField {
 	}
 
 	@Override
-	protected void onFocusChanged(boolean focused, int direction,
-			Rect previouslyFocusedRect) {
-		super.onFocusChanged(focused, direction, previouslyFocusedRect);
-		if (focusListener != null) {
-			if (focused) {
-				focusListener.onFocusGained();
-			} else {
-				focusListener.onFocusLost();
-			}
-		}
+	public void setText(String text) {
+		editText.setText(text);
 	}
 
 	@Override
-	public void setInput(String text) {
-		setText(text);
+	public String getText() {
+		return editText.getText().toString();
 	}
-
-	@Override
-	public String getInput() {
-		return getText().toString();
+	
+	public void setHint(String hint) {
+		editText.setHint(hint);
 	}
+	
 
 	public class AndroidTextWatcher implements TextWatcher {
 

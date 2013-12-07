@@ -1,20 +1,18 @@
 package ch.openech.mj.android.toolkit;
 
 import android.content.Context;
-import android.text.InputType;
-import android.widget.EditText;
+import android.graphics.Color;
+import android.widget.TextView;
 import ch.openech.mj.toolkit.IFocusListener;
 import ch.openech.mj.toolkit.TextField;
 
-public class AndroidReadonlyTextField extends EditText implements TextField {
+public class AndroidReadonlyTextField extends TextView implements TextField {
 
-	
-	private boolean isFirst = true;
 	
 	public AndroidReadonlyTextField(Context context) {
 		super(context);
 		setEditable(false);
-		setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		setBackgroundColor(Color.WHITE);
 	}
 
 	@Override
@@ -33,13 +31,13 @@ public class AndroidReadonlyTextField extends EditText implements TextField {
 	}
 
 	@Override
-	public String getInput() {
-		return getText().toString();
+	public String getText() {
+		return super.getText().toString();
 	}
 
 	@Override
-	public void setInput(String text) {
-		setText(text);
+	public void setText(String text) {
+		super.setText(text);
 	}
 
 }

@@ -49,15 +49,7 @@ public class SwingReadOnlyTextField extends JLabel implements TextField {
 		// read only field cannot get commit command
 	}
 
-	@Override
-	public void setInput(String text) {
-		setText(text);
-	}
-
-	@Override
-	public String getInput() {
-		return getText();
-	}
+	
 	
 }
 

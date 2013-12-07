@@ -80,14 +80,6 @@ public class LanternaTextField extends TextBox implements TextField {
 		
 	}
 
-	@Override
-	public void setInput(String text) {
-		setText(text);
-	}
-
-	@Override
-	public String getInput() {
-		return getText();
-	}
+	
 	
 }

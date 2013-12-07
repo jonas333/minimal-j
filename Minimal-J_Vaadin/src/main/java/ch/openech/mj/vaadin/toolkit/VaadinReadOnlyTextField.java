@@ -26,8 +26,8 @@ public class VaadinReadOnlyTextField extends Label implements TextField {
 	}
 
 	@Override
-	public void setInput(String text) {
-		if (!StringUtils.isEmpty(getInput())) {
+	public void setText(String text) {
+		if (!StringUtils.isEmpty(getText())) {
 			setReadOnly(false);
 		}
 		if (!StringUtils.isEmpty(text)) {
@@ -41,7 +41,7 @@ public class VaadinReadOnlyTextField extends Label implements TextField {
 	}
 
 	@Override
-	public String getInput() {
+	public String getText() {
 		return (String) super.getValue();
 	}
 

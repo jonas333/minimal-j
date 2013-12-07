@@ -99,7 +99,7 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 
 		@Override
 		public ReadablePartial getObject() {
-			String text = textField.getInput();
+			String text = textField.getText();
 			text = DateUtils.parseCH(text, true);
 			boolean fieldTextWasEmpty = text == null;
 			if (fieldTextWasEmpty) return null;
@@ -113,14 +113,14 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 		public void setObject(ReadablePartial value) {
 			if (InvalidValues.isInvalid(value)) {
 				String text = InvalidValues.getInvalidValue(value);
-				textField.setInput(text);
+				textField.setText(text);
 			} else if (value != null) {
 				String text = DateUtils.formatPartialCH(value);
-				if (!StringUtils.equals(textField.getInput().toString(), text)) {
-					textField.setInput(text);
+				if (!StringUtils.equals(textField.getText().toString(), text)) {
+					textField.setText(text);
 				}
 			} else {
-				textField.setInput(null);
+				textField.setText(null);
 			}
 		}
 
@@ -150,7 +150,7 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 
 		@Override
 		public LocalDate getObject() {
-			String fieldText = textField.getInput();
+			String fieldText = textField.getText();
 			// TODO DateField doesn't handle date locals other than CH/DE
 			String text = DateUtils.parseCH(fieldText, false);
 			boolean fieldTextWasEmpty = text == null;
@@ -169,14 +169,14 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 		public void setObject(LocalDate value) {
 			if (InvalidValues.isInvalid(value)) {
 				String text = InvalidValues.getInvalidValue(value);
-				textField.setInput(text);
+				textField.setText(text);
 			} else if (value != null) {
 				String text = DateTimeFormat.mediumDate().print(value);
-				if (!StringUtils.equals(textField.getInput(), text)) {
-					textField.setInput(text);
+				if (!StringUtils.equals(textField.getText(), text)) {
+					textField.setText(text);
 				}
 			} else {
-				textField.setInput(null);
+				textField.setText(null);
 			}
 		}
 		
@@ -226,7 +226,7 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 
 		@Override
 		public LocalTime getObject() {
-			String text = textField.getInput();
+			String text = textField.getText();
 			if (text != null) {
 				try {
 					return formatter.parseLocalTime(text);
@@ -242,14 +242,14 @@ public abstract class AbstractJodaField<T> extends AbstractEditField<T> implemen
 		public void setObject(LocalTime value) {
 			if (InvalidValues.isInvalid(value)) {
 				String text = InvalidValues.getInvalidValue(value);
-				textField.setInput(text);
+				textField.setText(text);
 			} else if (value != null) {
 				String text = formatter.print(value);
-				if (!StringUtils.equals(textField.getInput(), text)) {
-					textField.setInput(text);
+				if (!StringUtils.equals(textField.getText(), text)) {
+					textField.setText(text);
 				}
 			} else {
-				textField.setInput(null);
+				textField.setText(null);
 			}
 		}
 

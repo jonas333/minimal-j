@@ -11,7 +11,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,13 +25,8 @@ import android.widget.Toast;
 import ch.openech.mj.android.toolkit.AndroidCaption;
 import ch.openech.mj.android.toolkit.AndroidClientToolkit;
 import ch.openech.mj.android.toolkit.AndroidDummyAction;
-import ch.openech.mj.application.ApplicationContext;
-import ch.openech.mj.application.MjApplication;
-import ch.openech.mj.edit.Editor;
-import ch.openech.mj.edit.form.IForm;
 import ch.openech.mj.example.model.Book;
 import ch.openech.mj.example.page.BookTablePage;
-import ch.openech.mj.page.PageContext;
 import ch.openech.mj.search.Search;
 import ch.openech.mj.toolkit.CheckBox;
 import ch.openech.mj.toolkit.ClientToolkit;
@@ -51,7 +45,7 @@ import ch.openech.mj.toolkit.ITable.TableActionListener;
 import ch.openech.mj.toolkit.SwitchLayout;
 import ch.openech.mj.toolkit.TextField;
 
-public class WidgetDemoActivity extends Activity implements PageContext {
+public class WidgetDemoActivity extends Activity {
 	
 	private final String[] WIDGETS = { "Label", "ActionLabel", "Title", "Link",
 			"TextField", "ReadOnlyTextField", "ComboBox", "CheckBox",
@@ -298,8 +292,8 @@ public class WidgetDemoActivity extends Activity implements PageContext {
 	}
 
 	private void showReadOnlyTextfield(String title) {
-		IComponent readonlyTextField = ClientToolkit.getToolkit()
-				.createReadOnlyTextField();
+		TextField readonlyTextField = ClientToolkit.getToolkit().createReadOnlyTextField();
+		readonlyTextField.setText("Ein nicht editierbarer Text");
 		showDialog(readonlyTextField, title);
 	}
 
@@ -317,9 +311,9 @@ public class WidgetDemoActivity extends Activity implements PageContext {
 					@Override
 					public void changed(IComponent component) {
 						ClientToolkit.getToolkit().showMessage(null,
-								((TextField) component).getInput());
+								((TextField) component).getText());
 					}
-				}, 2, "aAa");
+				}, 2, "aABb");
 		textField.setFocusListener(new IFocusListener() {
 
 			@Override
@@ -364,18 +358,7 @@ public class WidgetDemoActivity extends Activity implements PageContext {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
         
-		Menu newMenu = menu.findItem(R.id.menu_new).getSubMenu();
-		newMenu.clear();
-		for (final IAction action : MjApplication.getApplication().getActionsNew(null)) {
-			MenuItem newItem = newMenu.add(action.getName());
-			newItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					action.action(WidgetDemoActivity.this);
-					return false;
-				}
-			});
-		}
+		
 		return true;
 	}
 	
@@ -446,32 +429,7 @@ public class WidgetDemoActivity extends Activity implements PageContext {
 		
 	}
 
-	@Override
-	public void show(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void show(Editor<?> editor) {
-		IForm<?> form = editor.startEditor();
-		IComponent component = form.getComponent();
-		ClientToolkit.getToolkit().createDialog(null, editor.getTitle(), component, null).openDialog();
-	}
-
-
-	@Override
-	public void show(List<String> arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public ApplicationContext getAppContext() {
-		return ((AndroidApplication) getApplication()).getAppContext();
-	}
+	
 	
 
 }

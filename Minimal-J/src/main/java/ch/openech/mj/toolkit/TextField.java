@@ -4,9 +4,9 @@ package ch.openech.mj.toolkit;
 
 public interface TextField extends IComponent {
 	
-	public void setInput(String text);
+	public void setText(String text);
 
-	public String getInput();
+	public String getText();
 
 	public void setEditable(boolean editable);
 	
