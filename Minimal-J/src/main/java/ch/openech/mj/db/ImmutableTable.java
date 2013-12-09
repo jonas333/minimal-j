@@ -32,6 +32,27 @@ public class ImmutableTable<T> extends AbstractTable<T> {
 		selectIdQuery = selectIdQuery();
 		selectIdByHashQuery = selectIdByHashQuery();
 	}
+	
+	@Override
+	public void create() throws SQLException {
+		super.create();
+		// insertEmptyObject();
+	}
+
+	private void insertEmptyObject() {
+		try {
+			String insertEmptyObjectQuery = insertQuery(true);
+			PreparedStatement statement = getStatement(dbPersistence.getConnection(), insertEmptyObjectQuery, false);
+			T emptyObject = EmptyObjects.getEmptyObject(getClazz());
+			int hash = HashUtils.getHash(emptyObject);
+			setParameters(statement, emptyObject, hash);
+			statement.execute();
+		} catch (SQLException x) {
+			x.printStackTrace();
+			sqlLogger.log(Level.SEVERE, "Couldn't insert empty object in " + getTableName(), x);
+			throw new RuntimeException("Couldn't insert empty object in " + getTableName());
+		}
+	}
 
 	public Integer getId(T object) {
 		return getId(object, false);
@@ -146,9 +167,13 @@ public class ImmutableTable<T> extends AbstractTable<T> {
 		
 		return query.toString();
 	}
-	
+
 	@Override
 	protected String insertQuery() {
+		return insertQuery(false);
+	}
+
+	private String insertQuery(boolean forEmptyObject) {
 		StringBuilder s = new StringBuilder();
 		
 		s.append("INSERT INTO "); s.append(getTableName()); s.append(" (");
@@ -158,12 +183,14 @@ public class ImmutableTable<T> extends AbstractTable<T> {
 			s.append(name);
 			s.append(", ");
 		}
+		if (forEmptyObject) s.append("id, ");
 		s.append("hash) VALUES (");
 		for (int j = 0; j<size; j++) {
 			s.append("?");
 			s.append(", ");
 		}
-		s.append(" ?)");
+		if (forEmptyObject) s.append("0, ");
+		s.append("?)");
 		
 		return s.toString();
 	}
