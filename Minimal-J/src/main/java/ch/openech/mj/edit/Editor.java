@@ -1,6 +1,7 @@
 package ch.openech.mj.edit;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,7 +98,9 @@ public abstract class Editor<T> {
 		return null;
 	}
 
-	protected abstract Object save(T object) throws Exception;
+	protected abstract Callable<?> save(T object);
+	
+	// protected abstract Object save(T object) throws Exception;
 
 	public String getTitle() {
 		String resourceName = getClass().getSimpleName() + ".text";
@@ -209,11 +212,10 @@ public abstract class Editor<T> {
 	
 	private void doSave() {
 		try {
-			Object saveResult = save(editedObject);
-			if (saveResult != null) {
-				fireSaved(saveResult);
-				finish();
-			}
+			Callable<?> callable = save(editedObject);
+			Object saveResult = ClientToolkit.getToolkit().execute(form.getComponent(), callable);
+			fireSaved(saveResult);
+			finish();
 		} catch (Exception x) {
 			String message = x.getMessage() != null ? x.getMessage() : x.getClass().getSimpleName();
 			logger.log(Level.SEVERE, message, x);

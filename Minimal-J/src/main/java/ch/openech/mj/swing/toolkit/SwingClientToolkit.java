@@ -18,8 +18,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
+import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -60,6 +65,9 @@ import ch.openech.mj.util.StringUtils;
 
 public class SwingClientToolkit extends ClientToolkit {
 
+	private static String serverUrl;
+	private static int serverPort;
+	
 	@Override
 	public IComponent createLabel(String string) {
 		return new SwingLabel(string);
@@ -342,6 +350,25 @@ public class SwingClientToolkit extends ClientToolkit {
 	public <T> IDialog createSearchDialog(IComponent parent, Search<T> index, Object[] keys, TableActionListener<T> listener) {
 		SwingSearchPanel<T> panel = new SwingSearchPanel<T>(index, keys, listener);
 		return createDialog(parent, null, panel);
+	}
+	
+	@Override
+    public Object execute(IComponent parent, Callable<?> callable) throws Exception {
+		if (serverUrl != null && serverPort != 0) {
+			try (Socket socket = new Socket(serverUrl, serverPort)) {
+				try (ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
+					oos.writeObject(callable);
+					try (ObjectInputStream ois = new ObjectInputStream(socket.getInputStream())) {
+						Object result = ois.readObject();
+						return result;
+					}
+				}
+			} catch (ConnectException c) {
+				throw new RuntimeException("Couldn't connect to " + serverUrl + ":" + serverPort);
+			}
+		} else {
+			return callable.call();
+		}
 	}
 
 	@Override

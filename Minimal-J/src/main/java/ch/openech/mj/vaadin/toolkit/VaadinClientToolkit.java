@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import ch.openech.mj.toolkit.Caption;
 import ch.openech.mj.toolkit.CheckBox;
@@ -332,6 +333,11 @@ public class VaadinClientToolkit extends ClientToolkit {
 		public VaadinGridLayout(int columns, int rows) {
 			super(columns, rows);
 		}
+	}
+	
+	@Override
+    public Object execute(IComponent parent, Callable<?> callable) throws Exception {
+		return callable.call();
 	}
 	
 	@Override

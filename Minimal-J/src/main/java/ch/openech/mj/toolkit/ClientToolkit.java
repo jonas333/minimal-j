@@ -3,6 +3,7 @@ package ch.openech.mj.toolkit;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import ch.openech.mj.toolkit.ITable.TableActionListener;
 
@@ -118,8 +119,13 @@ public abstract class ClientToolkit {
 		void close(Object result);
 	}
 
-	// Up / Dowload
+	// communication
 	
+	
+	// Up / Dowload
+
+	public abstract <T> T execute(IComponent parent, Callable<T> callable);
+
 	/**
 	 * Store the output of a stream locally on a place to select
 	 * 
