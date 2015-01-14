@@ -1,6 +1,9 @@
 package org.minimalj.backend.db;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +28,7 @@ import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.mariadb.jdbc.MySQLDataSource;
 import org.minimalj.application.DevMode;
 import org.minimalj.model.Code;
+import org.minimalj.model.annotation.InitialValues;
 import org.minimalj.model.test.ModelTest;
 import org.minimalj.transaction.criteria.Criteria;
 import org.minimalj.util.Codes;
@@ -398,6 +402,7 @@ public class DbPersistence {
 	private void createCodes() {
 		createConstantCodes();
 		createCsvCodes();
+		createCustomCodes();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -425,6 +430,33 @@ public class DbPersistence {
 					List<? extends Code> values = reader.readValues(clazz);
 					for (Code value : values) {
 						((Table<Code>) table).insert(value);
+					}
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void createCustomCodes() {
+		for (AbstractTable<?> table : tables.values()) {
+			if (Code.class.isAssignableFrom(table.getClazz())) {
+				Class<? extends Code> codeClass = (Class<? extends Code>) table.getClazz(); 
+				for (Method method : codeClass.getMethods()) {
+					if (Modifier.isStatic(method.getModifiers()) && method.getAnnotation(InitialValues.class) != null) {
+						Object methodValue;
+						try {
+							methodValue = method.invoke(null); // null: call as static method
+							if (methodValue instanceof List) {
+								List<?> values = (List<?>) methodValue;
+								for (Object value : values) {
+									if (value instanceof Code) {
+										((Table<Code>) table).insert((Code) value);
+									}
+								}
+							}
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+							throw new LoggingRuntimeException(e, logger, "Could not create initial values");
+						} 
 					}
 				}
 			}
