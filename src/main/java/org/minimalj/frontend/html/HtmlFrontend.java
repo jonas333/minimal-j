@@ -41,7 +41,9 @@ public class HtmlFrontend extends NanoHTTPD {
         String msg = "<html><head><title>" + visiblePage.getTitle() + "</title>";
         msg += "<link rel=\"stylesheet\" type=\"text/css\" href=\"/mj.css\"></head><body>";
         msg += new HtmlMenuBar(visiblePage).toHtml();
-        msg += ((HtmlContent) visiblePage.getContent()).toHtml();
+        if (visiblePage.getContent() != null) {
+        	msg += ((HtmlContent) visiblePage.getContent()).toHtml();
+        }
         msg += "</body></html>\n";
 
         return new NanoHTTPD.Response(msg);
