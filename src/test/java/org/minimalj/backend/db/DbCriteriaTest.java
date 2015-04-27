@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.minimalj.model.ViewUtil;
 import org.minimalj.transaction.criteria.Criteria;
 
 public class DbCriteriaTest {
@@ -16,7 +17,7 @@ public class DbCriteriaTest {
 	
 	@BeforeClass
 	public static void setupDb() throws SQLException {
-		persistence = new DbPersistence(DbPersistence.embeddedDataSource(), A.class, G.class, H.class);
+		persistence = new DbPersistence(DbPersistence.embeddedDataSource(), A.class, G.class, H.class, L.class, M.class);
 	}
 	
 	@AfterClass
@@ -80,5 +81,25 @@ public class DbCriteriaTest {
 		
 		Assert.assertEquals(2, hList.size());
 	}
-
+	
+	@Test // if list can contain Views of Model classes
+	public void testViewAsListContent() throws SQLException {
+		L l = new L();
+		
+		M m1 = new M("text1_1", "text1_2");
+		persistence.insert(m1);
+		MView mview1 = new MView();
+		ViewUtil.view(m1, mview1);
+		
+		M m2 = new M("text2_1", "text2_2");
+		persistence.insert(m2);
+		MView mview2 = new MView();
+		ViewUtil.view(m2, mview2);
+		
+		l.mviews.add(mview1);
+		l.mviews.add(mview2);
+		
+		
+	}
+	
 }
