@@ -55,6 +55,7 @@ public abstract class AbstractTable<T> {
 	protected final LinkedHashMap<String, PropertyInterface> lists;
 	
 	protected final String name;
+	protected final String quotedTableName;
 
 	protected final PropertyInterface idProperty;
 
@@ -72,7 +73,8 @@ public abstract class AbstractTable<T> {
 	protected AbstractTable(DbPersistence dbPersistence, String name, Class<T> clazz, PropertyInterface idProperty) {
 		this.dbPersistence = dbPersistence;
 		this.helper = new DbPersistenceHelper(dbPersistence);
-		this.name = name != null ? name : StringUtils.toDbName(clazz.getSimpleName());
+		this.name = name != null ? name : tableName(dbPersistence, clazz);
+		this.quotedTableName = dbPersistence.quote(this.name);
 		this.clazz = clazz;
 		this.idProperty = idProperty;
 		this.columns = findColumns(clazz);
@@ -87,7 +89,20 @@ public abstract class AbstractTable<T> {
 		findIndexes();
 	}
 
-	protected static LinkedHashMap<String, PropertyInterface> findColumns(Class<?> clazz) {
+	private static String tableName(DbPersistence dbPersistence, Class<?> clazz) {
+		String name = StringUtils.toDbName(clazz.getSimpleName());
+		return name;
+		
+//		if (name.length() > dbPersistence.getMaxIdentifierLength()) {
+//			name = name.substring(0, dbPersistence.getMaxIdentifierLength() - 4);
+//			
+//		}
+//		if (dbPersistence.tableNameExists(name)) {
+//			
+//		}
+	}
+	
+	protected LinkedHashMap<String, PropertyInterface> findColumns(Class<?> clazz) {
 		if (columnsForClass.containsKey(clazz)) {
 			return columnsForClass.get(clazz);
 		}
@@ -96,7 +111,7 @@ public abstract class AbstractTable<T> {
 		for (Field field : clazz.getFields()) {
 			if (!FieldUtils.isPublic(field) || FieldUtils.isStatic(field) || FieldUtils.isTransient(field)) continue;
 			String fieldName = StringUtils.toDbName(field.getName());
-			if (StringUtils.equals(fieldName, "ID", "VERSION")) continue;
+			if (StringUtils.equals(fieldName.toUpperCase(), "ID", "VERSION")) continue;
 			if (FieldUtils.isList(field)) continue;
 			if (FieldUtils.isFinal(field) && !FieldUtils.isSet(field) && !Codes.isCode(field.getType())) {
 				Map<String, PropertyInterface> inlinePropertys = findColumns(field.getType());
@@ -112,6 +127,8 @@ public abstract class AbstractTable<T> {
 				columns.put(fieldName, new FieldProperty(field));
 			}
 		}
+		
+		
 		columnsForClass.put(clazz, columns);
 		return columns;
 	}	
@@ -181,7 +198,7 @@ public abstract class AbstractTable<T> {
 
 	protected void createTable(DbSyntax syntax) {
 		StringBuilder s = new StringBuilder();
-		syntax.addCreateStatementBegin(s, getTableName());
+		syntax.addCreateStatementBegin(s, getQuotedTableName());
 		addSpecialColumns(syntax, s);
 		addFieldColumns(syntax, s);
 		addPrimaryKey(syntax, s);
@@ -209,7 +226,7 @@ public abstract class AbstractTable<T> {
 	
 	protected void createIndexes(DbSyntax syntax) {
 		for (String index : indexes) {
-			String s = syntax.createIndex(getTableName(), index, this instanceof HistorizedTable);
+			String s = syntax.createIndex(getName(), index, this instanceof HistorizedTable);
 			execute(s.toString());
 		}
 	}
@@ -222,7 +239,7 @@ public abstract class AbstractTable<T> {
 				Class<?> fieldClass = ViewUtil.resolve(property.getClazz());
 				AbstractTable<?> referencedTable = dbPersistence.table(fieldClass);
 
-				String s = syntax.createConstraint(getTableName(), column.getKey(), referencedTable.getTableName(), referencedTable instanceof HistorizedTable);
+				String s = syntax.createConstraint(getName(), column.getKey(), referencedTable.getName(), referencedTable instanceof HistorizedTable);
 				if (s != null) {
 					execute(s.toString());
 				}
@@ -235,7 +252,7 @@ public abstract class AbstractTable<T> {
 			PreparedStatement statement = getStatement(dbPersistence.getConnection(), clearQuery, false);
 			statement.execute();
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Clear of Table " + getTableName() + " failed");
+			throw new LoggingRuntimeException(x, sqlLogger, "Clear of Table " + getName() + " failed");
 		}
 	}
 
@@ -248,7 +265,11 @@ public abstract class AbstractTable<T> {
 		return null;
 	}
 
-	protected String getTableName() {
+	protected String getQuotedTableName() {
+		return quotedTableName;
+	}
+	
+	protected String getName() {
 		return name;
 	}
 	
@@ -292,7 +313,7 @@ public abstract class AbstractTable<T> {
 			column = findColumn(fieldPath);
 			if (column != null) break;
 			int pos = fieldPath.lastIndexOf('.');
-			if (pos < 0) throw new IllegalArgumentException("FieldPath " + wholeFieldPath + " not even partially found in " + getTableName());
+			if (pos < 0) throw new IllegalArgumentException("FieldPath " + wholeFieldPath + " not even partially found in " + getName());
 			fieldPath = fieldPath.substring(0, pos);
 		}
 		if (fieldPath.length() < wholeFieldPath.length()) {
@@ -302,7 +323,7 @@ public abstract class AbstractTable<T> {
 			} else {
 				PropertyInterface subProperty = columns.get(column);
 				AbstractTable<?> subTable = dbPersistence.table(ViewUtil.resolve(subProperty.getClazz()));
-				return column + " = (select ID from " + subTable.getTableName() + " where " + subTable.whereStatement(restOfFieldPath, criteriaOperator) + ")";
+				return column + " = (select ID from " + subTable.getQuotedTableName() + " where " + subTable.whereStatement(restOfFieldPath, criteriaOperator) + ")";
 			}
 		} else {
 			return column + " " + criteriaOperator.getOperatorAsString() + " ?";
@@ -369,7 +390,10 @@ public abstract class AbstractTable<T> {
 			}
 			
 			PropertyInterface property = columns.get(columnName);
-			if (property == null) continue;
+			if (property == null) {
+				sqlLogger.warning("Unknown column without property: " + columnName);
+				continue;
+			}
 			
 			Object value = resultSet.getObject(columnIndex);
 			if (value == null) continue;
@@ -474,7 +498,7 @@ public abstract class AbstractTable<T> {
 	
 	// TODO multiple dependables could be get with one (prepared) statement
 	private Object getDependableId(Object id, String column) throws SQLException {
-		String query = "SELECT " + column + " FROM " + getTableName() + " WHERE ID = ?";
+		String query = "SELECT " + column + " FROM " + getQuotedTableName() + " WHERE ID = ?";
 		if (this instanceof HistorizedTable) {
 			query += " AND VERSION = 0";
 		}
@@ -490,7 +514,7 @@ public abstract class AbstractTable<T> {
 	}
 
 	private void setColumnToNull(Object id, String column) throws SQLException {
-		String update = "UPDATE " + getTableName() + " SET " + column + " = NULL WHERE ID = ?";
+		String update = "UPDATE " + getQuotedTableName() + " SET " + column + " = NULL WHERE ID = ?";
 		PreparedStatement preparedStatement = getStatement(dbPersistence.getConnection(), update, false);
 		preparedStatement.setObject(1, id);
 		preparedStatement.execute();
@@ -516,7 +540,7 @@ public abstract class AbstractTable<T> {
 
 	protected String clearQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("DELETE FROM "); query.append(getTableName()); 
+		query.append("DELETE FROM "); query.append(getQuotedTableName()); 
 		return query.toString();
 	}
 	

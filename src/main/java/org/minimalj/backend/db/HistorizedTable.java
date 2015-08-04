@@ -64,7 +64,7 @@ public class HistorizedTable<T> extends Table<T> {
 			}
 			return id;
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't insert object into " + getTableName() + " / Object: " + object);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't insert object into " + getName() + " / Object: " + object);
 		}
 	}
 	
@@ -106,7 +106,7 @@ public class HistorizedTable<T> extends Table<T> {
 				historizedSubTable.update(id, list, version);
 			}
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't update in " + getTableName() + " with " + object);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't update in " + getName() + " with " + object);
 		}
 	}
 	
@@ -142,7 +142,7 @@ public class HistorizedTable<T> extends Table<T> {
 			}
 			return object;
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read " + getTableName() + " with ID " + id);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read " + getName() + " with ID " + id);
 		}
 	}
 
@@ -157,7 +157,7 @@ public class HistorizedTable<T> extends Table<T> {
 				loadRelations(object, id, time);
 				return object;
 			} catch (SQLException x) {
-				throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read " + getTableName() + " with ID " + id + " on time " +  time);
+				throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read " + getName() + " with ID " + id + " on time " +  time);
 			}
 		} else {
 			return read(id);
@@ -206,7 +206,7 @@ public class HistorizedTable<T> extends Table<T> {
 			Collections.sort(result);
 			return result;
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read version of " + getTableName() + " with ID " + id);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read version of " + getName() + " with ID " + id);
 		}
 	}
 	
@@ -216,7 +216,7 @@ public class HistorizedTable<T> extends Table<T> {
 	@Override
 	protected String selectByIdQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); 
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); 
 		query.append(" WHERE id = ? AND version = 0");
 		return query.toString();
 	}
@@ -224,14 +224,14 @@ public class HistorizedTable<T> extends Table<T> {
 	@Override
 	protected String selectAllQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); 
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); 
 		query.append(" WHERE version = 0");
 		return query.toString();
 	}
 	
 	protected String selectByIdAndTimeQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); 
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); 
 		query.append(" WHERE id = ? AND version = ?");
 		return query.toString();
 	}
@@ -240,7 +240,7 @@ public class HistorizedTable<T> extends Table<T> {
 	protected String insertQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("INSERT INTO "); s.append(getTableName()); s.append(" (");
+		s.append("INSERT INTO "); s.append(getQuotedTableName()); s.append(" (");
 		for (String columnName : getColumns().keySet()) {
 			s.append(columnName);
 			s.append(", ");
@@ -258,7 +258,7 @@ public class HistorizedTable<T> extends Table<T> {
 	protected String updateQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("INSERT INTO "); s.append(getTableName()); s.append(" (");
+		s.append("INSERT INTO "); s.append(getQuotedTableName()); s.append(" (");
 		for (String name : getColumns().keySet()) {
 			s.append(name);
 			s.append(", ");
@@ -275,7 +275,7 @@ public class HistorizedTable<T> extends Table<T> {
 	private String selectMaxVersionQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("SELECT MAX(version) FROM "); s.append(getTableName()); 
+		s.append("SELECT MAX(version) FROM "); s.append(getQuotedTableName()); 
 		s.append(" WHERE id = ?");
 
 		return s.toString();
@@ -283,14 +283,14 @@ public class HistorizedTable<T> extends Table<T> {
 	
 	private String endQuery() {
 		StringBuilder s = new StringBuilder();
-		s.append("UPDATE "); s.append(getTableName()); s.append(" SET version = ? WHERE id = ? AND version = 0");
+		s.append("UPDATE "); s.append(getQuotedTableName()); s.append(" SET version = ? WHERE id = ? AND version = 0");
 		return s.toString();
 	}
 	
 	private String readVersionsQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("SELECT version FROM "); s.append(getTableName()); 
+		s.append("SELECT version FROM "); s.append(getQuotedTableName()); 
 		s.append(" WHERE id = ?");
 
 		return s.toString();

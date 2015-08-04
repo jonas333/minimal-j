@@ -24,7 +24,6 @@ import org.minimalj.transaction.criteria.Criteria.SimpleCriteria;
 import org.minimalj.util.GenericUtils;
 import org.minimalj.util.IdUtils;
 import org.minimalj.util.LoggingRuntimeException;
-import org.minimalj.util.StringUtils;
 
 @SuppressWarnings("rawtypes")
 public class Table<T> extends AbstractTable<T> {
@@ -103,7 +102,7 @@ public class Table<T> extends AbstractTable<T> {
 			}
 			return id;
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't insert in " + getTableName() + " with " + object);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't insert in " + getName() + " with " + object);
 		}
 	}
 
@@ -114,7 +113,7 @@ public class Table<T> extends AbstractTable<T> {
 			updateStatement.setObject(1, id);
 			updateStatement.execute();
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't delete " + getTableName() + " with ID " + id);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't delete " + getName() + " with ID " + id);
 		}
 	}
 
@@ -133,11 +132,7 @@ public class Table<T> extends AbstractTable<T> {
 	}
 
 	protected String buildSubTableName(PropertyInterface property) {
-		StringBuilder b = new StringBuilder();
-		b.append(getTableName());
-		String fieldName = StringUtils.upperFirstChar(property.getName());
-		b.append('_'); b.append(fieldName); 
-		return b.toString();
+		return getName() + "." + property.getName();
 	}
 	
 	public void update(T object) {
@@ -166,7 +161,7 @@ public class Table<T> extends AbstractTable<T> {
 				dbPersistence.invalidateCodeCache(object.getClass());
 			}
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't update in " + getTableName() + " with " + object);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't update in " + getName() + " with " + object);
 		}
 	}
 	
@@ -184,7 +179,7 @@ public class Table<T> extends AbstractTable<T> {
 			}
 			return object;
 		} catch (SQLException x) {
-			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read " + getTableName() + " with ID " + id);
+			throw new LoggingRuntimeException(x, sqlLogger, "Couldn't read " + getName() + " with ID " + id);
 		}
 	}
 
@@ -203,7 +198,7 @@ public class Table<T> extends AbstractTable<T> {
 	}
 
 	public List<T> read(Criteria criteria, int maxResults) {
-		String query = "select * from " + getTableName();
+		String query = "select * from " + getQuotedTableName();
 		if (criteria instanceof SimpleCriteria) {
 			SimpleCriteria simpleCriteria = (SimpleCriteria) criteria;
 			PropertyInterface propertyInterface = Keys.getProperty(simpleCriteria.getKey());
@@ -322,7 +317,7 @@ public class Table<T> extends AbstractTable<T> {
 			querySql += ", ";
 			querySql += column;
 		}
-		querySql += " from " + getTableName();
+		querySql += " from " + getQuotedTableName();
 		return querySql;
 	}
 	
@@ -381,7 +376,7 @@ public class Table<T> extends AbstractTable<T> {
 	}
 	
 	private List<T> search(List<String> searchColumns, String query, int maxResults) {
-		String querySql = "select * from " + getTableName() + " where (";
+		String querySql = "select * from " + getQuotedTableName() + " where (";
 		
 		boolean first = true;
 		for (String column : searchColumns) {
@@ -427,7 +422,7 @@ public class Table<T> extends AbstractTable<T> {
 				columns += ", ";
 				columns += column;
 			}
-		String querySql = "select " + columns + " from " + getTableName() + " where (";
+		String querySql = "select " + columns + " from " + getQuotedTableName() + " where (";
 		
 		boolean first = true;
 		for (String column : searchColumns) {
@@ -489,14 +484,14 @@ public class Table<T> extends AbstractTable<T> {
 	@Override
 	protected String selectByIdQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); 
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); 
 		query.append(" WHERE id = ?");
 		return query.toString();
 	}
 	
 	protected String selectAllQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); 
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); 
 		return query.toString();
 	}
 	
@@ -504,7 +499,7 @@ public class Table<T> extends AbstractTable<T> {
 	protected String insertQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("INSERT INTO "); s.append(getTableName()); s.append(" (");
+		s.append("INSERT INTO "); s.append(getQuotedTableName()); s.append(" (");
 		for (String columnName : getColumns().keySet()) {
 			s.append(columnName);
 			s.append(", ");
@@ -521,7 +516,7 @@ public class Table<T> extends AbstractTable<T> {
 	protected String updateQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("UPDATE "); s.append(getTableName()); s.append(" SET ");
+		s.append("UPDATE "); s.append(getQuotedTableName()); s.append(" SET ");
 		for (Object columnNameObject : getColumns().keySet()) {
 			s.append((String) columnNameObject);
 			s.append("= ?, ");
@@ -534,7 +529,7 @@ public class Table<T> extends AbstractTable<T> {
 	
 	protected String deleteQuery() {
 		StringBuilder s = new StringBuilder();
-		s.append("DELETE FROM "); s.append(getTableName()); s.append(" WHERE id = ?");
+		s.append("DELETE FROM "); s.append(getQuotedTableName()); s.append(" WHERE id = ?");
 		return s.toString();
 	}
 	

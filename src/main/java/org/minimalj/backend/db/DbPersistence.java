@@ -452,6 +452,23 @@ public class DbPersistence {
 		return tables.containsKey(clazz);
 	}
 	
+	public String quote(String identifier) {
+		return syntax.quote(identifier);
+	}
+	
+	public int getMaxIdentifierLength() {
+		return syntax.getMaxIdentifierLength();
+	}
+	
+	public boolean tableNameExists(String name) {
+		for (AbstractTable<?> table : tables.values()) {
+			if (name.equals(table.getQuotedTableName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void testModel(Class<?>[] classes) {
 		ModelTest test = new ModelTest(classes);
 		if (DevMode.isActive()) {

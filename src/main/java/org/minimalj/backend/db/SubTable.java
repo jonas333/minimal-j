@@ -88,7 +88,7 @@ public class SubTable extends AbstractTable {
 	@Override
 	protected String selectByIdQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); query.append(" WHERE id = ? ORDER BY position");
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); query.append(" WHERE id = ? ORDER BY position");
 		return query.toString();
 	}
 	
@@ -96,7 +96,7 @@ public class SubTable extends AbstractTable {
 	protected String insertQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("INSERT INTO "); s.append(getTableName()); s.append(" (");
+		s.append("INSERT INTO "); s.append(getQuotedTableName()); s.append(" (");
 		for (Object columnNameObject : getColumns().keySet()) {
 			// myst, direkt auf columnNames zugreiffen funktionert hier nicht
 			String columnName = (String) columnNameObject;
@@ -115,7 +115,7 @@ public class SubTable extends AbstractTable {
 	protected String updateQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("UPDATE "); s.append(getTableName()); s.append(" SET ");
+		s.append("UPDATE "); s.append(getQuotedTableName()); s.append(" SET ");
 		for (Object columnNameObject : getColumns().keySet()) {
 			s.append((String) columnNameObject);
 			s.append("= ?, ");
@@ -127,7 +127,7 @@ public class SubTable extends AbstractTable {
 	}
 	
 	protected String deleteQuery() {
-		return "DELETE FROM " + getTableName() + " WHERE id = ? AND position >= ?";
+		return "DELETE FROM " + getQuotedTableName() + " WHERE id = ? AND position >= ?";
 	}
 	
 	@Override

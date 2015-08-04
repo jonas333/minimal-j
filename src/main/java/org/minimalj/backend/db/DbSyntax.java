@@ -109,25 +109,24 @@ public abstract class DbSyntax {
 	
 	public String createConstraint(String tableName, String column, String referencedTableName, boolean referencedTableIsHistorized) {
 		StringBuilder s = new StringBuilder();
-		s.append("ALTER TABLE "); s.append(tableName);
-		s.append(" ADD CONSTRAINT FK_");
-		s.append(tableName); s.append("_"); s.append(column);
+		s.append("ALTER TABLE ");
+		s.append(quote(tableName));
+		s.append(" ADD CONSTRAINT ");
+		s.append(quote("FK_" + tableName + "_" + column));
 		s.append(" FOREIGN KEY (");
 		s.append(column);
 		s.append(") REFERENCES ");
-		s.append(referencedTableName);
+		s.append(quote(referencedTableName));
 		s.append(" (ID)"); // not used at the moment: INITIALLY DEFERRED
 		return s.toString();
 	}
 	
 	public String createIndex(String tableName, String column, boolean withVersion) {
 		StringBuilder s = new StringBuilder();
-		s.append("CREATE INDEX IDX_");
-		s.append(tableName);
-		s.append('_');
-		s.append(column);
+		s.append("CREATE INDEX ");
+		s.append(quote("IDX_" + tableName + '_' + column));
 		s.append(" ON ");
-		s.append(tableName);
+		s.append(quote(tableName));
 		s.append("(");
 		s.append(column);
 		if (withVersion) {
@@ -136,24 +135,34 @@ public abstract class DbSyntax {
 		s.append(")");
 		return s.toString();
 	}
+
+	public abstract int getMaxIdentifierLength();
 	
-	public String createUniqueIndex(String tableName, String column) {
-		StringBuilder s = new StringBuilder();
-		s.append("ALTER TABLE ");
-		s.append(tableName);
-		s.append(" ADD UNIQUE INDEX ");
-		s.append(column);
-		s.append(" (");
-		s.append(column);
-		s.append(")");
-		return s.toString();
+	public abstract String getQuoteChar();
+	
+	public String quote(String identifier) {
+		if (identifier.contains(".")) {
+			return getQuoteChar() + identifier + getQuoteChar();
+		} else {
+			return identifier;
+		}
 	}
-	
+
 	public static class MariaDbSyntax extends DbSyntax {
 		
 		@Override
 		protected void addCreateStatementEnd(StringBuilder s) {
 			s.append("\n) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED\n");
+		}
+
+		@Override
+		public int getMaxIdentifierLength() {
+			return 64;
+		}
+		
+		@Override
+		public String getQuoteChar() {
+			return "`";
 		}
 	}
 	
@@ -196,16 +205,13 @@ public abstract class DbSyntax {
 		}
 		
 		@Override
-		public String createUniqueIndex(String tableName, String column) {
-			StringBuilder s = new StringBuilder();
-			s.append("ALTER TABLE ");
-			s.append(tableName);
-			s.append(" ADD CONSTRAINT ");
-			s.append(column);
-			s.append("_UNIQUE UNIQUE (");
-			s.append(column);
-			s.append(")");
-			return s.toString();
+		public int getMaxIdentifierLength() {
+			return 128;
+		}
+		
+		@Override
+		public String getQuoteChar() {
+			return "\"";
 		}
 	}
 	

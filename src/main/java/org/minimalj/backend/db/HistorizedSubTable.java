@@ -116,7 +116,7 @@ public class HistorizedSubTable extends AbstractTable {
 	
 	protected String selectByIdAndTimeQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); 
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); 
 		query.append(" WHERE id = ? AND (startVersion = 0 OR startVersion < ?) AND (endVersion = 0 OR endVersion >= ?) ORDER BY position");
 		return query.toString();
 	}
@@ -124,7 +124,7 @@ public class HistorizedSubTable extends AbstractTable {
 	@Override
 	protected String selectByIdQuery() {
 		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM "); query.append(getTableName()); query.append(" WHERE id = ?");
+		query.append("SELECT * FROM "); query.append(getQuotedTableName()); query.append(" WHERE id = ?");
 		query.append(" AND endVersion = 0 ORDER BY position");
 		return query.toString();
 	}
@@ -133,7 +133,7 @@ public class HistorizedSubTable extends AbstractTable {
 	protected String insertQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("INSERT INTO "); s.append(getTableName()); s.append(" (");
+		s.append("INSERT INTO "); s.append(getQuotedTableName()); s.append(" (");
 		for (Object columnNameObject : getColumns().keySet()) {
 			// myst, direkt auf columnNames zugreiffen funktionert hier nicht
 			String columnName = (String) columnNameObject;
@@ -151,14 +151,14 @@ public class HistorizedSubTable extends AbstractTable {
 	
 	private String endQuery() {
 		StringBuilder s = new StringBuilder();
-		s.append("UPDATE "); s.append(getTableName()); s.append(" SET endVersion = ? WHERE id = ? AND position = ? AND endVersion = 0");
+		s.append("UPDATE "); s.append(getQuotedTableName()); s.append(" SET endVersion = ? WHERE id = ? AND position = ? AND endVersion = 0");
 		return s.toString();
 	}
 	
 	private String readVersionsQuery() {
 		StringBuilder s = new StringBuilder();
 		
-		s.append("SELECT startVersion, endVersion FROM "); s.append(getTableName()); 
+		s.append("SELECT startVersion, endVersion FROM "); s.append(getQuotedTableName()); 
 		s.append(" WHERE id = ?");
 
 		return s.toString();
