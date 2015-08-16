@@ -15,23 +15,34 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.minimalj.application.Application;
+import org.minimalj.application.Subject;
+import org.minimalj.frontend.Frontend;
+import org.minimalj.frontend.editor.Editor.SimpleEditor;
+import org.minimalj.frontend.form.Form;
 import org.minimalj.frontend.page.Page;
 import org.minimalj.frontend.swing.component.HideableTabbedPane;
+import org.minimalj.model.Keys;
+import org.minimalj.model.annotation.Size;
+import org.minimalj.model.annotation.Size;
 import org.minimalj.util.StringUtils;
 
 public class SwingFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private HideableTabbedPane tabbedPane;
-	final Action closeWindowAction, exitAction, newWindowAction, newTabAction;
+	final Action loginAction, logoutAction, closeWindowAction, exitAction, newWindowAction, newWindowWithLoginAction, newTabAction, newTabWithLoginAction;
 	
 	public SwingFrame() {
 		super();
 
+		loginAction = new LoginAction();
+		logoutAction = new LogoutAction();
 		closeWindowAction = new CloseWindowAction();
 		exitAction = new ExitAction();
 		newWindowAction = new NewWindowAction();
+		newWindowWithLoginAction = new NewWindowWithLoginAction();
 		newTabAction = new NewTabAction();
+		newTabWithLoginAction = new NewTabWithLoginAction();
 		
 		setDefaultSize();
 		setLocationRelativeTo(null);
@@ -183,6 +194,59 @@ public class SwingFrame extends JFrame {
 		}
 	}
 	
+	private class LoginAction extends SwingResourceAction {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			SimpleEditor<Login> loginEditor = new SimpleEditor<Login>() {
+
+				@Override
+				protected Login createObject() {
+					return new Login();
+				}
+
+				@Override
+				protected Form<Login> createForm() {
+					Form<Login> form = new Form<>();
+					form.line(Login.$.user);
+					form.line(Login.$.password);
+					return form;
+				}
+
+				@Override
+				protected Login save(Login login) {
+					Subject subject = new Subject();
+					subject.setUser(login.user);
+					Subject.set(subject);
+					return login;
+				}
+			};
+			
+			Frontend.setBrowser(getVisibleTab());
+			loginEditor.action();
+			Frontend.setBrowser(null);
+		}
+	}
+	
+	private class LogoutAction extends SwingResourceAction {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+		}
+	}
+	
+	public static class Login {
+		public static final Login $ = Keys.of(Login.class);
+
+		@Size(255)
+		public String user;
+		@Size(255)
+		public String password;
+	}
+	
 	private class CloseWindowAction extends SwingResourceAction {
 		private static final long serialVersionUID = 1L;
 
@@ -209,8 +273,26 @@ public class SwingFrame extends JFrame {
 			FrameManager.getInstance().openNavigationFrame();
 		}
 	}
+	
+	private static class NewWindowWithLoginAction extends SwingResourceAction {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		}
+	}
+
 
 	private class NewTabAction extends SwingResourceAction {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			addTab();
+		}
+	}
+
+	private class NewTabWithLoginAction extends SwingResourceAction {
 		private static final long serialVersionUID = 1L;
 
 		@Override

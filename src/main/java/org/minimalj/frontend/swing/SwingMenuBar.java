@@ -36,10 +36,15 @@ public class SwingMenuBar extends JMenuBar {
 		JMenu menu = menu("window");
 		
 		menu.add(new JMenuItem(tab.frame.newWindowAction));
+		menu.add(new JMenuItem(tab.frame.newWindowWithLoginAction));
 		menu.add(new JMenuItem(tab.frame.closeWindowAction));
-		menu.addSeparator();
+		menu.addSeparator();		
 		menu.add(new JMenuItem(tab.frame.newTabAction));
+		menu.add(new JMenuItem(tab.frame.newTabWithLoginAction));
 		menu.add(new JMenuItem(tab.closeTabAction));
+		menu.addSeparator();
+		menu.add(new JMenuItem(tab.frame.loginAction));
+		menu.add(new JMenuItem(tab.frame.logoutAction));
 		menu.addSeparator();
 		menu.add(new JMenuItem(tab.frame.exitAction));
 		return menu;
