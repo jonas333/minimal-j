@@ -11,6 +11,8 @@ public interface Persistence {
 
 	public <T> List<T> read(Class<T> clazz, Criteria criteria, int maxResults);
 
+	public <T> T create(T object);
+	
 	public <T> Object insert(T object);
 
 	public <T> T update(T object);

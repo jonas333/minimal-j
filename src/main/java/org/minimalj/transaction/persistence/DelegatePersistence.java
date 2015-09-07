@@ -27,6 +27,11 @@ public class DelegatePersistence implements Persistence {
 	}
 
 	@Override
+	public <T> T create(T object) {
+		return backend.execute(new CreateTransaction<T>(object));
+	}
+	
+	@Override
 	public <T> Object insert(T object) {
 		return backend.execute(new InsertTransaction<T>(object));
 	}
