@@ -11,7 +11,7 @@ public class JsonTextField extends JsonInputComponent<String> implements Input<S
 	private static final String MAX_LENGTH = "maxLength";
 	private static final String ALLOWED_CHARACTERS = "allowedCharacters";
 	private static final String INPUT_TYPE = "inputType";
-	private static final String AUTOCOMPLETE = "autocomplete";
+	private static final String SUGGESTIONS = "suggestions";
 	
 	public JsonTextField(String type) {
 		super(type, null);
@@ -21,13 +21,16 @@ public class JsonTextField extends JsonInputComponent<String> implements Input<S
 		super(type, changeListener);
 	}
 	
-	public JsonTextField(String type, int maxLength, String allowedCharacters, InputType inputType, List<String> choice,
+	public JsonTextField(String type, int maxLength, String allowedCharacters, InputType inputType, List<String> suggestions,
 			InputComponentListener changeListener) {
 		super(type, changeListener);
 		put(MAX_LENGTH, maxLength);
 		put(ALLOWED_CHARACTERS, allowedCharacters);
 		if (inputType != null) {
 			put(INPUT_TYPE, inputType.name());
+		}
+		if (suggestions != null) {
+			put(SUGGESTIONS, suggestions);
 		}
 	}
 	

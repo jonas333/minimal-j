@@ -323,6 +323,10 @@
 			if (content.value != undefined) {
 				element.appendChild(document.createTextNode(content.value));
 			}
+			if (content.suggestions != undefined) {
+				element.setAttribute("list", content.id + "-suggestions");
+				element.appendChild(createSuggestions(content.id + "-suggestions", content.suggestions));
+			}
 		} else if (type == "AreaField") {
 			element = document.createElement("textarea");
 			element.setAttribute("onchange", "sendchange(this);");
@@ -498,6 +502,18 @@
 		navigation.appendChild(menuElement);		
 	}
 
+	function createSuggestions(id, suggestions) {
+		var datalist = document.createElement("datalist");
+		datalist.id = id;
+		for (var i = 0; i < suggestions.length; i++) {
+			var option = document.createElement("option");
+			option.setAttribute("value", suggestions[i]);
+			datalist.appendChild(option);
+		}
+		return datalist;
+	}
+	
+	
 	function createMenu(items, pageId) {
 		var ul = document.createElement("ul");
 
