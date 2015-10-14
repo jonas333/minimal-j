@@ -25,9 +25,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.Frontend.ITable;
 import org.minimalj.frontend.Frontend.TableActionListener;
+import org.minimalj.frontend.action.Action;
 import org.minimalj.model.Keys;
 import org.minimalj.model.properties.PropertyInterface;
 import org.minimalj.util.DateUtils;
@@ -128,14 +128,13 @@ public class SwingTable<T> extends JScrollPane implements ITable<T> {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() >= 2 && listener != null) {
-				try {
-					SwingFrontend.updateEventTab(table);
-					listener.action(getSelectedObject());
-				} catch (Exception x) {
-					x.printStackTrace();
-				} finally {
-					Frontend.setBrowser(null);
-				}
+				Action action = new Action() {
+					@Override
+					public void action() {
+						listener.action(getSelectedObject());
+					}
+				};
+				SwingFrontend.executeActionInSwingWorker(action, SwingTable.this);
 			}
 		}
 	}
@@ -144,9 +143,13 @@ public class SwingTable<T> extends JScrollPane implements ITable<T> {
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			if (!e.getValueIsAdjusting() && table.isShowing()) {
-				SwingFrontend.updateEventTab(table);
-				listener.selectionChanged(getSelectedObject(), getSelectedObjects());
-				Frontend.setBrowser(null);
+				Action action = new Action() {
+					@Override
+					public void action() {
+						listener.selectionChanged(getSelectedObject(), getSelectedObjects());
+					}
+				};
+				SwingFrontend.executeActionInSwingWorker(action, SwingTable.this);
 			}
 		}
 	}

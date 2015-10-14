@@ -1,21 +1,29 @@
 package org.minimalj.frontend.impl.swing.toolkit;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.FocusTraversalPolicy;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.FocusManager;
+import javax.swing.InputMap;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -24,20 +32,44 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.SwingWorker.StateValue;
+import javax.swing.plaf.ComponentInputMapUIResource;
 import javax.swing.text.JTextComponent;
 
 import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.action.Action.ActionChangeListener;
+import org.minimalj.frontend.impl.swing.SwingFrame;
 import org.minimalj.frontend.impl.swing.SwingTab;
 import org.minimalj.frontend.impl.swing.component.SwingHtmlContent;
 import org.minimalj.frontend.page.IDialog;
 import org.minimalj.frontend.page.Page;
+import org.minimalj.frontend.page.PageBrowser;
 import org.minimalj.model.Rendering;
 import org.minimalj.model.Rendering.RenderType;
+import org.minimalj.security.Subject;
 
 public class SwingFrontend extends Frontend {
 
+	public SwingFrontend() {
+		AWTEventListener listener = new AWTEventListener() {
+			@Override
+			public void eventDispatched(AWTEvent event) {
+				if (event.getID() == FocusEvent.FOCUS_GAINED && event.getSource() instanceof Component) {
+					Component focusedPageComponent = findPageComponent((Component) event.getSource());
+					if (focusedPageComponent != null) {
+						SwingTab swingTab = findSwingTab(focusedPageComponent);
+						swingTab.setFocusedPage(getPageProperty(focusedPageComponent));
+					}
+				}
+			}
+		};
+		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.FOCUS_EVENT_MASK);
+	}
+	
 	@Override
 	public IComponent createLabel(String string) {
 		return new SwingText(string);
@@ -58,32 +90,42 @@ public class SwingFrontend extends Frontend {
 
 		public SwingActionLabel(final Action action) {
 			setText(action.getName());
-//			label.setToolTipText(Resources.getResourceBundle().getString(runnable.getClass().getSimpleName() + ".description"));
+			setToolTipText(action.getDescription());
 			
 			setForeground(Color.BLUE);
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					updateEventTab((Component) e.getSource());
-					action.action();
+					SwingFrontend.executeActionInSwingWorker(action, (Component) e.getSource());
 				}
 			});
 		}
 	}
 	
 	public static SwingTab findSwingTab(Component c) {
-		while (c != null && !(c instanceof SwingTab)) {
+		while (c != null && !(c instanceof SwingFrame)) {
 			if (c instanceof JPopupMenu) {
 				c = ((JPopupMenu) c).getInvoker();
 			} else {
 				c = c.getParent();
 			}
 		}
-		return (SwingTab) c;
+		return c != null ? ((SwingFrame) c).getVisibleTab() : null;
 	}
 	
-	public static Page findPage(Component c) {
+//	public static Page findPage(Component c) {
+//		while (c != null && getPageProperty(c) == null) {
+//			if (c instanceof JPopupMenu) {
+//				c = ((JPopupMenu) c).getInvoker();
+//			} else {
+//				c = c.getParent();
+//			}
+//		}
+//		return getPageProperty(c);
+//	}
+	
+	public static Component findPageComponent(Component c) {
 		while (c != null && getPageProperty(c) == null) {
 			if (c instanceof JPopupMenu) {
 				c = ((JPopupMenu) c).getInvoker();
@@ -91,7 +133,7 @@ public class SwingFrontend extends Frontend {
 				c = c.getParent();
 			}
 		}
-		return getPageProperty(c);
+		return c;
 	}
 	
 	private static Page getPageProperty(Component c) {
@@ -103,12 +145,14 @@ public class SwingFrontend extends Frontend {
 		}
 	}
 	
-	public static void updateEventTab(Component c) {
-		SwingTab swingTab = findSwingTab(c);
-		Frontend.setBrowser(swingTab);
-		Page focusedPage = findPage(c);
-		swingTab.setFocusedPage(focusedPage);
-	}
+//	public static void updateEventTab(Component c) {
+//		SwingTab swingTab = findSwingTab(c);
+//		Frontend.setBrowser(swingTab);
+//		if (swingTab != null) {
+//			Page focusedPage = findPage(c);
+//			swingTab.setFocusedPage(focusedPage);
+//		}
+//	}
 
 	@Override
 	public IComponent createTitle(String string) {
@@ -355,11 +399,9 @@ public class SwingFrontend extends Frontend {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SwingFrontend.updateEventTab((Component) e.getSource());
-				action.action();
+				executeActionInSwingWorker(action, (Component) e.getSource());
 			}
 		};
-		swingAction.putValue(javax.swing.Action.SHORT_DESCRIPTION, action.getDescription());
 		action.setChangeListener(new ActionChangeListener() {
 			{
 				update();
@@ -372,9 +414,100 @@ public class SwingFrontend extends Frontend {
 
 			protected void update() {
 				swingAction.setEnabled(action.isEnabled());
+				swingAction.putValue(javax.swing.Action.SHORT_DESCRIPTION, action.getDescription());
 			}
 		});
 		return swingAction;
 	}
 	
+	public static void executeActionInSwingWorker(Action action, Component source) {
+		SwingTab pageBrowser = findSwingTab(source);
+		pageBrowser.lock();
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				Frontend.setBrowser(new EventThreadPageBrowser(pageBrowser));
+				action.action();
+				Thread.sleep(3000);
+				return null;
+			}
+		};
+		worker.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+//				if ("progress".equals(evt.getPropertyName())) {
+//					// progress.showProgress((Integer) evt.getNewValue(), 100);
+//				} else 
+				if ("state".equals(evt.getPropertyName()) && evt.getNewValue() == StateValue.DONE) {
+					pageBrowser.unlock();
+				}
+			}
+		});
+		worker.execute();
+	}
+	
+	public static void installAccelerator(javax.swing.Action action, final JButton button) {
+		if (action.getValue(javax.swing.Action.ACCELERATOR_KEY) instanceof KeyStroke) {
+			KeyStroke keyStroke = (KeyStroke)action.getValue(javax.swing.Action.ACCELERATOR_KEY);
+			InputMap windowInputMap = SwingUtilities.getUIInputMap(button, JComponent.WHEN_IN_FOCUSED_WINDOW);
+			if (windowInputMap == null) {
+				windowInputMap = new ComponentInputMapUIResource(button);
+				SwingUtilities.replaceUIInputMap(button, JComponent.WHEN_IN_FOCUSED_WINDOW, windowInputMap);
+			}
+			windowInputMap.put(keyStroke, keyStroke.toString());
+			button.getActionMap().put(keyStroke.toString(), action);
+		}
+	}
+	
+	private static class EventThreadPageBrowser implements PageBrowser {
+		private final PageBrowser delegate;
+		
+		public EventThreadPageBrowser(PageBrowser delegate) {
+			this.delegate = delegate;
+		}
+
+		public Subject getSubject() {
+			return delegate.getSubject();
+		}
+
+		public void setSubject(Subject subject) {
+			delegate.setSubject(subject);
+		}
+
+		public boolean hasPermission(String... accessRoles) {
+			return delegate.hasPermission(accessRoles);
+		}
+
+		public void show(Page page) {
+			SwingUtilities.invokeLater(() -> delegate.show(page));
+		}
+
+		public void showDetail(Page page) {
+			delegate.showDetail(page);
+		}
+
+		public void hideDetail(Page page) {
+			delegate.hideDetail(page);
+		}
+
+		public boolean isDetailShown(Page page) {
+			return delegate.isDetailShown(page);
+		}
+
+		public IDialog showDialog(String title, IContent content, Action saveAction, Action closeAction, Action... actions) {
+			return delegate.showDialog(title, content, saveAction, closeAction, actions);
+		}
+
+		public <T> IDialog showSearchDialog(Search<T> index, Object[] keys, TableActionListener<T> listener) {
+			return delegate.showSearchDialog(index, keys, listener);
+		}
+
+		public void showMessage(String text) {
+			delegate.showMessage(text);
+		}
+
+		public void showError(String text) {
+			delegate.showError(text);
+		}
+	}
 }

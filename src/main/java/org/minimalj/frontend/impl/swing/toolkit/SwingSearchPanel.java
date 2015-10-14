@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 
 import org.minimalj.frontend.Frontend.Search;
 import org.minimalj.frontend.Frontend.TableActionListener;
+import org.minimalj.frontend.action.Action;
 
 public class SwingSearchPanel<T> extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -25,7 +26,7 @@ public class SwingSearchPanel<T> extends JPanel {
 		super(new BorderLayout());
 		
 		text = new JTextField();
-		searchButton = new SwingHeavyActionButton("Search");
+		searchButton = new JButton("Search");
 		table = new SwingTable<T>(keys, listener);
 
 		JPanel northPanel = new JPanel(new BorderLayout());
@@ -35,20 +36,21 @@ public class SwingSearchPanel<T> extends JPanel {
 		add(border(northPanel, 5, 5, 5, 5), BorderLayout.NORTH);
 		add(table, BorderLayout.CENTER);
 
-		text.addActionListener(new ActionListener() {
+		Action action = new Action() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchButton.doClick();
-			}
-		});
-		
-		searchButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void action() {
 				List<T> objects = search.search(text.getText());
 				table.setObjects(objects);
 			}
-		});
+		};
+		ActionListener actionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SwingFrontend.executeActionInSwingWorker(action, searchButton);
+			}
+		};
+		text.addActionListener(actionListener);
+		searchButton.addActionListener(actionListener);
 	}
 
 	private static Component border(Component component, int top, int left, int bottom, int right) {

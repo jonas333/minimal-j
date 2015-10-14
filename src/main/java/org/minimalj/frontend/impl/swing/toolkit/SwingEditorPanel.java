@@ -1,25 +1,17 @@
 package org.minimalj.frontend.impl.swing.toolkit;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Insets;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.InputMap;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
-import javax.swing.plaf.ComponentInputMapUIResource;
 
 import org.minimalj.frontend.Frontend.IContent;
 
@@ -32,7 +24,13 @@ public class SwingEditorPanel extends JPanel {
 		scrollPane.setBorder(new TopBottomBorder(scrollPane.getBorder()));
 		add(scrollPane, BorderLayout.CENTER);
 		
-		ButtonBar buttonBar = new ButtonBar(SwingFrontend.adaptActions(actions));
+		JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0)); // align, hgap, vgap
+		buttonBar.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 2)); // unknown: why the need for additional 2 pixel?
+		for (org.minimalj.frontend.action.Action action : actions) {
+			Action swingAction = SwingFrontend.adaptAction(action);
+			buttonBar.add(new JButton(swingAction));
+		}
+		
 		add(buttonBar, BorderLayout.SOUTH);
 	}
 	
@@ -60,51 +58,6 @@ public class SwingEditorPanel extends JPanel {
 			return delegate.isBorderOpaque();
 		}
 		
-	}
-	
-	// TODO: move this unused stuff to ButtonBar
-	public static JButton createButton(Action action) {
-		JButton button = new SwingHeavyActionButton(action);
-		installAccelerator(action, button);
-		installAdditionalActionListener(action, button);
-		return button;
-	}
-
-	private static void installAdditionalActionListener(Action action, final JButton button) {
-		action.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				if ("foreground".equals(evt.getPropertyName()) && (evt.getNewValue() instanceof Color)) {
-					button.setForeground((Color) evt.getNewValue());
-				}
-			}
-		});
-	}
-
-	private static void installAccelerator(Action action, final JButton button) {
-		if (action.getValue(Action.ACCELERATOR_KEY) instanceof KeyStroke) {
-			KeyStroke keyStroke = (KeyStroke)action.getValue(Action.ACCELERATOR_KEY);
-			InputMap windowInputMap = SwingUtilities.getUIInputMap(button, JComponent.WHEN_IN_FOCUSED_WINDOW);
-			if (windowInputMap == null) {
-				windowInputMap = new ComponentInputMapUIResource(button);
-				SwingUtilities.replaceUIInputMap(button, JComponent.WHEN_IN_FOCUSED_WINDOW, windowInputMap);
-			}
-			windowInputMap.put(keyStroke, keyStroke.toString());
-			button.getActionMap().put(keyStroke.toString(), action);
-		}
-	}
-	
-	private static class ButtonBar extends JPanel {
-		private static final long serialVersionUID = 1L;
-
-		public ButtonBar(Action... actions) {
-			super(new FlowLayout(FlowLayout.RIGHT, 5, 0)); // align, hgap, vgap
-			setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 2)); // unknown: why the need for additional 2 pixel?
-
-			for (Action action: actions) {
-				add(new JButton(action));
-			}
-		}
 	}
 
 }

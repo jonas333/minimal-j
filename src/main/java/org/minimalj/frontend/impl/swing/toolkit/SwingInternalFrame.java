@@ -49,7 +49,7 @@ public class SwingInternalFrame extends JInternalFrame implements IDialog {
 	@Override
 	public void doDefaultCloseAction() {
 		if (closeAction != null) {
-			closeAction.action();
+			SwingFrontend.executeActionInSwingWorker(closeAction, this);
 		} else {
 			closeDialog();
 		}
