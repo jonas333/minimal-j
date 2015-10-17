@@ -17,13 +17,16 @@ package org.minimalj.frontend.impl.swing.component;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Insets;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 
 public class HideableTabbedPane extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -35,6 +38,9 @@ public class HideableTabbedPane extends JPanel {
 	
 	public HideableTabbedPane() {
 		super(new BorderLayout());
+		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0)); 
+	    
+		setBorder(BorderFactory.createEmptyBorder());
 	}
 	
 	public void addTab(String title, Component tab) {

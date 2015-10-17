@@ -2,7 +2,6 @@ package org.minimalj.frontend.impl.swing;
 
 import java.util.List;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -22,11 +21,11 @@ import org.minimalj.util.resources.Resources;
 public class SwingMenuBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 	
-	private final SwingTab tab;
+	private final SwingFrame frame;
 
-	public SwingMenuBar(SwingTab tab) {
+	public SwingMenuBar(SwingFrame tab) {
 		super();
-		this.tab = tab;
+		this.frame = tab;
 
 		add(createWindowMenu());
 		add(createEditMenu());
@@ -36,18 +35,18 @@ public class SwingMenuBar extends JMenuBar {
 	private JMenu createWindowMenu() {
 		JMenu menu = menu("window");
 		
-		menu.add(new JMenuItem(tab.frame.newWindowAction));
-		menu.add(new JMenuItem(tab.frame.closeWindowAction));
+		menu.add(new JMenuItem(frame.newWindowAction));
+		menu.add(new JMenuItem(frame.closeWindowAction));
 		menu.addSeparator();		
-		menu.add(new JMenuItem(tab.frame.newTabAction));
-		menu.add(new JMenuItem(tab.closeTabAction));
+		menu.add(new JMenuItem(frame.newTabAction));
+		menu.add(new JMenuItem(frame.closeTabAction));
 		if (Authorization.isAvailable()) {
 			menu.addSeparator();
-			menu.add(new JMenuItem(tab.loginAction));
-			menu.add(new JMenuItem(tab.logoutAction));
+			menu.add(new JMenuItem(frame.loginAction));
+			menu.add(new JMenuItem(frame.logoutAction));
 		}
 		menu.addSeparator();
-		menu.add(new JMenuItem(tab.frame.exitAction));
+		menu.add(new JMenuItem(frame.exitAction));
 		return menu;
 	}
 	
@@ -61,11 +60,11 @@ public class SwingMenuBar extends JMenuBar {
 	
 	private JMenu createViewMenu() {
 		JMenu menu = menu("view");
-		menu.add(new JMenuItem(tab.previousAction));
-		menu.add(new JMenuItem(tab.nextAction));
-		menu.add(new JMenuItem(tab.refreshAction));
+//		menu.add(new JMenuItem(frame.previousAction));
+//		menu.add(new JMenuItem(frame.nextAction));
+//		menu.add(new JMenuItem(frame.refreshAction));
 		menu.addSeparator();
-		menu.add(new JCheckBoxMenuItem(tab.toggleMenuAction));
+//		menu.add(new JCheckBoxMenuItem(frame.toggleMenuAction));
 		menu.addSeparator();
 		menu.add(createLookAndFeeldMenu());
 		return menu;

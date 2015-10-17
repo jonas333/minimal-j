@@ -15,19 +15,30 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.minimalj.application.Application;
+import org.minimalj.backend.Backend;
 import org.minimalj.frontend.impl.swing.component.HideableTabbedPane;
 import org.minimalj.frontend.page.Page;
+import org.minimalj.security.LoginAction;
+import org.minimalj.security.LogoutTransaction;
+import org.minimalj.security.Subject;
 
 public class SwingFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private static SwingFrame swingFrameInConstruction = null;
 	
+	private SwingMenuBar menuBar;
 	private HideableTabbedPane tabbedPane;
-	final Action closeWindowAction, exitAction, newWindowAction, newTabAction;
+	final Action loginAction, logoutAction, closeWindowAction, exitAction, newWindowAction, newTabAction, closeTabAction;
+	
+	private Subject subject;
 	
 	public SwingFrame() {
 		swingFrameInConstruction = this;
+		
+		loginAction = new SwingLoginAction();
+		logoutAction = new SwingLogoutAction();
+		updateLoginAction();
 		
 		updateWindowTitle();
 		
@@ -35,6 +46,7 @@ public class SwingFrame extends JFrame {
 		exitAction = new ExitAction();
 		newWindowAction = new NewWindowAction();
 		newTabAction = new NewTabAction();
+		closeTabAction = new CloseTabAction();
 		
 		setDefaultSize();
 		setLocationRelativeTo(null);
@@ -70,6 +82,8 @@ public class SwingFrame extends JFrame {
 
 	protected void createContent() {
 		getContentPane().setLayout(new BorderLayout());
+		menuBar = new SwingMenuBar(this);
+		getContentPane().add(menuBar, BorderLayout.NORTH);
 		getContentPane().add(createTabbedPane(), BorderLayout.CENTER);
 	}
 
@@ -171,9 +185,9 @@ public class SwingFrame extends JFrame {
 	
 	protected void updateWindowTitle() {
 		String title = Application.getApplication().getName();
-//		if (subject != null) {
-//			title = title + " - " + subject.getName();
-//		}
+		if (subject != null) {
+			title = title + " - " + subject.getName();
+		}
 		setTitle(title);
 	}
 	
@@ -186,6 +200,39 @@ public class SwingFrame extends JFrame {
 				throw new RuntimeException("Page null");
 			}
 			tabbedPane.setTitleAt(index, page.getTitle());
+		}
+	}
+	
+	private void updateLoginAction() {
+		loginAction.setEnabled(subject == null);
+		logoutAction.setEnabled(subject != null);
+	}
+	
+	private class SwingLoginAction extends SwingResourceAction {
+		private static final long serialVersionUID = 1L;
+
+		public SwingLoginAction() {
+			super("LoginAction");
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			new LoginAction().action();
+		}
+	}
+	
+	private class SwingLogoutAction extends SwingResourceAction {
+		private static final long serialVersionUID = 1L;
+
+		public SwingLogoutAction() {
+			super("LogoutAction");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Backend.getInstance().execute(new LogoutTransaction());
+			getVisibleTab().setSubject(null);
+
 		}
 	}
 	
@@ -222,6 +269,15 @@ public class SwingFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			addTab();
+		}
+	}
+	
+	private class CloseTabAction extends SwingResourceAction {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			closeTab();
 		}
 	}
 

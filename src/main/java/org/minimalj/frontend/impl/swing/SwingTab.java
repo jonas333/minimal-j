@@ -56,16 +56,14 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 	
 	final SwingFrame frame;
 	final Action previousAction, nextAction, refreshAction;
-	final Action closeTabAction;
 	final Action toggleMenuAction;
 	final Action loginAction, logoutAction;
 	
 	private final SwingToolBar toolBar;
-	private final SwingMenuBar menuBar;
 	private final JSplitPane splitPane;
 	private final SwingDecoration decoratedMenuPane;
-	private final JScrollPane contentScrollPane;
-	private final JPanel verticalPanel;
+	private final JScrollPane pageScrollPane;
+	private final JPanel pagePanel;
 	private final JScrollPane menuScrollPane;
 	
 	private final History<List<Page>> history;
@@ -88,40 +86,32 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 		nextAction = new NextPageAction();
 		refreshAction = new RefreshAction();
 
-		closeTabAction = new CloseTabAction();
-		
 		toggleMenuAction = new ToggleMenuAction();
 		
 		loginAction = new SwingLoginAction();
 		logoutAction = new SwingLogoutAction();
 		updateLoginAction();
-		
-		JPanel outerPanel = new JPanel(new BorderLayout());
-		
-		menuBar = new SwingMenuBar(this);
-		outerPanel.add(menuBar, BorderLayout.NORTH);
-		setContent(outerPanel);
 
-		JPanel panel = new JPanel(new BorderLayout());
-		outerPanel.add(panel, BorderLayout.CENTER);
-
+		JPanel content = new JPanel(new BorderLayout());
+		setContent(content);
+		
 		toolBar = new SwingToolBar(this);
-		panel.add(toolBar, BorderLayout.NORTH);
+		content.add(toolBar, BorderLayout.NORTH);
 
 		splitPane = new JSplitPane();
 		splitPane.setBorder(BorderFactory.createEmptyBorder());
-		panel.add(splitPane, BorderLayout.CENTER);
+		content.add(splitPane, BorderLayout.CENTER);
 
-		verticalPanel = new JPanel(new VerticalLayoutManager());
-		contentScrollPane = new JScrollPane(verticalPanel);
-		contentScrollPane.getVerticalScrollBar().setUnitIncrement(20);
-		contentScrollPane.setBorder(BorderFactory.createEmptyBorder());
-		splitPane.setRightComponent(contentScrollPane);
+		pagePanel = new JPanel(new VerticalLayoutManager());
+		pageScrollPane = new JScrollPane(pagePanel);
+		pageScrollPane.getVerticalScrollBar().setUnitIncrement(20);
+		pageScrollPane.setBorder(BorderFactory.createEmptyBorder());
+		splitPane.setRightComponent(pageScrollPane);
 		
-		contentScrollPane.addComponentListener(new ComponentAdapter() {
+		pageScrollPane.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				verticalPanel.revalidate();
+				pagePanel.revalidate();
 			}
 		});
 		
@@ -207,15 +197,6 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 		}
 	}
 	
-	private class CloseTabAction extends SwingResourceAction {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			frame.closeTab();
-		}
-	}
-	
 	private class ToggleMenuAction extends SwingResourceAction {
 		private static final long serialVersionUID = 1L;
 
@@ -246,7 +227,7 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 		@Override
 		public void onHistoryChanged() {
 			visiblePageAndDetailsList.clear();
-			verticalPanel.removeAll();
+			pagePanel.removeAll();
 			
 			for (Page page : history.getPresent()) {
 				addPageOrDetail(page);
@@ -303,7 +284,7 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 			int width = parent.getWidth();
 			int widthWithoutIns = width - x;
 //			int moreThanMin = parent.getHeight() - minSum;
-			int moreThanMin = contentScrollPane.getHeight() - minSum;
+			int moreThanMin = pageScrollPane.getHeight() - minSum;
 			if (moreThanMin < 0) {
 				verticallyGrowingComponents.clear();
 			}
@@ -357,7 +338,7 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 	public void showDetail(Page mainPage, Page detail) {
 		int index = visiblePageAndDetailsList.indexOf(detail);
 		if (index > -1) {
-			SwingDecoration decoration = (SwingDecoration) verticalPanel.getComponents()[index];
+			SwingDecoration decoration = (SwingDecoration) pagePanel.getComponents()[index];
 			decoration.setTitle(detail.getTitle());
 			decoration.setContentVisible();
 			return;
@@ -393,9 +374,9 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 		}
 		content.putClientProperty("page", page);
 
-		verticalPanel.add(new SwingDecoration(page.getTitle(), content, SwingDecoration.SHOW_MINIMIZE, closeListener));
-		verticalPanel.revalidate();
-		verticalPanel.repaint();
+		pagePanel.add(new SwingDecoration(page.getTitle(), content, SwingDecoration.SHOW_MINIMIZE, closeListener));
+		pagePanel.revalidate();
+		pagePanel.repaint();
 	}
 
 	private void removeDetailsOf(Page page) {
@@ -406,10 +387,10 @@ public class SwingTab extends EditablePanel implements PageBrowser {
 	private void removeDetails(int index) {
 		for (int index2 = visiblePageAndDetailsList.size() - 1; index2 >= index; index2--) {
 			visiblePageAndDetailsList.remove(index2);
-			verticalPanel.remove(verticalPanel.getComponentCount()-1);
+			pagePanel.remove(pagePanel.getComponentCount()-1);
 		}
-		verticalPanel.revalidate();
-		verticalPanel.repaint();
+		pagePanel.revalidate();
+		pagePanel.repaint();
 	}
 
 	@Override
