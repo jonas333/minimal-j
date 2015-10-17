@@ -134,7 +134,7 @@ public class SwingFrame extends JFrame {
 			return swingFrameInConstruction;
 		}
 		for (Window w : Window.getWindows()) {
-			if (w.isActive()) {
+			if (w.isActive() && w instanceof SwingFrame) {
 				return (SwingFrame) w;
 			}
 		}

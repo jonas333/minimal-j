@@ -25,6 +25,7 @@ import javax.swing.FocusManager;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,12 +35,16 @@ import javax.swing.text.JTextComponent;
 import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.action.Action.ActionChangeListener;
+import org.minimalj.frontend.impl.swing.FrameManager;
 import org.minimalj.frontend.impl.swing.SwingFrame;
 import org.minimalj.frontend.impl.swing.SwingTab;
 import org.minimalj.frontend.impl.swing.component.SwingHtmlContent;
 import org.minimalj.frontend.page.IDialog;
+import org.minimalj.frontend.page.Page;
+import org.minimalj.frontend.page.PageBrowser;
 import org.minimalj.model.Rendering;
 import org.minimalj.model.Rendering.RenderType;
+import org.minimalj.security.Subject;
 
 public class SwingFrontend extends Frontend {
 	private static final Logger logger = Logger.getLogger(SwingFrontend.class.getName());
@@ -199,7 +204,7 @@ public class SwingFrontend extends Frontend {
 		chooser.setMultiSelectionEnabled(false);
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setDialogTitle(title);
-		if (JFileChooser.APPROVE_OPTION == chooser.showDialog(getBrowser(), approveButtonText)) {
+		if (JFileChooser.APPROVE_OPTION == chooser.showDialog((Component) getBrowser(), approveButtonText)) {
 			return chooser.getSelectedFile();
 		} else {
 			return null;
@@ -329,11 +334,15 @@ public class SwingFrontend extends Frontend {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					pushContext();
+				if (SwingFrame.getActiveWindow() != null) {
+					try {
+						pushContext();
+						action.action();
+					} finally {
+						popContext();
+					}
+				} else {
 					action.action();
-				} finally {
-					popContext();
 				}
 			}
 		};
@@ -368,14 +377,84 @@ public class SwingFrontend extends Frontend {
 	}
 	
 	@Override
-	public SwingTab getBrowser() {
+	public PageBrowser getBrowser() {
 		if (hasContext()) {
 			return browserStack.peek();
 		} else {
-			return SwingFrame.getActiveWindow().getVisibleTab();
+			SwingFrame activeWindow = SwingFrame.getActiveWindow();
+			boolean atStartup = activeWindow == null;
+			if (atStartup) {
+				return getStartupPageBrowser();
+			} else {
+				return activeWindow.getVisibleTab();
+			}
 		}
 	}
 
+	
+	private static StartupPageBrowser startupPageBrowser;
+	
+	private static StartupPageBrowser getStartupPageBrowser() {
+		if (startupPageBrowser == null) {
+			startupPageBrowser = new StartupPageBrowser();
+		}
+		return startupPageBrowser;
+	}
+	
+	private static class StartupPageBrowser implements PageBrowser {
+
+		@Override
+		public void show(Page page) {
+			// no need to be implemented here
+		}
+
+		@Override
+		public IDialog showDialog(String title, IContent content, Action saveAction, Action closeAction, Action... actions) {
+			JComponent contentComponent = new SwingEditorPanel(content, actions);
+			SwingStartupDialog dialog = new SwingStartupDialog();
+			
+			dialog.setTitle(title);
+			dialog.setResizable(true);
+			
+			dialog.getContentPane().setLayout(new BorderLayout());
+			dialog.getContentPane().add(contentComponent, BorderLayout.CENTER);
+			dialog.pack();
+			dialog.setLocationRelativeTo(null);
+			dialog.setVisible(true);
+			return dialog;
+		}
+
+		@Override
+		public <T> IDialog showSearchDialog(Search<T> index, Object[] keys, TableActionListener<T> listener) {
+			// no need to be implemented here
+			return null;
+		}
+
+		@Override
+		public void showMessage(String text) {
+			// not implemented
+		}
+
+		@Override
+		public void showError(String text) {
+			// not implemented
+		}
+		
+		@Override
+		public void setSubject(Subject subject) {
+			FrameManager.getInstance().openNavigationFrame();
+		}
+	}		
+
+	private static class SwingStartupDialog extends JDialog implements IDialog {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void closeDialog() {
+			super.setVisible(false);
+		}
+	}
+	
 	@Override
 	public <INPUT, RESULT> RESULT executeSync(Function<INPUT, RESULT> function, INPUT input) {
 		if (!hasContext()) {
@@ -387,7 +466,7 @@ public class SwingFrontend extends Frontend {
 		SecondaryLoop loop = eq.createSecondaryLoop();
 
 		ExecuteSyncThread<INPUT, RESULT> thread = new ExecuteSyncThread<>(loop, function, input);
-		SwingTab pageBrowser = getBrowser();
+		SwingTab pageBrowser = (SwingTab) getBrowser();
 		try {
 			browserStack.push(null);
 			pageBrowser.lock();
