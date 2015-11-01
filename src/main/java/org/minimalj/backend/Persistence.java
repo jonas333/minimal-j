@@ -15,9 +15,19 @@ public interface Persistence {
 
 	public <T> List<T> read(Class<T> clazz, Criteria criteria, int maxResults);
 
-	public <T> Object insert(T object);
+	public static enum Return { VOID, ID, COMPLETE }
 
-	public <T> T update(T object);
+	public default <T> T insert(T object) {
+		return insert(object, Return.ID);
+	}
+	
+	public <T> T insert(T object, Return r);
+
+	public default <T> T update(T object) {
+		return update(object, Return.COMPLETE);
+	}
+
+	public <T> T update(T object, Return r);
 
 	public <T> void delete(Class<T> clazz, Object id);
 	

@@ -6,6 +6,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.minimalj.backend.Persistence.Return;
 import org.minimalj.backend.sql.EmptyObjects;
 import org.minimalj.backend.sql.SqlPersistence;
 
@@ -130,13 +131,11 @@ public class SqlCrudTest {
 	@Test
 	public void testByteArray() throws Exception {
 		M m = new M();
-		Object id = persistence.insert(m);
+		m = persistence.insert(m, Return.COMPLETE);
 
-		m = persistence.read(M.class, id);
 		m.bytes = new byte[]{1,2,3};
-		persistence.update(m);
+		m = persistence.update(m, Return.COMPLETE);
 
-		m = persistence.read(M.class, id);
 		Assert.assertNotNull("Byte array should be available", m.bytes);
 		Assert.assertEquals("Content of byte array should be stored", 3, m.bytes.length);
 		

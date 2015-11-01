@@ -303,21 +303,39 @@ public class SqlPersistence implements Persistence {
 	}
 
 	@Override
-	public <T> Object insert(T object) {
+	public <T> T insert(T object, Return r) {
 		if (object == null) throw new NullPointerException();
 		@SuppressWarnings("unchecked")
 		Table<T> table = getTable((Class<T>) object.getClass());
-		return table.insert(object);
+		Object newId = table.insert(object);
+		switch (r) {
+		case COMPLETE:
+			return table.read(newId);
+		case ID:
+			T result = CloneHelper.newInstance(table.getClazz());
+			IdUtils.setId(result, newId);
+			return result;
+		default:
+			return null;
+		}
 	}
 
 	@Override
-	public <T> T update(T object) {
+	public <T> T update(T object, Return r) {
 		if (object == null) throw new NullPointerException();
 		@SuppressWarnings("unchecked")
 		Table<T> table = getTable((Class<T>) object.getClass());
 		table.update(object);
-		// re read result
-		return table.read(IdUtils.getId(object));
+		switch (r) {
+		case COMPLETE:
+			return table.read(IdUtils.getId(object));
+		case ID:
+			T result = CloneHelper.newInstance(table.getClazz());
+			IdUtils.setId(result, IdUtils.getId(object));
+			return result;
+		default:
+			return null;
+		}
 	}
 
 	public <T> void delete(T object) {

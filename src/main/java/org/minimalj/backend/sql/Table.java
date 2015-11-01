@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 
 import org.minimalj.model.Code;
 import org.minimalj.model.Keys;
-import org.minimalj.model.ViewUtil;
 import org.minimalj.model.annotation.Searched;
 import org.minimalj.model.properties.FlatProperties;
 import org.minimalj.model.properties.PropertyInterface;
@@ -22,8 +21,6 @@ import org.minimalj.transaction.criteria.Criteria.AndCriteria;
 import org.minimalj.transaction.criteria.Criteria.OrCriteria;
 import org.minimalj.transaction.criteria.FieldCriteria;
 import org.minimalj.transaction.criteria.SearchCriteria;
-import org.minimalj.util.Codes;
-import org.minimalj.util.FieldUtils;
 import org.minimalj.util.GenericUtils;
 import org.minimalj.util.IdUtils;
 import org.minimalj.util.LoggingRuntimeException;
@@ -208,10 +205,8 @@ public class Table<T> extends AbstractTable<T> {
 			PropertyInterface propertyInterface = Keys.getProperty(fieldCriteria.getKey());
 			Object value = fieldCriteria.getValue();
 			String term = whereStatement(propertyInterface.getPath(), fieldCriteria.getOperator());
-			if (ViewUtil.isReference(propertyInterface)) {
-				if (!Codes.isCode(propertyInterface.getClazz()) || value == null || FieldUtils.isAllowedCodeId(value.getClass())) {
-					value = IdUtils.getId(value);
-				}
+			if (value != null && IdUtils.hasId(value.getClass())) {
+				value = IdUtils.getId(value);
 			}
 			result.add(term);
 			result.add(value);

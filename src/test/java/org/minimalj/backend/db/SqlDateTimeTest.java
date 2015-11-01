@@ -8,6 +8,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.minimalj.backend.Persistence.Return;
 import org.minimalj.backend.sql.SqlPersistence;
 
 public class SqlDateTimeTest {
@@ -30,11 +31,7 @@ public class SqlDateTimeTest {
 		d.localTime = LocalTime.of(12, 34, 56);
 		d.localDateTime = LocalDateTime.of(2001, 2, 3, 10, 20, 30);
 		
-		Object id = persistence.insert(d);
-
-		//
-		
-		D d2 = persistence.read(D.class, id);
+		D d2 = persistence.insert(d, Return.COMPLETE);
 		Assert.assertEquals(d.localDate, d2.localDate);
 		Assert.assertEquals(d.localTime, d2.localTime);
 		Assert.assertEquals(d.localDateTime, d2.localDateTime);
