@@ -27,6 +27,7 @@ import org.minimalj.model.properties.PropertyInterface;
 import org.minimalj.transaction.criteria.FieldOperator;
 import org.minimalj.util.EqualsHelper;
 import org.minimalj.util.FieldUtils;
+import org.minimalj.util.GenericUtils;
 import org.minimalj.util.IdUtils;
 import org.minimalj.util.LoggingRuntimeException;
 import org.minimalj.util.StringUtils;
@@ -48,6 +49,8 @@ public abstract class AbstractTable<T> {
 	protected final LinkedHashMap<String, PropertyInterface> columns;
 	protected final LinkedHashMap<String, PropertyInterface> lists;
 	
+	protected final Map<String, AbstractTable<?>> subTables;
+
 	protected final String name;
 
 	protected final PropertyInterface idProperty;
@@ -69,7 +72,8 @@ public abstract class AbstractTable<T> {
 		this.idProperty = idProperty;
 		this.columns = sqlPersistence.findColumns(clazz);
 		this.lists = findLists(clazz);
-		
+		this.subTables = findSubTables();
+
 		this.selectByIdQuery = selectByIdQuery();
 		this.insertQuery = insertQuery();
 		this.clearQuery = clearQuery();
@@ -112,6 +116,24 @@ public abstract class AbstractTable<T> {
 		return properties; 
 	}
 	
+	private Map<String, AbstractTable<?>> findSubTables() {
+		Map<String, AbstractTable<?>> subTables = new HashMap<String, AbstractTable<?>>();
+		Map<String, PropertyInterface> properties = getLists();
+		for (PropertyInterface property : properties.values()) {
+			Class<?> clazz = GenericUtils.getGenericClass(property.getType());
+			subTables.put(property.getName(), createSubTable(property, clazz));
+		}
+		return subTables;
+	}
+
+	protected AbstractTable createSubTable(PropertyInterface property, Class<?> clazz) {
+		return new SubTable(sqlPersistence, buildSubTableName(property), clazz, idProperty);
+	}
+
+	protected String buildSubTableName(PropertyInterface property) {
+		return getTableName() + "__" + property.getName();
+	}
+	
 	protected LinkedHashMap<String, PropertyInterface> getColumns() {
 		return columns;
 	}
@@ -150,6 +172,10 @@ public abstract class AbstractTable<T> {
 		syntax.addCreateStatementEnd(s);
 		
 		execute(s.toString());
+		
+		for (AbstractTable<?> subTable : subTables.values()) {
+			subTable.createTable(syntax);
+		}
 	}
 	
 	protected abstract void addSpecialColumns(SqlSyntax syntax, StringBuilder s);
@@ -174,6 +200,10 @@ public abstract class AbstractTable<T> {
 			String s = syntax.createIndex(getTableName(), index, this instanceof HistorizedTable);
 			execute(s.toString());
 		}
+		
+		for (AbstractTable<?> subTable : subTables.values()) {
+			subTable.createIndexes(syntax);
+		}
 	}
 	
 	protected void createConstraints(SqlSyntax syntax) {
@@ -189,6 +219,10 @@ public abstract class AbstractTable<T> {
 					execute(s.toString());
 				}
 			}
+		}
+		
+		for (AbstractTable<?> subTable : subTables.values()) {
+			subTable.createConstraints(syntax);
 		}
 	}
 	

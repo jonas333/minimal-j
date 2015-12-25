@@ -3,7 +3,6 @@ package org.minimalj.example.library.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import org.minimalj.model.Keys;

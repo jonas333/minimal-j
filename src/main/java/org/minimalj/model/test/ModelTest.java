@@ -25,6 +25,7 @@ import org.minimalj.model.properties.PropertyInterface;
 import org.minimalj.util.Codes;
 import org.minimalj.util.FieldUtils;
 import org.minimalj.util.GenericUtils;
+import org.minimalj.util.IdUtils;
 import org.minimalj.util.StringUtils;
 import org.minimalj.util.resources.Resources;
 
@@ -195,10 +196,16 @@ public class ModelTest {
 					testSize(field);
 				}
 			} else if (List.class.equals(fieldType)) {
-				if (!isMain(field.getDeclaringClass())) {
+				Class<?> generic = GenericUtils.getGenericClass(field);
+				if (generic == null) {
 					String messagePrefix = field.getName() + " of " + field.getDeclaringClass().getName();
-					problems.add(messagePrefix + ": not allowed. Only main model class or inline fields in these classes may contain lists");
-				}
+					problems.add(messagePrefix + ": missing type. All lists must specifiy containing class");
+				} else if (IdUtils.hasId(generic)) {
+					if (!ViewUtil.isView(field)) {
+						String messagePrefix = field.getName() + " of " + field.getDeclaringClass().getName();
+						problems.add(messagePrefix + ": not allowed. Use View or annotate field with @View");
+					}
+				} // else : containing. no problem
 			}
 			
 		}

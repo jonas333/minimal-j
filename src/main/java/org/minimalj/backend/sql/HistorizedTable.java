@@ -68,7 +68,7 @@ public class HistorizedTable<T> extends Table<T> {
 	}
 	
 	@Override
-	AbstractTable createSubTable(PropertyInterface property, Class<?> clazz) {
+	protected AbstractTable createSubTable(PropertyInterface property, Class clazz) {
 		return new HistorizedSubTable(sqlPersistence, buildSubTableName(property), clazz, idProperty);
 	}
 	

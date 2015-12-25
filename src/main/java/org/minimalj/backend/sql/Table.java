@@ -24,7 +24,6 @@ import org.minimalj.transaction.criteria.FieldCriteria;
 import org.minimalj.transaction.criteria.SearchCriteria;
 import org.minimalj.util.Codes;
 import org.minimalj.util.FieldUtils;
-import org.minimalj.util.GenericUtils;
 import org.minimalj.util.IdUtils;
 import org.minimalj.util.LoggingRuntimeException;
 
@@ -35,41 +34,14 @@ public class Table<T> extends AbstractTable<T> {
 	protected final String selectAllQuery;
 	protected final String updateQuery;
 	protected final String deleteQuery;
-	protected final Map<String, AbstractTable<?>> subTables;
 	
 	public Table(SqlPersistence sqlPersistence, Class<T> clazz) {
 		super(sqlPersistence, null, clazz, FlatProperties.getProperty(clazz, "id", true));
-		
-		this.subTables = findSubTables();
 		
 		this.selectByIdQuery = selectByIdQuery();
 		this.selectAllQuery = selectAllQuery();
 		this.updateQuery = updateQuery();
 		this.deleteQuery = deleteQuery();
-	}
-	
-	@Override
-	public void createTable(SqlSyntax syntax) {
-		super.createTable(syntax);
-		for (AbstractTable<?> subTable : subTables.values()) {
-			subTable.createTable(syntax);
-		}
-	}
-
-	@Override
-	public void createIndexes(SqlSyntax syntax) {
-		super.createIndexes(syntax);
-		for (AbstractTable<?> subTable : subTables.values()) {
-			subTable.createIndexes(syntax);
-		}
-	}
-
-	@Override
-	public void createConstraints(SqlSyntax syntax) {
-		super.createConstraints(syntax);
-		for (AbstractTable<?> subTable : subTables.values()) {
-			subTable.createConstraints(syntax);
-		}
 	}
 	
 	public Object insert(T object) {
@@ -116,24 +88,6 @@ public class Table<T> extends AbstractTable<T> {
 		}
 	}
 
-	private Map<String, AbstractTable<?>> findSubTables() {
-		Map<String, AbstractTable<?>> subTables = new HashMap<String, AbstractTable<?>>();
-		Map<String, PropertyInterface> properties = getLists();
-		for (PropertyInterface property : properties.values()) {
-			Class<?> clazz = GenericUtils.getGenericClass(property.getType());
-			subTables.put(property.getName(), createSubTable(property, clazz));
-		}
-		return subTables;
-	}
-
-	AbstractTable createSubTable(PropertyInterface property, Class<?> clazz) {
-		return new SubTable(sqlPersistence, buildSubTableName(property), clazz, idProperty);
-	}
-
-	protected String buildSubTableName(PropertyInterface property) {
-		return getTableName() + "__" + property.getName();
-	}
-	
 	public void update(T object) {
 		Object id = IdUtils.getId(object);
 		update(id, object);

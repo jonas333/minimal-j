@@ -58,4 +58,9 @@ public class By {
 		}
 		return c;
 	}
+	
+	public static Criteria list(Object parent, Object parentFieldKey) {
+		// return new ParentCriteria(parent, parentFieldKey);
+		return null;
+	}
 }

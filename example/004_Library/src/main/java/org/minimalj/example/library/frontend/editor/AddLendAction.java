@@ -3,9 +3,11 @@ package org.minimalj.example.library.frontend.editor;
 import org.minimalj.backend.Backend;
 import org.minimalj.example.library.frontend.form.LendForm;
 import org.minimalj.example.library.model.Customer;
+import org.minimalj.example.library.model.CustomerView;
 import org.minimalj.example.library.model.Lend;
 import org.minimalj.frontend.editor.Editor.NewObjectEditor;
 import org.minimalj.frontend.form.Form;
+import org.minimalj.model.ViewUtil;
 
 public class AddLendAction extends NewObjectEditor<Lend> {
 
@@ -27,7 +29,7 @@ public class AddLendAction extends NewObjectEditor<Lend> {
 	@Override
 	protected Lend createObject() {
 		Lend lend = new Lend();
-		lend.customer = startWithCustomer;
+		lend.customer = ViewUtil.view(startWithCustomer, new CustomerView());
 		return lend;
 	}
 

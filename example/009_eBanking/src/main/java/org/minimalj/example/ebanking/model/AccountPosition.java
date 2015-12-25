@@ -14,9 +14,7 @@ public class AccountPosition {
 
 	public static final AccountPosition $ = Keys.of(AccountPosition.class);
 	
-	public Object id;
-	
-	@Reference @NotEmpty
+	@NotEmpty @Reference
 	public Account account;
 	
 	@NotEmpty @Decimal(2)
