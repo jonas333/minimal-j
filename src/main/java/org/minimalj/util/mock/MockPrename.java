@@ -1,21 +1,59 @@
 package org.minimalj.util.mock;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Logger;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
+
+import org.minimalj.util.LoggingRuntimeException;
 
 // http://www.heise.de/ct/ftp/07/17/182/
 public class MockPrename {
 	public static final Logger LOG = Logger.getLogger(MockPrename.class.getName());
 	
-	public static class NameWithFrequency {
+	public static class NameWithFrequency implements Serializable {
+		private static final long serialVersionUID = 4174820307622957597L;
+		
 		public int frequency;
 		public String name;
 		public String callName;
+		public Boolean male;
 		
+		public boolean male() {
+			return male != null ? male : true;
+		}
+		
+		public static void write(Map<String, List<NameWithFrequency>> namesByLocale, String filename) throws IOException {
+			try (FileOutputStream fos = new FileOutputStream(filename)) {
+				try (DeflaterOutputStream dos = new DeflaterOutputStream(fos)) {
+					try (ObjectOutput oos = new ObjectOutputStream(dos)) {
+						oos.writeObject(namesByLocale);
+					}
+				}
+			}
+		}
+
+		public static Map<String, List<NameWithFrequency>> read(InputStream inputStream) {
+			try (InflaterInputStream iis = new InflaterInputStream(inputStream)) {
+				try (ObjectInputStream ois = new ObjectInputStream(iis)) {
+					return (Map<String, List<NameWithFrequency>>) ois.readObject();
+				}
+			} catch (Exception x) {
+				throw new LoggingRuntimeException(x, LOG, "Read of demo names failed");
+			}
+		}
+
 		// eclipse
 		
 		@Override
@@ -25,20 +63,19 @@ public class MockPrename {
 		
 	}
 	
-	private static List<NameWithFrequency> males = new ArrayList<NameWithFrequency>(2000);
-	private static List<NameWithFrequency> femals = new ArrayList<NameWithFrequency>(2000);
+	private static Map<String, List<NameWithFrequency>> namesByLocale = new HashMap<>();
 	
-	public static String getFirstName(boolean male) {
-		return getName(male).name;
+	public static String getFirstName() {
+		return getName().name;
 	}
 	
 	public static NameWithFrequency getName() {
-		return getName(Math.random() < .5);
-	}
-	
-	public static NameWithFrequency getName(boolean male) {
-		if (males.isEmpty()) readNames();
-		return choose(male ? males : femals);
+		Locale locale = Locale.getDefault();
+		String country = locale.getCountry();
+		if (!namesByLocale.containsKey(country)) {
+			country = "CH";
+		}
+		return choose(namesByLocale.get(country));
 	}
 	
 	private static NameWithFrequency choose(List<NameWithFrequency> list) {
@@ -48,45 +85,5 @@ public class MockPrename {
 		}
 		return null;
  	}
-	
-	private static synchronized void readNames() {
-		try {
-			if (!males.isEmpty()) return; // other thread already read the names
-			InputStream inputStream = MockPrename.class.getResourceAsStream("/org/minimalj/util/mock/prenames.txt");
-			if (inputStream != null) {
-				readNames(inputStream);
-			} else {
-				LOG.warning("vornamen.txt not available. Maybe test/resources folder is not included in build path");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private static void readNames(InputStream fis) throws Exception {
-		Scanner scanner = new Scanner(fis, "ISO-8859-1");
-		scanner.useDelimiter("\n");
-		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			if (line.charAt(0) == '#') continue;
-			char frequency = line.charAt(44); // 44 -> Schweiz
-			if (Character.isWhitespace(frequency)) continue;
-			String type = line.substring(0, 3);
-			NameWithFrequency nameWithFrequency = new NameWithFrequency();
-			String name = line.substring(3, 29).trim();
-			int pos = name.indexOf(' ');
-			if (pos < 0) {
-				nameWithFrequency.name = name;
-			} else {
-				nameWithFrequency.name = name.substring(pos + 1);
-				nameWithFrequency.callName = name.substring(0, pos);
-			}
-			if (Character.isDigit(frequency)) nameWithFrequency.frequency = frequency - '0';
-			else nameWithFrequency.frequency = frequency - 'A' + 10;
-			if (!type.contains("M")) femals.add(nameWithFrequency);
-			if (!type.contains("F")) males.add(nameWithFrequency);
-		}
-		scanner.close();
-	}
 	
 }
