@@ -55,14 +55,16 @@ public abstract class Authorization {
 	protected abstract List<String> retrieveRoles(UserPassword login);
 
 	public Subject login(UserPassword login) {
-		List<String> roles = retrieveRoles(login);
 		Subject subject = new Subject();
+		List<String> roles = retrieveRoles(login);
 		if (roles != null) {
 			subject.setName(login.user);
 			subject.getRoles().addAll(roles);
 			UUID token = UUID.randomUUID();
 			subject.setToken(token);
 			userByToken.put(token, subject);
+		} else {
+			// subject is invalid because it has no token
 		}
 		return subject;
 	}
@@ -83,12 +85,17 @@ public abstract class Authorization {
 		return userByToken.get(securityToken.get());
 	}
 	
-	public static class LoginFailedException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-		
-		public LoginFailedException() {
-			super("Login failed");
-		}
-	}
+//	public static class LoginFailedException extends RuntimeException {
+//		private static final long serialVersionUID = 1L;
+//		
+//		public LoginFailedException() {
+//			super("Login failed");
+//		}
+//		
+//		@Override
+//		public String getLocalizedMessage() {
+//			return Resources.getString("LoginFailed");
+//		}
+//	}
 	
 }

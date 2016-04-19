@@ -68,9 +68,9 @@ public class FrameManager {
 				navigationFrames.remove(frame);
 			}
 		});
-		if (subject != null && !subject.isValid()) {
+		if (authorizationAvailable && !subject.isValid()) {
 			SwingFrame.activeFrameOverride = frame;
-			new LoginAction(subject) {
+			new LoginAction() {
 				@Override
 				public void cancel() {
 					frame.closeWindow();
