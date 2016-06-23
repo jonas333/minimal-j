@@ -48,6 +48,11 @@ public class SwingBackend extends Backend {
 		}
 	}
 	
+	@Override
+	public boolean isInTransaction() {
+		return delegate.isInTransaction();
+	}
+	
 	private class ExecuteSyncThread<T> extends Thread {
 		private final SecondaryLoop loop;
 		private final Transaction<T> transaction;

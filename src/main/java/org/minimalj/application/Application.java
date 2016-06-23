@@ -25,7 +25,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.minimalj.backend.Backend;
 import org.minimalj.backend.SocketBackendServer;
+import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.impl.swing.SwingApplication;
 import org.minimalj.frontend.page.EmptyPage;
@@ -52,6 +54,9 @@ import org.minimalj.util.resources.Resources;
 public abstract class Application {
 	private static InheritableThreadLocal<Application> current = new InheritableThreadLocal<>();
 	
+	private Frontend frontend;
+	private Backend backend;
+	
 	public Application() {
 		for (String resourceBundleName : getResourceBundleNames()) {
 			Resources.addResourceBundleName(resourceBundleName);
@@ -66,6 +71,37 @@ public abstract class Application {
 		current.set(application);
 	}
 	
+	public final Frontend getFrontend() {
+		if (frontend == null) {
+			throw new IllegalStateException("Frontend has to be initialized");
+		}
+		if (backend != null && backend.isInTransaction()) {
+			throw new IllegalStateException("Not allowed to access Frontend from within a transaction");
+		}
+		return frontend;
+	}
+
+	public final void setFrontend(Frontend frontend) {
+		if (this.frontend != null) {
+			throw new IllegalStateException("Frontend cannot be changed");
+		}
+		this.frontend = frontend;
+	}
+
+	public final Backend getBackend() {
+		if (backend == null) {
+			backend = Backend.create();
+		}
+		return backend;
+	}
+
+	public final void setBackend(Backend backend) {
+		if (this.backend != null) {
+			throw new IllegalStateException("Backend cannot be changed");
+		}
+		this.backend = backend;
+	}
+
 	/**
 	 * This is just a shortcut for creating the application from jvm arguments.
 	 * Most frontend or backend main classes use this method

@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.minimalj.backend.Backend;
+import org.minimalj.application.Application;
 import org.minimalj.model.Code;
 import org.minimalj.model.Keys;
 import org.minimalj.model.View;
@@ -471,8 +471,8 @@ public abstract class AbstractTable<T> {
 	
 	public void checkGrants(Grant.Privilege privilege, Class<?> clazz) {
 		Authorization authorization;
-		if (Backend.isTransaction()) {
-			authorization = Backend.getAuthorization();
+		if (Application.getInstance() != null && Application.getInstance().getBackend() != null) {
+			authorization = Application.getInstance().getBackend().getAuthorization();
 		} else {
 			authorization = sqlPersistence.getAuthorization();
 		}

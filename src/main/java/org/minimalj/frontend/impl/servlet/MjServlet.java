@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.minimalj.application.Application;
-import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.impl.json.JsonFrontend;
 import org.minimalj.frontend.impl.json.JsonHandler;
 import org.minimalj.util.StringUtils;
@@ -31,13 +30,13 @@ public class MjServlet extends HttpServlet {
 	
 	protected void initializeApplication() {
 		if (!applicationInitialized) {
-			Frontend.setInstance(new JsonFrontend());
 			String applicationName = getServletConfig().getInitParameter("Application");
 			if (StringUtils.isBlank(applicationName)) {
 				throw new IllegalArgumentException("Missing Application parameter");
 			}
 			copyPropertiesFromServletConfigToSystem();
 			Application application = Application.createApplication(applicationName);
+			application.setFrontend(new JsonFrontend());
 			Application.setInstance(application);
 			applicationInitialized = true;
 		}

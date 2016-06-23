@@ -16,8 +16,6 @@ public class LanternaApplication {
 
 	public void run() {
 		try {
-			Frontend.setInstance(new LanternaFrontend());
-
 			SwingTerminal terminal = new SwingTerminal();
 			Screen screen = new Screen(terminal);
 
@@ -33,6 +31,7 @@ public class LanternaApplication {
 
 	public static void main(final String[] args) throws Exception {
 		Application.initApplication(args);
+		Application.getInstance().setFrontend(new LanternaFrontend());
 
 		new LanternaApplication().run();
 	}

@@ -14,7 +14,7 @@ public class IsAuthorizationActive implements Transaction<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		return Backend.getAuthorization() != null;
+		return Backend.getInstance().getAuthorization() != null;
 	}
 
 }

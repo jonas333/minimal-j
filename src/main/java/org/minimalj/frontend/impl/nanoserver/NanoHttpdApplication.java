@@ -3,7 +3,6 @@ package org.minimalj.frontend.impl.nanoserver;
 import java.io.IOException;
 
 import org.minimalj.application.Application;
-import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.impl.json.JsonFrontend;
 import org.minimalj.util.StringUtils;
 
@@ -44,9 +43,9 @@ public class NanoHttpdApplication {
 	}
 	
 	public static void main(final String[] args) throws Exception {
-		Frontend.setInstance(new JsonFrontend());
 		Application.initApplication(args);
-		
+		Application.getInstance().setFrontend(new JsonFrontend());
+
 		NanoHTTPD daemon = null, secureDaemon = null;
         try {
         	daemon = start(!SECURE);

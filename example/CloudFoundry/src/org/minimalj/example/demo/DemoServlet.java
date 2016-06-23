@@ -17,7 +17,6 @@ import org.minimalj.example.library.MjExampleApplication;
 import org.minimalj.example.notes.NotesApplication;
 import org.minimalj.example.numbers.NumbersApplication;
 import org.minimalj.example.petclinic.PetClinicApplication;
-import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.impl.json.JsonFrontend;
 import org.minimalj.frontend.impl.servlet.MjServlet;
 
@@ -25,10 +24,8 @@ public class DemoServlet extends MjServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static boolean applicationInitialized;
-	private static JsonFrontend frontend = new JsonFrontend();
 	
 	private final Map<String, Application> applications = new HashMap<>();
-	private final Map<String, Backend> backends = new HashMap<>();
 	
 	@Override
 	protected void initializeApplication() {
@@ -41,7 +38,10 @@ public class DemoServlet extends MjServlet {
 			applications.put("library", new MjExampleApplication());
 			applications.put("petClinic", new PetClinicApplication());
 			
-			applications.keySet().forEach((applicationName) -> backends.put(applicationName, new Backend()));
+			JsonFrontend frontend = new JsonFrontend();
+			applications.values().forEach((application) -> application.setFrontend(frontend));
+
+			applications.values().forEach((application) -> new Backend());
 			
 			applicationInitialized = true;
 		}
@@ -56,8 +56,6 @@ public class DemoServlet extends MjServlet {
 		String uriWithoutfile = uri.substring(0, uri.lastIndexOf('/'));
 		String applicationName = uriWithoutfile.substring(uriWithoutfile.lastIndexOf('/') + 1);
 		
-		Frontend.setInstance(frontend);
-		Backend.setInstance(backends.get(applicationName));
 		Application.setInstance(applications.get(applicationName));
 
 		super.service(request, response);

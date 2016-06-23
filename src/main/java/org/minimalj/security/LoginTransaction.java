@@ -23,6 +23,6 @@ public class LoginTransaction implements Transaction<Subject> {
 	
 	@Override
 	public Subject execute() {
-		return Backend.getAuthorization().login(userPassword);
+		return Backend.getInstance().getAuthorization().login(userPassword);
 	}
 }

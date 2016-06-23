@@ -11,7 +11,7 @@ public class LogoutTransaction implements Transaction<Void> {
 
 	@Override
 	public Void execute() {
-		Backend.getAuthorization().logout();
+		Backend.getInstance().getAuthorization().logout();
 		return null;
 	}
 

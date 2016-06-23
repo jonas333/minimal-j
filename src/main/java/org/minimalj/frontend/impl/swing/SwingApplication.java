@@ -4,7 +4,6 @@ import javax.swing.SwingUtilities;
 
 import org.minimalj.application.Application;
 import org.minimalj.backend.Backend;
-import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.impl.swing.toolkit.SwingFrontend;
 
 public class SwingApplication implements Runnable {
@@ -20,8 +19,8 @@ public class SwingApplication implements Runnable {
 	@Override
 	public void run() {
 		FrameManager.setSystemLookAndFeel();
-		Frontend.setInstance(new SwingFrontend());
-		Backend.setInstance(new SwingBackend(Backend.getInstance()));
+		Application.getInstance().setFrontend(new SwingFrontend());
+		Application.getInstance().setBackend(new SwingBackend(Backend.create()));
 		
 		FrameManager.getInstance().openNavigationFrame(null);
 	}
