@@ -17,7 +17,7 @@ public class CalculationEditor2 extends Editor<CurrencyCalculation2, BigDecimal>
 	@Override
 	protected Form<CurrencyCalculation2> createForm() {
 		Form<CurrencyCalculation2> form = new Form<>(2);
-		form.line(CurrencyCalculation2.$.from, CurrencyCalculation2.$.to);
+		form.line(new CurrencyFormElement(CurrencyCalculation2.$.from), new CurrencyFormElement(CurrencyCalculation2.$.to));
 		form.line(CurrencyCalculation2.$.fromValue);
 
 		return form;
