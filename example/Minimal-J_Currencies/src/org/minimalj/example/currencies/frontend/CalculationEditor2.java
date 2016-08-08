@@ -30,7 +30,8 @@ public class CalculationEditor2 extends Editor<CurrencyCalculation2, BigDecimal>
 	}
 	
 	@Override
-	protected void finished(BigDecimal result) {
+	protected boolean closeWith(BigDecimal result) {
 		Frontend.showMessage("Wert " + result.toPlainString());
+		return false;
 	}
 }
