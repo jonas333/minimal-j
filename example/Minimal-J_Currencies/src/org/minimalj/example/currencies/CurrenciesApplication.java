@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.minimalj.application.Application;
+import org.minimalj.example.currencies.frontend.CalculationEditor;
+import org.minimalj.example.currencies.frontend.CalculationEditor2;
 import org.minimalj.example.currencies.frontend.CurrencyTablePage;
 import org.minimalj.example.currencies.frontend.ImportIsoCurrencyInformationAction;
 import org.minimalj.example.currencies.model.Currency;
@@ -24,6 +26,13 @@ public class CurrenciesApplication extends Application {
 		actions.add(new ImportIsoCurrencyInformationAction());
 		actions.add(new PageAction(new CurrencyTablePage()));
 		
+		actions.add(new CalculationEditor());
+		actions.add(new CalculationEditor2());
+		
 		return actions;
+	}
+
+	public static void main(String[] args) {
+		Application.main(args);
 	}
 }
