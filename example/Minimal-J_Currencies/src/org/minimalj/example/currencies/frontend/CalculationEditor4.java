@@ -29,7 +29,7 @@ public class CalculationEditor4 extends NewObjectEditor<CurrencyCalculation3> {
 	
 	@Override
 	protected boolean closeWith(CurrencyCalculation3 result) {
-		form.setObject(getObject());
+		form.setObject(result);
 		return false;
 	}
 }
