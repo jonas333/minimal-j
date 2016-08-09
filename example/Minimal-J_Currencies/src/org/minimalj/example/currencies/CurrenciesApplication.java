@@ -7,6 +7,7 @@ import org.minimalj.application.Application;
 import org.minimalj.example.currencies.frontend.CalculationEditor;
 import org.minimalj.example.currencies.frontend.CalculationEditor2;
 import org.minimalj.example.currencies.frontend.CalculationEditor3;
+import org.minimalj.example.currencies.frontend.CalculationEditor4;
 import org.minimalj.example.currencies.frontend.CurrencyTablePage;
 import org.minimalj.example.currencies.frontend.ImportIsoCurrencyInformationAction;
 import org.minimalj.example.currencies.model.Currency;
@@ -30,6 +31,7 @@ public class CurrenciesApplication extends Application {
 		actions.add(new CalculationEditor());
 		actions.add(new CalculationEditor2());
 		actions.add(new CalculationEditor3());
+		actions.add(new CalculationEditor4());
 		
 		return actions;
 	}
