@@ -365,10 +365,8 @@ public class SwingFrontend extends Frontend {
 	public static void runWithContext(Runnable r) {
 		try {
 			browserStack.push(SwingFrame.getActiveWindow().getVisibleTab());
-			Subject.setCurrent(SwingFrame.getActiveWindow().getSubject());
 			r.run();
 		} finally {
-			Subject.setCurrent(null);
 			browserStack.pop();
 		}
 	}
@@ -386,6 +384,11 @@ public class SwingFrontend extends Frontend {
 		} else {
 			return null;
 		}
+	}
+	
+	@Override
+	public Subject getSubject() {
+		return SwingFrame.getActiveWindow().getSubject();
 	}
 	
 }

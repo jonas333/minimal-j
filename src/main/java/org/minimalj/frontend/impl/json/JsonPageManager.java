@@ -44,7 +44,6 @@ public class JsonPageManager implements PageManager, LoginListener {
 	@Override
 	public void loginSucceded(Subject subject) {
 		this.subject = subject;
-		Subject.setCurrent(subject);
 		
 		componentById.clear();
 		navigation = createNavigation();
@@ -59,6 +58,10 @@ public class JsonPageManager implements PageManager, LoginListener {
 		}
 	};
 	
+	public Subject getSubject() {
+		return subject;
+	}
+	
 	public String handle(String inputString) {
 		JsonInput input = new JsonInput(inputString);
 		JsonOutput output = handle(input);
@@ -67,7 +70,6 @@ public class JsonPageManager implements PageManager, LoginListener {
 	
 	public JsonOutput handle(JsonInput input) {
 		JsonFrontend.setSession(this);
-		Subject.setCurrent(subject);
 		String locale = (String) input.getObject("locale");
 		if (locale != null) {
 			LocaleContext.setCurrent(Locale.forLanguageTag(locale));
@@ -157,7 +159,6 @@ public class JsonPageManager implements PageManager, LoginListener {
 			show(pageIds);
 		}
 		
-		Subject.setCurrent(null);
 		JsonFrontend.setSession(null);
 		return output;
 	}

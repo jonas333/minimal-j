@@ -3,7 +3,9 @@ package org.minimalj.frontend.impl.swing;
 import javax.swing.SwingUtilities;
 
 import org.minimalj.backend.Backend;
+import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.impl.swing.toolkit.SwingFrontend;
+import org.minimalj.security.Subject;
 import org.minimalj.transaction.Transaction;
 
 public class SwingBackend extends Backend {
@@ -14,9 +16,9 @@ public class SwingBackend extends Backend {
 	}
 
 	@Override
-	public <T> T doExecute(Transaction<T> transaction) {
+	public <T> T doExecute(Transaction<T> transaction, Subject transactionSubject) {
 		if (!SwingFrontend.hasContext() || !SwingUtilities.isEventDispatchThread()) {
-			return delegate.doExecute(transaction);
+			return delegate.doExecute(transaction, transactionSubject);
 		}
 		
 		SwingTab swingTab = (SwingTab) SwingFrontend.getInstance().getPageManager();
@@ -50,7 +52,7 @@ public class SwingBackend extends Backend {
 		@Override
 		public void run() {
 			try {
-				result = delegate.doExecute(transaction);
+				result = delegate.doExecute(transaction, Frontend.getInstance().getSubject());
 			} catch (Exception x) {
 				exception = x;
 			} finally {

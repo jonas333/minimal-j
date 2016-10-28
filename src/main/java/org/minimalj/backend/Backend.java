@@ -17,6 +17,7 @@ import org.minimalj.persistence.criteria.Criteria;
 import org.minimalj.persistence.sql.SqlPersistence;
 import org.minimalj.security.Authorization;
 import org.minimalj.security.IsAuthorizationActive;
+import org.minimalj.security.Subject;
 import org.minimalj.transaction.Transaction;
 import org.minimalj.util.LoggingRuntimeException;
 import org.minimalj.util.StringUtils;
@@ -74,6 +75,7 @@ public class Backend {
 	private Persistence persistence = null; 
 	
 	private InheritableThreadLocal<Transaction<?>> currentTransaction = new InheritableThreadLocal<>();
+	private InheritableThreadLocal<Subject> currentTransactionSubject = new InheritableThreadLocal<>();
 	
 	public static void setInstance(Backend instance) {
 		Objects.nonNull(instance);
@@ -146,12 +148,14 @@ public class Backend {
 		return getInstance().doExecute(transaction);
 	}
 	
-	public <T> T doExecute(Transaction<T> transaction) {
+	public <T> T doExecute(Transaction<T> transaction, Subject transactionSubject) {
 		if (!Authorization.isActive() || Authorization.getInstance().isAllowed(transaction)) {
 			try {
+				currentTransactionSubject.set(transactionSubject);
 				currentTransaction.set(transaction);
 				return transaction.execute();
 			} finally {
+				currentTransactionSubject.set(null);
 				currentTransaction.set(null);
 			}
 		} else {

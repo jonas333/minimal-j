@@ -42,12 +42,12 @@ public class Subject implements Serializable {
 		return false;
 	}
 
-	public static void setCurrent(Subject subject) {
-		Subject.subject.set(subject);
-	}
-	
-	public static Subject getCurrent() {
-		return subject.get();
-	}
+//	public static void setCurrent(Subject subject) {
+//		Subject.subject.set(subject);
+//	}
+//	
+//	public static Subject getCurrent() {
+//		return subject.get();
+//	}
 
 }

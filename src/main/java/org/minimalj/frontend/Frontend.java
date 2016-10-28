@@ -10,6 +10,7 @@ import org.minimalj.frontend.page.IDialog;
 import org.minimalj.frontend.page.Page;
 import org.minimalj.frontend.page.PageManager;
 import org.minimalj.model.Rendering;
+import org.minimalj.security.Subject;
 
 /**
  * To provide a new kind (Xy) of client you have to implement two things:
@@ -192,4 +193,8 @@ public abstract class Frontend {
 	public static void showError(String text) {
 		getInstance().getPageManager().showError(text);
 	}
+	
+	//
+	
+	public abstract Subject getSubject();
 }

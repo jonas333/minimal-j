@@ -27,11 +27,10 @@ public class SocketBackend extends Backend {
 	}
 	
 	@Override
-	public <T> T doExecute(Transaction<T> transaction) {
+	public <T> T doExecute(Transaction<T> transaction, Subject transactionSubject) {
 		try (Socket socket = new Socket(url, port)) {
 			try (ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
-				Subject subject = Subject.getCurrent();
-				oos.writeObject(subject != null ? subject.getToken() : null);
+				oos.writeObject(transactionSubject != null ? transactionSubject.getToken() : null);
 				
 				oos.writeObject(transaction);
 				if (transaction instanceof InputStreamTransaction) {

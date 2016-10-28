@@ -16,6 +16,7 @@ import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.page.PageManager;
 import org.minimalj.model.Rendering;
+import org.minimalj.security.Subject;
 import org.minimalj.util.LocaleContext;
 import org.minimalj.util.resources.Resources;
 
@@ -138,6 +139,12 @@ public class JsonFrontend extends Frontend {
 	
 	//
 	
+	@Override
+	public Subject getSubject() {
+		return ((JsonPageManager) getPageManager()).getSubject();
+	}
+	
+	//
 	
 	public static boolean useWebSocket() {
 		return useWebSocket;
