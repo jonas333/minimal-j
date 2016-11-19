@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.security.auth.callback.CallbackHandler;
+
 import org.minimalj.application.Configuration;
 import org.minimalj.backend.persistence.DeleteEntityTransaction;
 import org.minimalj.backend.persistence.InsertTransaction;
@@ -17,6 +19,7 @@ import org.minimalj.persistence.criteria.Criteria;
 import org.minimalj.persistence.sql.SqlPersistence;
 import org.minimalj.security.Authorization;
 import org.minimalj.security.IsAuthorizationActive;
+import org.minimalj.security.LoginAction.LoginListener;
 import org.minimalj.transaction.Transaction;
 import org.minimalj.util.LoggingRuntimeException;
 import org.minimalj.util.StringUtils;
@@ -157,6 +160,16 @@ public class Backend {
 		} else {
 			throw new IllegalStateException(transaction.getClass().getSimpleName() + " forbidden");
 		}
+	}
+	
+	public void login(LoginListener loginListener) {
+		// 1. login
+		// 2. Rückfrage über Handler
+		
+	}
+	
+	public void logout() {
+		
 	}
 	
 	private void init() {
