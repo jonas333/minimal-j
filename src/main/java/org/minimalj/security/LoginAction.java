@@ -3,9 +3,6 @@ package org.minimalj.security;
 import java.util.Collections;
 import java.util.List;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-
 import org.minimalj.application.Application;
 import org.minimalj.backend.Backend;
 import org.minimalj.frontend.Frontend;
@@ -82,8 +79,6 @@ public class LoginAction extends Editor<UserPassword, Subject> {
 	}
 
 	public static interface LoginListener {
-		
-		public void handle(Callback[] callback, CallbackResultListener listener);
 		
 		public void loginSucceded(Subject subject);
 
