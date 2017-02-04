@@ -27,6 +27,11 @@ public class ChainedProperty implements PropertyInterface {
 	}
 
 	@Override
+	public Class<?> getRootDeclaringClass() {
+		return property1.getDeclaringClass();
+	}
+	
+	@Override
 	public Object getValue(Object object) {
 		Object value1 = property1.getValue(object);
 		if (value1 != null) {

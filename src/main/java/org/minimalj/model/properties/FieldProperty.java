@@ -27,6 +27,11 @@ public class FieldProperty implements PropertyInterface {
 	}
 
 	@Override
+	public Class<?> getRootDeclaringClass() {
+		return getDeclaringClass();
+	}
+	
+	@Override
 	public Object getValue(Object object) {
 		try {
 			return field.get(object);

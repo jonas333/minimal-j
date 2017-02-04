@@ -205,6 +205,11 @@ public class Keys {
 		public Class<?> getDeclaringClass() {
 			return clazz;
 		}
+		
+		@Override
+		public Class<?> getRootDeclaringClass() {
+			return getDeclaringClass();
+		}
 
 		@Override
 		public Object getValue(Object object) {

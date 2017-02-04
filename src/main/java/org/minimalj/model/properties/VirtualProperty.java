@@ -19,6 +19,11 @@ public abstract class VirtualProperty implements PropertyInterface {
 	public Class<?> getDeclaringClass() {
 		return null;
 	}
+	
+	@Override
+	public Class<?> getRootDeclaringClass() {
+		return getDeclaringClass();
+	}
 
 	@Override
 	public String getPath() {

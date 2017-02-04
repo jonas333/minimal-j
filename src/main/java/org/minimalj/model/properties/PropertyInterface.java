@@ -18,6 +18,8 @@ public interface PropertyInterface {
 
 	public Class<?> getDeclaringClass();
 	
+	public Class<?> getRootDeclaringClass();
+	
 	public String getName();
 
 	public String getPath();

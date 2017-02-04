@@ -68,6 +68,7 @@ public class Form<T> {
 	@SuppressWarnings("rawtypes")
 	private final Map<PropertyInterface, Map<PropertyInterface, PropertyUpdater>> propertyUpdater = new HashMap<>();
 	
+	private Class<?> clazz; // see assertClass
 	private T object;
 
 	public Form() {
@@ -109,12 +110,23 @@ public class Form<T> {
 			if (property == null) throw new IllegalArgumentException(IComponent.class.getSimpleName() + " has no key");
 		} else {
 			property = Keys.getProperty(key);
-			// if ths happens for a getter-method there is the special line missing
+			// if this happens for a getter-method there is the special line missing
 			if (property == null) throw new IllegalArgumentException("" + key);
 			element = createElement(property);
 		}
-
+		assertClass(property.getRootDeclaringClass(), property.getName());
+		
 		return element;
+	}
+	
+	private void assertClass(Class<?> clazz, String name) {
+		if (this.clazz != null) {
+			if (this.clazz != clazz) {
+				throw new IllegalArgumentException("All elements of a form must edit same class: " + name);
+			}
+		} else {
+			this.clazz = clazz;
+		}
 	}
 	
 	@SuppressWarnings("rawtypes")
