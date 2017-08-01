@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -203,6 +204,39 @@ public class Form<T> {
 	public void addTitle(String text) {
 		IComponent label = Frontend.getInstance().createTitle(text);
 		formContent.add(label);
+	}
+	
+	public void item(String description, Object mainKey, Object... additionalKeys) {
+		List<Object> keys = new ArrayList<>();
+		keys.add(mainKey);
+		if (additionalKeys != null) {
+			keys.addAll(Arrays.asList(additionalKeys));
+		}
+		if (keys.size() > columns - 1) {
+			throw new IllegalArgumentException();
+		}
+		
+		IComponent label = Frontend.getInstance().createText(description);
+		formContent.add(null, label, columns - keys.size());
+
+		for (Object key : keys) {
+			FormElement<?> element = createElement(key);
+			formContent.add(null, element.getComponent(), 1);
+			registerNamedElement(element);
+			addDependencies(element);
+		}
+	}
+
+	public void item(Object key) {
+		FormElement<?> element = createElement(key);
+
+		String captionText = caption(element);
+		IComponent label = Frontend.getInstance().createText(captionText);
+		formContent.add(null, label, columns - 1);
+
+		formContent.add(null, element.getComponent(), 1);
+		registerNamedElement(element);
+		addDependencies(element);
 	}
 
 	//
