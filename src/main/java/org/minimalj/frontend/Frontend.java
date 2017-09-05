@@ -7,6 +7,7 @@ import org.minimalj.application.Application;
 import org.minimalj.application.Configuration;
 import org.minimalj.backend.Backend;
 import org.minimalj.frontend.action.Action;
+import org.minimalj.frontend.action.Item;
 import org.minimalj.frontend.page.IDialog;
 import org.minimalj.frontend.page.Page;
 import org.minimalj.frontend.page.PageManager;
@@ -197,6 +198,28 @@ public abstract class Frontend {
 	 * available by the Application.name .
 	 */
 	public abstract IContent createQueryContent();
+	
+	public static enum EXPLORER_DISPLAY { TILES, LIST, TABLE, TREE };
+	
+	/**
+	 * @param items
+	 *            may be a QueryResultList for paging
+	 * @param display
+	 *            the preferred initial explorer style. A frontend or the user
+	 *            can choose to display a different style at any time or not
+	 *            support a display type at all
+	 * @return explorer content
+	 */
+	public IContent createExplorerContent(List<Item> items, EXPLORER_DISPLAY display) {
+		ITable<Item> table = createTable(new Object[] { Item.$.getName(), Item.$.getDescription() }, false, new TableActionListener<Item>() {
+			@Override
+			public void action(Item item) {
+				item.action();
+			}
+		});
+		table.setObjects(items);
+		return table;
+	}	
 	
 	//
 	

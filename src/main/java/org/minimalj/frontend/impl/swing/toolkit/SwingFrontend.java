@@ -12,12 +12,16 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Stack;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.FocusManager;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -29,18 +33,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 import javax.swing.text.JTextComponent;
 
 import org.minimalj.application.Application;
 import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.action.Action.ActionChangeListener;
+import org.minimalj.frontend.action.Item;
 import org.minimalj.frontend.impl.swing.Swing;
 import org.minimalj.frontend.impl.swing.SwingFrame;
 import org.minimalj.frontend.impl.swing.SwingTab;
 import org.minimalj.frontend.impl.swing.component.QueryLayout;
 import org.minimalj.frontend.impl.swing.component.QueryLayout.QueryLayoutConstraint;
 import org.minimalj.frontend.impl.swing.component.SwingHtmlContent;
+import org.minimalj.frontend.impl.swing.component.WrapLayout;
 import org.minimalj.frontend.page.IDialog;
 import org.minimalj.frontend.page.Page;
 import org.minimalj.model.Rendering;
@@ -214,6 +221,44 @@ public class SwingFrontend extends Frontend {
 		});
 
 		return new QueryContent(Resources.getString("Application.queryCaption"), (JTextField) field);
+	}
+	
+	public static class ExplorerContent extends JPanel implements IContent {
+		private static final long serialVersionUID = 1L;
+
+		public ExplorerContent() {
+			super(new WrapLayout());
+		}
+	}
+	
+	@Override
+	public IContent createExplorerContent(List<Item> items, EXPLORER_DISPLAY display) {
+		if (display == EXPLORER_DISPLAY.TILES || display == EXPLORER_DISPLAY.LIST) {
+			ExplorerContent content = new ExplorerContent();
+			for (Item item : items) {
+				ImageIcon icon = null;
+				try {
+					BufferedImage image = ImageIO.read(item.getContent());
+					icon = new ImageIcon(image);
+				} catch (IOException e) {
+					// ignore for the moment
+				}
+				JPanel panel = new JPanel(new BorderLayout());
+				panel.add(new JLabel(icon), BorderLayout.CENTER);
+				panel.add(new JLabel(item.getName()), BorderLayout.SOUTH);
+				panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+				panel.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						item.action();
+					}
+				});
+				content.add(panel);
+			}		
+			return content;
+		} else {
+			return super.createExplorerContent(items, display);
+		}
 	}
 	
 	@Override
