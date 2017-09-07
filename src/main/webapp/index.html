@@ -388,6 +388,29 @@ $ICON
 			removeChildren(element);
 			element.appendChild(document.createTextNode(content.caption));
 			element = document.getElementById("query").cloneNode(true);
+		} else if (type == "Explorer") {
+			element = document.createElement("div");
+			element.style = "margin: 0cm";
+			for (var i = 0; i < content.items.length; i++) {
+				var item = content.items[i];
+				var itemElement = document.createElement("div");
+				itemElement.style = "height: 3.5cm; position: relative;"
+				if (item.mimetype.startsWith("image")) {
+					var imageElement = document.createElement("img");
+					imageElement.src = "/media/" + item.mediaProvider + "/" + item.mediaName;
+					imageElement.style = "max-height: 3cm; max-width: 4.5cm; margin-top: 0.2cm; margin-bottom: 0.2cm";
+					itemElement.appendChild(imageElement);
+				}
+				var nameElement = document.createElement("span");
+				nameElement.appendChild(document.createTextNode(item.name));
+				nameElement.style = "position: absolute; top: 0.5cm; left: 5cm; font-weight: bold;";
+				itemElement.appendChild(nameElement);
+				var descriptionElement = document.createElement("span");
+				descriptionElement.appendChild(document.createTextNode(item.description));
+				descriptionElement.style = "position: absolute; top: 1.1cm; left: 5cm;";
+				itemElement.appendChild(descriptionElement);
+				element.appendChild(itemElement);
+			}
 		} else if (type == "Table") {
 			element = document.createElement("table");
 			element.name = content.id;
@@ -1194,6 +1217,11 @@ $ICON
 			<div id="queryCaption" style="text-align: center; margin-top: 17em"></div>
 			<div style="text-align: center; margin-top: 1em; margin-bottom: 8em"><input type="text" id="querySearch" onkeydown="if (event.keyCode == 13) { querySearch() }" style="width:600px; max-width: 600px; height: 2em;"></div>
 		</div>
+		<div id="item">
+			<div id="itemContent"></div>
+			<div style="text-align: center; margin-top: 1em; margin-bottom: 8em"><input type="text" id="querySearch" onkeydown="if (event.keyCode == 13) { querySearch() }" style="width:600px; max-width: 600px; height: 2em;"></div>
+		</div>
+
 	</div>
 			
 

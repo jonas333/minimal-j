@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.minimalj.application.Application;
 import org.minimalj.application.Configuration;
+import org.minimalj.frontend.action.MediaProvider;
 import org.minimalj.frontend.impl.json.JsonFrontend;
 import org.minimalj.frontend.impl.json.JsonSessionManager;
 import org.minimalj.util.resources.Resources;
@@ -55,7 +56,7 @@ public class MjWebDaemon extends NanoHTTPD {
 
     static Response serve(JsonSessionManager sessionManager, String uri, Method method, Map<String, String> headers, Map<String, String> parms,
             Map<String, String> files) {
-		uri = uri.substring(uri.lastIndexOf('/'), uri.length());
+		// uri = uri.substring(uri.lastIndexOf('/'), uri.length());
 		if (uri.equals("/")) {
 			String htmlTemplate = JsonFrontend.getHtmlTemplate();
 			Locale locale = getLocale(headers.get("accept-language"));
@@ -67,6 +68,25 @@ public class MjWebDaemon extends NanoHTTPD {
 			return newFixedLengthResponse(Status.OK, "text/xml", result);
 		} else if ("/application.png".equals(uri)) {			
 			return newChunkedResponse(Status.OK, "png", Application.getInstance().getIcon());
+		} else if (uri.startsWith("/media/")) {	
+			String mediaUri = uri.substring("/media/".length());
+			int index = mediaUri.indexOf('/');
+			if (index < 1) {
+				return newFixedLengthResponse(Status.BAD_REQUEST, "text/html", uri + " invalid. Not media provider name");
+			} else if (index == mediaUri.length()-1) {
+				return newFixedLengthResponse(Status.BAD_REQUEST, "text/html", uri + " invalid. No media name");
+			}
+			String providerName = mediaUri.substring(0, index);
+			String mediaName = mediaUri.substring(index + 1);
+			MediaProvider mediaProvider = MediaProvider.getProvider(providerName);
+			if (mediaProvider == null) {
+				return newFixedLengthResponse(Status.BAD_REQUEST, "text/html", uri + " invalid. Invalid media provider " + providerName);
+			}
+			InputStream media = mediaProvider.getData(mediaName);
+			if (media == null) {
+				return newFixedLengthResponse(Status.BAD_REQUEST, "text/html", uri + " invalid. Invalid media " + mediaName);
+			}
+			return newChunkedResponse(Status.OK, mediaProvider.getMimeType(mediaName), media);
 		} else {
 			int index = uri.lastIndexOf('.');
 			if (index > -1 && index < uri.length()-1) {

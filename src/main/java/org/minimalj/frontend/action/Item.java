@@ -1,12 +1,7 @@
 package org.minimalj.frontend.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 
-import org.minimalj.application.Application;
 import org.minimalj.frontend.editor.Editor;
 import org.minimalj.frontend.page.Page;
 import org.minimalj.frontend.page.PageAction;
@@ -17,14 +12,14 @@ public class Item {
 	public static final Item $ = Keys.of(Item.class);
 	
 	private final Action action;
-	private String resourceName;
-	private byte[] content;
-	private final String mimeType;
+	private final MediaProvider mediaProvider;
+	private final String mediaName;
 
 	// only to allow $ construction
 	public Item() {
 		this.action = null;
-		this.mimeType = null;
+		this.mediaProvider = null;
+		this.mediaName = null;
 	}
 	
 	public Item(Page page) {
@@ -38,36 +33,32 @@ public class Item {
 	private Item(Action action, Class<?> resouceClass) {
 		this.action = action;
 
-		resourceName = Resources.getString(resouceClass.getName() + ".tile", Resources.OPTIONAL);
-		if (resourceName == null) {
-			resourceName = Resources.getString(resouceClass.getSimpleName() + ".tile");
+		String mediaName = Resources.getString(resouceClass.getName() + ".tile", Resources.OPTIONAL);
+		if (mediaName == null) {
+			mediaName = Resources.getString(resouceClass.getSimpleName() + ".tile");
 		}
-		
-		this.mimeType = guessMimeType(resourceName);
+		this.mediaName = mediaName;
+		this.mediaProvider = MediaProvider.resourceMediaProvider;
 	}
 	
-	public Item(Action action, byte[] content, String mimeType) {
+	public Item(Action action, MediaProvider mediaProvider, String name) {
 		Objects.nonNull(action);
 		
 		this.action = action;
-		this.content = content;
-		this.mimeType = mimeType;
+		this.mediaProvider = mediaProvider;
+		this.mediaName = name;
 	}
 	
-	public Item(Action action, String resourceName) {
+	public Item(Action action, String mediaName) {
 		Objects.nonNull(action);
 		
 		this.action = action;
-		this.resourceName = resourceName;
-		this.mimeType = guessMimeType(resourceName);
+		this.mediaName = mediaName;
+		this.mediaProvider = MediaProvider.resourceMediaProvider;
 	}
 
-	public Item(Page page, byte[] content, String mimeType) {
-		this(new PageAction(page), content, mimeType);
-	}
-
-	public Item(Page page, String resourceName) {
-		this(new PageAction(page), resourceName);
+	public Item(Page page, String mediaName) {
+		this(new PageAction(page), mediaName);
 	}
 
 	//
@@ -84,51 +75,16 @@ public class Item {
 		return action.getDescription();
 	}
 
-	public InputStream getContent() {
-		if (resourceName != null) {
-			return Application.getInstance().getClass().getResourceAsStream(resourceName);
-		} else if (content != null) {
-			return new ByteArrayInputStream(content);
-		} else {
-			return null;
-		}
+	public String getMediaProviderName() {
+		return mediaProvider.getName();
 	}
 	
-	public byte[] getContentBytes() {
-		if (content != null) {
-			return content;
-		} else if (resourceName != null) {
-			InputStream is = Application.getInstance().getClass().getResourceAsStream(resourceName);
-			try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-				byte[] buffer = new byte[1024];
-				while (true) {
-					int r = is.read(buffer);
-					if (r == -1) break;
-					out.write(buffer, 0, r);
-				}
-				content = out.toByteArray();
-				return content;
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		} else {
-			return null;
-		}
+	public String getMediaName() {
+		return mediaName;
 	}
-
+	
 	public String getMimeType() {
-		return mimeType;
-	}
-	
-	private String guessMimeType(String resourceName) {
-		int index = resourceName.lastIndexOf('.');
-		if (index > 0 && index < resourceName.length() - 1) {
-			String postfix = resourceName.substring(index + 1, resourceName.length());
-			return Resources.getMimeType(postfix);
-		} else {
-			return null;
-		}
-		
+		return mediaProvider.getMimeType(mediaName);
 	}
 	
 	public void action() {

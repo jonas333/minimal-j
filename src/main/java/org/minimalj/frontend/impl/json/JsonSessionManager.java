@@ -74,6 +74,5 @@ public class JsonSessionManager {
 		
 		return output.toString();
 	}
-
-
+	
 }

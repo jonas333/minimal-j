@@ -15,6 +15,7 @@ import org.minimalj.application.Configuration;
 import org.minimalj.backend.Backend;
 import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.action.Action;
+import org.minimalj.frontend.action.Item;
 import org.minimalj.frontend.page.PageManager;
 import org.minimalj.model.Rendering;
 import org.minimalj.util.LocaleContext;
@@ -154,6 +155,11 @@ public class JsonFrontend extends Frontend {
 	public IContent createQueryContent() {
 		String caption = Resources.getString("Application.queryCaption", Resources.OPTIONAL);
 		return new JsonQueryContent(caption);
+	}
+	
+	@Override
+	public IContent createExplorerContent(List<Item> items, EXPLORER_DISPLAY display) {
+		return new JsonExplorerContent(items);
 	}
 	
 	//

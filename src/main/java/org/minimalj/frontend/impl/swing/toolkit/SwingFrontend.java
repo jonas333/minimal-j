@@ -41,6 +41,7 @@ import org.minimalj.frontend.Frontend;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.action.Action.ActionChangeListener;
 import org.minimalj.frontend.action.Item;
+import org.minimalj.frontend.action.MediaProvider;
 import org.minimalj.frontend.impl.swing.Swing;
 import org.minimalj.frontend.impl.swing.SwingFrame;
 import org.minimalj.frontend.impl.swing.SwingTab;
@@ -238,7 +239,8 @@ public class SwingFrontend extends Frontend {
 			for (Item item : items) {
 				ImageIcon icon = null;
 				try {
-					BufferedImage image = ImageIO.read(item.getContent());
+					MediaProvider mediaProvider = MediaProvider.getProvider(item.getMediaProviderName());
+					BufferedImage image = ImageIO.read(mediaProvider.getData(item.getMediaName()));
 					icon = new ImageIcon(image);
 				} catch (IOException e) {
 					// ignore for the moment
