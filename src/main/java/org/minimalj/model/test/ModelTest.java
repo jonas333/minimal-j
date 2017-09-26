@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -119,6 +121,7 @@ public class ModelTest {
 			testHistorized(clazz);
 			testConstructor(clazz);
 			testFields(clazz);
+			testEnumFields(clazz);
 			testSelfReferences(clazz);
 			if (!IdUtils.hasId(clazz)) {
 				testNoListFields(clazz);
@@ -461,6 +464,28 @@ public class ModelTest {
 		for (PropertyInterface property : FlatProperties.getProperties(clazz).values()) {
 			if (StringUtils.equals(property.getName(), "id", "version")) continue;
 			Resources.getPropertyName(property);
+		}
+	}
+	
+	private void testEnumFields(Class<?> clazz) {
+		Map<Class, Integer> map = new HashMap<>();
+		for (PropertyInterface property : FlatProperties.getProperties(clazz).values()) {
+			Class<?> enumClazz = property.getClazz();
+			if (Enum.class.isAssignableFrom(enumClazz)) {
+				if (!map.containsKey(enumClazz)) {
+					map.put(enumClazz, Integer.valueOf(1));
+					continue;
+				} else {
+					int value = map.get(enumClazz);
+					map.put(enumClazz, Integer.valueOf(value + 1));
+				}
+			}
+		}
+		for (Map.Entry<Class, Integer> entry : map.entrySet()) {
+			int enumCount = EnumUtils.valueList(entry.getKey()).size();
+			if (enumCount < entry.getValue()) {
+				problems.add(clazz.getName() + " has more fields of type " + entry.getKey() + " than that enum has values");
+			}
 		}
 	}
 	

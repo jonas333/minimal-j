@@ -427,4 +427,31 @@ public class ModelTestTest {
 	public static class TestClass28b {
 		public Object id;
 	}
+	
+	@Test public void
+	should_accept_enum_fields() {
+		ModelTest modelTest = new ModelTest(TestClass29b.class);
+		Assert.assertTrue(modelTest.isValid());
+	}
+	
+	@Test public void
+	should_not_accept_too_many_enum_fields() {
+		ModelTest modelTest = new ModelTest(TestClass29c.class);
+		Assert.assertFalse(modelTest.isValid());
+	}
+	
+	public static enum TestClass29a {
+		A, B;
+	}
+	
+	public static class TestClass29b {
+		public Object id;
+		public TestClass29a e1, e2;
+	}
+	
+	public static class TestClass29c {
+		public Object id;
+		public TestClass29a e1, e2, e3;
+	}
+
 }
