@@ -413,11 +413,9 @@ public class ModelTest {
 			problems.add(messagePrefix + " is an array which is not allowed");
 			return;
 		}
-		if (Codes.isCode(fieldType)) {
-			problems.add(messagePrefix + " is a list of codes which is not allowed");
-			return;
+		if (!FieldUtils.isAllowedPrimitive(fieldType)) {
+			testClass(fieldType);
 		}
-		testClass(fieldType);
 	}
 	
 	private void testStringSize(Field field) {

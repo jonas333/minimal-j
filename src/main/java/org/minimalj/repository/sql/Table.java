@@ -160,6 +160,8 @@ public class Table<T> extends AbstractTable<T> {
 		String subTableName = buildSubTableName(property);
 		if (IdUtils.hasId(elementClass)) {
 			return new CrossTable<>(sqlRepository, subTableName, elementClass, idProperty);
+		} else if (FieldUtils.isAllowedPrimitive(elementClass)) {
+			return new SubPrimitiveTable(sqlRepository, subTableName, elementClass, property, idProperty);
 		} else {
 			return new SubTable(sqlRepository, subTableName, elementClass, idProperty);
 		}
