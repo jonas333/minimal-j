@@ -29,8 +29,6 @@ import java.util.ResourceBundle.Control;
 import java.util.logging.Logger;
 
 import org.minimalj.frontend.action.Action;
-import org.minimalj.frontend.impl.nanoserver.NanoWebServer;
-import org.minimalj.frontend.impl.swing.Swing;
 import org.minimalj.frontend.page.EmptyPage;
 import org.minimalj.frontend.page.Page;
 import org.minimalj.model.Model;
@@ -259,19 +257,6 @@ public abstract class Application implements Model {
 		// I haven't figured out yet how this can be changed easily. 
 		if (StringUtils.isEmpty(System.getProperty("java.util.logging.SimpleFormatter.format"))) {
 			System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT:%1$tL %4$-13s %3$-4s %5$s %6$s%n");
-		}
-	}
-	
-	public static void main(String... args) {
-		Logger logger = Logger.getLogger(Application.class.getName());
-		logger.warning("Starting the Application class is not the intended way to start a Minimal-J application");
-		String mainClass = System.getProperty("sun.java.command");
-		if (mainClass == null) {
-			logger.severe("and the started application could not be retrieved. Nothing started.");
-		} else if (Application.class.getName().equals(mainClass)) {
-			logger.severe("and starting the Application class doesn't work at all. Nothing started.");
-		} else {
-			NanoWebServer.main(mainClass);
 		}
 	}
 	
