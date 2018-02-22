@@ -939,18 +939,22 @@
 	}
 	
 	function send(data, block) {
-		data.locale = "$LOCALE";
-	    data.inputTypes = isMobile && checkInput("date");
+		data.locale = "DE";
+		data.inputTypes = isMobile && checkInput("date");
 	    	
 		var dialogElements = document.getElementsByTagName("dialog");
 		data.dialogVisible = dialogElements != undefined && dialogElements.length > 0;
 		
-		$WEB_SOCKET ? sendWebSocket(data, block) : sendAjax(data, block);
-
-		// TODO invoke "JAVA"		
-		// onMessage(evt.data)
+		var sendStr = JSON.stringify(data);
+		cjCall("org.minimalj.frontend.impl.cheerpj.Cheerpj", "receiveMessage", sendStr).then(receive);
 	}
-		
+	
+	function receive(e) {
+		var resultStr = cjStringJavaToJs(e);
+		alert(resultStr);
+		onMessage(resultStr);
+	}
+	
 	function updateDialogSizes() {
 		var dialogElements = document.getElementsByTagName("dialog");
 		if (dialogElements != undefined && dialogElements.length > 0) {
@@ -1065,7 +1069,7 @@
 	}
 
 	function init() {
-		if (!$LOGIN) {
+		if (false) {
 			document.getElementById("loginButton").parentNode.removeChild(document.getElementById("loginButton"));
 		}
 
@@ -1078,13 +1082,13 @@
         window.addEventListener("resize", closeActionMenus);
         window.addEventListener("resize", resizeNavigation);
 
-        if ("$DISABLED_SEARCH" == "disabled") document.getElementById("searchButton").style.display = "none";
+        if (false) document.getElementById("searchButton").style.display = "none";
 
 		window.onpopstate = popState;
 
 		send({
 			"showDefaultPage" : "default-" + (new Date().getTime()),
-			"path" : "$PATH"
+			"path" : "."
 		});
 	}
 	
@@ -1095,8 +1099,9 @@
 	}
 	
 	 cheerpjInit();
-     cheerpjCreateDisplay(800,600);
-     cheerpjRunMain("AppClass", "/app/minimalj.jar:/app/application.jar"); 
+alert("after init");
+      cheerpjRunMain("org.minimalj.example.helloworld.HelloWorldApplication", "/app/m.jar:/app/hello.jar");  
+alert("after run");
 	
 </script>
 <meta name="viewport" content="width=device-width, minimum-scale=1, user-scalable=no" />
