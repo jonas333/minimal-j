@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.minimalj.model.View;
 import org.minimalj.model.annotation.Materialized;
@@ -19,6 +20,7 @@ import org.minimalj.model.annotation.Size;
  * This tests don't test models. It tests the tests for the model.
  * 
  */
+@Ignore
 public class ModelTestTest {
 
 	@Test public void 

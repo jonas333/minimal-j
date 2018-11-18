@@ -182,7 +182,7 @@ public class JsonReader {
 			}
 			Class<?> fieldClass = property.getClazz();
 			if (fieldClass == List.class) {
-				fieldClass = GenericUtils.getGenericClass(property.getType());
+				fieldClass = GenericUtils.getGenericClass(property.getGenericClass());
 			}
 			read(); // should be a colon
 			if (token != OBJECT_END) {

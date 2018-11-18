@@ -3,6 +3,7 @@ package org.minimalj.example.erp.frontend.form;
 import java.util.List;
 
 import org.minimalj.example.erp.model.Article;
+import org.minimalj.example.erp.model.ArticleView;
 import org.minimalj.example.erp.model.OfferArticle;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.form.Form;
@@ -24,7 +25,7 @@ public class OfferArticleFormElement extends ListFormElement<OfferArticle> {
 	@Override
 	protected Form<OfferArticle> createForm(boolean edit) {
 		Form<OfferArticle> form = new Form<>();
-		form.line(new ReferenceFormElement<Article>(OfferArticle.$.article, Article.$.article, Article.$.articleNr));
+		form.line(new ReferenceFormElement<ArticleView>(OfferArticle.$.article, Article.$.article, Article.$.articleNr));
 		form.line(OfferArticle.$.numberof);
 		form.line(OfferArticle.$.price);
 		return form;
