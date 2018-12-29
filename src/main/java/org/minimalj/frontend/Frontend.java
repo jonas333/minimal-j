@@ -7,6 +7,7 @@ import org.minimalj.application.Application;
 import org.minimalj.application.Configuration;
 import org.minimalj.backend.Backend;
 import org.minimalj.frontend.action.Action;
+import org.minimalj.frontend.form.element.FormElementConstraint;
 import org.minimalj.frontend.page.IDialog;
 import org.minimalj.frontend.page.Page;
 import org.minimalj.frontend.page.PageManager;
@@ -98,13 +99,6 @@ public abstract class Frontend {
 		return Optional.empty();
 	}
 	
-	/**
-	 * In text and titles html is supported (text has to start with &lt;html&gt; and
-	 * end with &lt;/html&gt; but only a limited set of tags to prevent code
-	 * injection. This can be overriden by configuration MjAllowedHtmlTags.
-	 */
-	public static final String[] ALLOWED_HTML_TAGS = { "b", "i", "u", "sub", "sup" };
-	
 	public abstract IComponent createText(String string);
 	public abstract IComponent createText(Rendering rendering);
 	public abstract IComponent createText(Action action);
@@ -117,7 +111,7 @@ public abstract class Frontend {
 	public abstract <T> Input<T> createComboBox(List<T> object, InputComponentListener changeListener);
 	public abstract Input<Boolean> createCheckBox(InputComponentListener changeListener, String text);
 
-	public abstract Input<byte[]> createImage(int size, InputComponentListener changeListener);
+	public abstract Input<byte[]> createImage(InputComponentListener changeListener);
 
 	public interface SwitchComponent extends IComponent {
 		public void show(IComponent component);
@@ -160,8 +154,8 @@ public abstract class Frontend {
 	}
 
 	public interface FormContent extends IContent {
-		public void add(IComponent component);
-		public void add(String caption, IComponent component, int span);
+		public void add(IComponent component, FormElementConstraint constraint);
+		public void add(String caption, IComponent component, FormElementConstraint constraint, int span);
 		public void setValidationMessages(IComponent component, List<String> validationMessages);
 	}
 	
@@ -187,6 +181,10 @@ public abstract class Frontend {
 		}
 	}
 	
+	// experimental. Signature may change. Idea is to have a header or filter above
+	// a table. But the header/filter must not be a growing content
+	public abstract IContent createFormTableContent(FormContent form, ITable<?> table);
+
 	public abstract <T> ITable<T> createTable(Object[] keys, boolean multiSelect, TableActionListener<T> listener);
 
 	/**

@@ -3,7 +3,6 @@ package org.minimalj.frontend.impl.swing.toolkit;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Insets;
@@ -29,7 +28,6 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
@@ -53,7 +51,7 @@ public class SwingFrontend extends Frontend {
 	public IComponent createText(String string) {
 		return new SwingText(string);
 	}
-	
+
 	@Override
 	public IComponent createText(Action action) {
 		return new SwingActionText(action);
@@ -63,14 +61,14 @@ public class SwingFrontend extends Frontend {
 	public IComponent createText(Rendering rendering) {
 		return new SwingText(rendering);
 	}
-	
+
 	public static class SwingActionText extends JLabel implements IComponent {
 		private static final long serialVersionUID = 1L;
 
 		public SwingActionText(final Action action) {
 			setText(action.getName());
 //			label.setToolTipText(Resources.getResourceBundle().getString(runnable.getClass().getSimpleName() + ".description"));
-			
+
 			setForeground(Color.BLUE);
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			addMouseListener(new MouseAdapter() {
@@ -81,9 +79,9 @@ public class SwingFrontend extends Frontend {
 			});
 		}
 	}
-	
+
 	public static final Stack<SwingTab> browserStack = new Stack<>();
-	
+
 	@Override
 	public IComponent createTitle(String string) {
 		return new SwingTitle(string);
@@ -108,17 +106,17 @@ public class SwingFrontend extends Frontend {
 	public PasswordField createPasswordField(InputComponentListener changeListener, int maxLength) {
 		return new SwingPasswordField(changeListener, maxLength);
 	}
-	
+
 	@Override
 	public Input<String> createAreaField(int maxLength, String allowedCharacters, InputComponentListener changeListener) {
 		return new SwingTextAreaField(changeListener, maxLength, null);
 	}
 
 	@Override
-	public Input<byte[]> createImage(int size, InputComponentListener changeListener) {
-		return new SwingImage(size, changeListener);
+	public Input<byte[]> createImage(InputComponentListener changeListener) {
+		return new SwingImage(changeListener);
 	}
-	
+
 	@Override
 	public IList createList(Action... actions) {
 		return new SwingList(actions);
@@ -143,7 +141,7 @@ public class SwingFrontend extends Frontend {
 	public SwitchContent createSwitchContent() {
 		return new SwingSwitch();
 	}
-	
+
 	@Override
 	public SwitchComponent createSwitchComponent() {
 		return new SwingSwitch();
@@ -183,11 +181,33 @@ public class SwingFrontend extends Frontend {
 		});
 	}
 
+	private static class SwingBorderLayoutContent extends JPanel implements IContent {
+		private static final long serialVersionUID = 1L;
+
+		private SwingBorderLayoutContent() {
+			super(new BorderLayout());
+		}
+
+		private void add(IContent content, String constraint) {
+			if (content != null) {
+				add((Component) content, constraint);
+			}
+		}
+	}
+
+	@Override
+	public IContent createFormTableContent(FormContent form, ITable<?> table) {
+		SwingBorderLayoutContent content = new SwingBorderLayoutContent();
+		content.add(form, BorderLayout.NORTH);
+		content.add(table, BorderLayout.CENTER);
+		return content;
+	}
+
 	@Override
 	public <T> ITable<T> createTable(Object[] keys, boolean multiSelect, TableActionListener<T> listener) {
 		return new SwingTable<T>(keys, multiSelect, listener);
 	}
-	
+
 	@Override
 	public <T> IContent createTable(Search<T> search, Object[] keys, boolean multiSelect, TableActionListener<T> listener) {
 		return new SwingSearchPanel<T>(search, keys, multiSelect, listener);
@@ -197,7 +217,7 @@ public class SwingFrontend extends Frontend {
 	public IContent createHtmlContent(String htmlOrUrl) {
 		return new SwingHtmlContent(htmlOrUrl);
 	}
-	
+
 	private static class QueryContent extends JPanel implements IContent {
 		private static final long serialVersionUID = 1L;
 
@@ -208,7 +228,7 @@ public class SwingFrontend extends Frontend {
 			add(label, QueryLayoutConstraint.CAPTION, 1);
 		}
 	}
-	
+
 	@Override
 	public IContent createQueryContent() {
 		JTextField field = new JTextField();
@@ -225,12 +245,12 @@ public class SwingFrontend extends Frontend {
 
 		return new QueryContent(Resources.getString("Application.queryCaption"), (JTextField) field);
 	}
-	
+
 	@Override
 	public Input<String> createLookup(Input<String> stringInput, Runnable lookup) {
 		return new SwingLookup(stringInput, lookup);
 	}
-	
+
 	public File showFileDialog(String title, String approveButtonText) {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setMultiSelectionEnabled(false);
@@ -242,25 +262,27 @@ public class SwingFrontend extends Frontend {
 			return null;
 		}
 	}
-	
+
 	private static final Insets EMPTY_INSETS = new Insets(0, 0, 0, 0);
 
 	private static class SwingLookup extends JPanel implements Input<String> {
 		private static final long serialVersionUID = 1L;
-		
+
 		private final JButton lookupButton;
 		private final Input<String> stringInput;
-		
+
 		public SwingLookup(Input<String> stringInput, Runnable lookup) {
 			super(new BorderLayout());
 			this.stringInput = stringInput;
-			
+
 			add((Component) stringInput, BorderLayout.CENTER);
 
 			this.lookupButton = new JButton("...");
 			lookupButton.setMargin(EMPTY_INSETS);
 			lookupButton.addActionListener(event -> lookup.run());
-			add(lookupButton, BorderLayout.AFTER_LINE_ENDS);
+			JPanel buttonPanel = new JPanel(new BorderLayout());
+			buttonPanel.add(lookupButton, BorderLayout.PAGE_START);
+			add(buttonPanel, BorderLayout.AFTER_LINE_ENDS);
 		}
 
 		@Override
@@ -272,7 +294,7 @@ public class SwingFrontend extends Frontend {
 		public String getValue() {
 			return stringInput.getValue();
 		}
-		
+
 		@Override
 		public void setEditable(boolean editable) {
 			stringInput.setEditable(editable);
@@ -280,24 +302,9 @@ public class SwingFrontend extends Frontend {
 		}
 	}
 
-	public static boolean verticallyGrowing(Component component) {
-		if (component instanceof SwingList || component instanceof JTable || component instanceof SwingTextAreaField || component instanceof SwingImage) {
-			return true;
-		}
-		if (component instanceof Container) {
-			Container container = (Container) component;
-			for (Component c : container.getComponents()) {
-				if (verticallyGrowing(c)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
 	public static javax.swing.Action[] adaptActions(Action[] actions) {
 		javax.swing.Action[] swingActions = new javax.swing.Action[actions.length];
-		for (int i = 0; i<actions.length; i++) {
+		for (int i = 0; i < actions.length; i++) {
 			swingActions[i] = adaptAction(actions[i]);
 		}
 		return swingActions;
@@ -317,7 +324,7 @@ public class SwingFrontend extends Frontend {
 			{
 				update();
 			}
-			
+
 			@Override
 			public void change() {
 				update();
@@ -330,7 +337,7 @@ public class SwingFrontend extends Frontend {
 		});
 		return swingAction;
 	}
-	
+
 	public static Icon getIcon(String resourceName) {
 		if (Resources.isAvailable(resourceName)) {
 			String filename = Resources.getString(resourceName);
@@ -341,10 +348,10 @@ public class SwingFrontend extends Frontend {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * As the current subject can be different for each Swing Window
-	 * this method ensure that no wrong subject stays as current subject
+	 * As the current subject can be different for each Swing Window this method
+	 * ensure that no wrong subject stays as current subject
 	 * 
 	 * @param r a runnable (normally a lambda is used)
 	 */
@@ -358,11 +365,11 @@ public class SwingFrontend extends Frontend {
 			browserStack.pop();
 		}
 	}
-	
+
 	public static boolean hasContext() {
 		return !browserStack.isEmpty() && browserStack.peek() != null;
 	}
-	
+
 	@Override
 	public SwingTab getPageManager() {
 		if (hasContext()) {
@@ -373,7 +380,7 @@ public class SwingFrontend extends Frontend {
 			return null;
 		}
 	}
-	
+
 	public static boolean applicationHasRouting() {
 		try {
 			return Application.getInstance().getClass().getMethod("createPage", new Class<?>[] { String.class }).getDeclaringClass() != Application.class;
@@ -381,5 +388,5 @@ public class SwingFrontend extends Frontend {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 }

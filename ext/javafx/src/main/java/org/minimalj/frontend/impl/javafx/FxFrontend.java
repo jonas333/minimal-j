@@ -76,7 +76,7 @@ public class FxFrontend extends Frontend {
 	}
 
 	@Override
-	public Input<byte[]> createImage(int size, InputComponentListener changeListener) {
+	public Input<byte[]> createImage(InputComponentListener changeListener) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -113,6 +113,12 @@ public class FxFrontend extends Frontend {
 
 	@Override
 	public <T> ITable<T> createTable(Object[] keys, boolean multiSelect, TableActionListener<T> listener) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IContent createFormTableContent(FormContent form, ITable<?> table) {
 		// TODO Auto-generated method stub
 		return null;
 	}

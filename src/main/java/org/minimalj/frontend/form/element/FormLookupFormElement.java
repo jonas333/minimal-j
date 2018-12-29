@@ -4,7 +4,7 @@ import org.minimalj.frontend.editor.Editor.SimpleEditor;
 import org.minimalj.frontend.form.Form;
 import org.minimalj.util.CloneHelper;
 
-public abstract class FormLookupFormElement<T> extends AbstractLookupFormElement {
+public abstract class FormLookupFormElement<T> extends AbstractLookupFormElement<T> {
 
 	public FormLookupFormElement(Object key, boolean editable) {
 		super(key, editable);
@@ -16,14 +16,8 @@ public abstract class FormLookupFormElement<T> extends AbstractLookupFormElement
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public T getValue() {
-		return (T) super.getValue();
-	}
-
-	@SuppressWarnings("unchecked")
 	protected T createObject() {
-		return (T) CloneHelper.newInstance(getProperty().getClazz());
+		return getValue() != null ? CloneHelper.clone(getValue()) : (T) CloneHelper.newInstance(getProperty().getClazz());
 	}
 
 	protected abstract Form<T> createForm();
@@ -32,7 +26,7 @@ public abstract class FormLookupFormElement<T> extends AbstractLookupFormElement
 
 		@Override
 		public T createObject() {
-			return getValue() != null ? CloneHelper.clone(getValue()) : FormLookupFormElement.this.createObject();
+			return FormLookupFormElement.this.createObject();
 		}
 
 		@Override
@@ -42,7 +36,7 @@ public abstract class FormLookupFormElement<T> extends AbstractLookupFormElement
 
 		@Override
 		protected T save(T object) {
-			FormLookupFormElement.this.setValue(object);
+			FormLookupFormElement.this.setValueInternal(object);
 			return object;
 		}
 	}

@@ -69,7 +69,7 @@ public class JsonFrontend extends Frontend {
 
 	@Override
 	public Input<String> createReadOnlyTextField() {
-		return new JsonTextField("ReadOnlyTextField");
+		return new JsonText((String) null);
 	}
 
 	@Override
@@ -97,8 +97,8 @@ public class JsonFrontend extends Frontend {
 	}
 
 	@Override
-	public Input<byte[]> createImage(int size, InputComponentListener changeListener) {
-		throw new RuntimeException("Image not yet implemented in JsonFrontend");
+	public Input<byte[]> createImage(InputComponentListener changeListener) {
+		return new JsonImage(changeListener);
 	};
 	
 	@Override
@@ -124,6 +124,12 @@ public class JsonFrontend extends Frontend {
 	@Override
 	public <T> IContent createTable(Search<T> search, Object[] keys, boolean multiSelect, TableActionListener<T> listener) {
 		return new JsonSearchTable<T>(search, keys, multiSelect, listener);
+	}
+
+	@Override
+	public IContent createFormTableContent(FormContent form, ITable<?> table) {
+		((JsonTable<?>) table).put("overview", form);
+		return table;
 	}
 
 	@Override

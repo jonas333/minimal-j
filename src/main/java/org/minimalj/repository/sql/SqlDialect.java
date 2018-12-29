@@ -169,7 +169,11 @@ public abstract class SqlDialect {
 		
 		@Override
 		protected void addCreateStatementEnd(StringBuilder s) {
+<<<<<<< HEAD
 			s.append("\n) ENGINE=InnoDB DEFAULT CHARSET=utf8\n");
+=======
+			s.append("\n) CHARSET=utf8\n");
+>>>>>>> upstream/develop
 		}
 
 		@Override

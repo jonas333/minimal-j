@@ -15,6 +15,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class VaadinFrontend extends Frontend {
@@ -142,6 +143,23 @@ public class VaadinFrontend extends Frontend {
 	}
 
 	@Override
+	public IContent createFormTableContent(FormContent form, ITable<?> table) {
+		LanternaBorderLayoutContent content = new LanternaBorderLayoutContent();
+		content.addComponent((Component) form);
+		content.addComponent((Component) table);
+		content.setExpandRatio((Component) table, 1f);
+		return content;
+	}
+
+	private static class LanternaBorderLayoutContent extends VerticalLayout implements IContent {
+		private static final long serialVersionUID = 1L;
+
+		public LanternaBorderLayoutContent() {
+			setMargin(false);
+		}
+	}
+
+	@Override
 	public <T> IContent createTable(Search<T> search, Object[] keys, boolean multiSelect, TableActionListener<T> listener) {
 		return new VaadinSearchPanel<T>(search, keys, multiSelect, listener);
 	}
@@ -221,8 +239,8 @@ public class VaadinFrontend extends Frontend {
 	}
 
 	@Override
-	public Input<byte[]> createImage(int size, InputComponentListener changeListener) {
-		return new VaadinImage(size, changeListener);
+	public Input<byte[]> createImage(InputComponentListener changeListener) {
+		return new VaadinImage(changeListener);
 	}
 
 	@Override

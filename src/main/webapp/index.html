@@ -57,7 +57,7 @@ $ICON
 			var pageElement = document.getElementById(pageId);
 			if (pageElement != null) {
 				var pageTitleElement = pageElement.querySelector(".pageTitle");
-				pageTitleElement.innerHTML = title;
+				pageTitleElement.textContent = title;
 			}
 		}
 		if (dataObject.hideDetail != undefined) {
@@ -73,8 +73,10 @@ $ICON
 			showDialog(dataObject.dialog);
 		}
 		if (dataObject.closeDialog != undefined) {
-			var dialog = document.getElementById(dataObject.closeDialog);
-			dialog.close();
+			for (var i = 0; i<dataObject.closeDialog.length; i++) {
+				var dialog = document.getElementById(dataObject.closeDialog[i]);
+				dialog.close();
+			}
 		}
 		if (dataObject.propertyChanges != undefined) {
 			var propertyChanges = dataObject.propertyChanges;
@@ -107,7 +109,9 @@ $ICON
 								element.setAttribute("disabled", "true");
 							}
 						} else if (property == "value" && (element.tagName == "DIV" || element.tagName == "SPAN")) {
-							element.innerHTML = value;
+							element.innerHTML = escapeText(value);
+						} else if (property == "value" && element.tagName == "IMG") {
+							element.src = "data:image;base64, " + atob(value);
 						} else {
                             if (property == "value" && element.tagName == "INPUT" && element.type == "password") {
 								value = value.join("");
@@ -348,7 +352,7 @@ $ICON
 		
 		var titleElement = document.createElement("span");
 		titleElement.className = "pageTitle";
-		titleElement.innerHTML = title;
+		titleElement.textContent = title;
 		element.appendChild(titleElement);
 		
 		var b = document.getElementById("pageHeaderButtons");
@@ -395,6 +399,11 @@ $ICON
 			if (content.multiSelect) {
 				element.classList.add("multiSelect");
 			}
+			if (content.overview != null) {
+				var overview = document.createElement("thead");
+				overview.appendChild(createContent(content.overview));
+				element.appendChild(overview);
+			}
 			element.appendChild(createTableHeaders(content.id, content.headers));
 			element.appendChild(createTableRows(content.id, content.tableContent));
 			
@@ -408,13 +417,11 @@ $ICON
 				}
 				element.appendChild(footer);
 			}
-		} else if (type == "Text" || type == "Gap" || type == "Title" || type == "ReadOnlyTextField") {
+		} else if (type == "Text" || type == "Title") {
 			element = document.createElement("div");
 			element.classList.add(type);
-			if (content.htmlValue != undefined) {
-				element.innerHTML = content.htmlValue;
-			} else if (content.value != undefined) {
-				element.appendChild(document.createTextNode(content.value));
+			if (content.value != undefined) {
+				element.innerHTML = escapeText(content.value);
 			} else {
 				element.innerHTML = "&nbsp;";
 			}
@@ -433,7 +440,7 @@ $ICON
 		} else if (type == "Action") {
 			element = document.createElement("div");
 			element.className = "action";
-			element.innerHTML = content.name;
+			element.textContent = content.name;
 			element.setAttribute("onclick", "action(\"" + content.id + "\");");
 		} else if (type == "TextField") {
 			element = document.createElement("input");
@@ -492,7 +499,7 @@ $ICON
 				for ( var id in content.options) {
 					var option = document.createElement("option");
 					option.value = id;
-					option.innerHTML = content.options[id].text;
+					option.textContent = content.options[id].text;
 					var description = content.options[id].description; 
 					if (description != undefined) option.title = description;
 					element.appendChild(option);
@@ -553,6 +560,17 @@ $ICON
 			element = document.createElement("div");
 			element.className = "htmlpage";
 			element.innerHTML = content.htmlOrUrl;
+		} else if (type == "Image") {
+		    if (editable) {
+				element = document.createElement("input");
+				element.type = "file";
+				element.setAttribute("onchange", "sendchange(this);");
+		    } else {
+		    	element = document.createElement("img");
+		    	if (content.value != undefined) {
+			    	element.src = "data:image;base64, " + content.value;
+			    }
+		    }
 		} else {
 			element = document.createElement("div");
 			element.appendChild(document.createTextNode("unknown: " + type));
@@ -566,13 +584,6 @@ $ICON
 		return element;
 	}
 	
-	function createFormRows(rows, columnWidth) {
-		var element = document.createElement("div");
-		for (var i = 0; i < rows.length; i++) {
-			element.appendChild(createFormRow(rows[i], columnWidth));
-		}
-		return element;
-	}
 	function createFormRow(row, columnWidth) {
 		var element = document.createElement("div");
 		for (var i = 0; i < row.length; i++) {
@@ -786,6 +797,20 @@ $ICON
 			changedValue[source.id] = source.checked.toString();
 		} else if (source.type == "password") {
 			changedValue[source.id] = source.value.split("");		
+		} else if (source.type == "file") {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var binary = "";
+				var bytes = new Uint8Array(reader.result);
+           		for (var i = 0; i < bytes.byteLength; i++) {
+               		binary += String.fromCharCode(bytes[i]);
+           		}
+		        changedValue[source.id] = btoa(binary);
+		        data.changedValue = changedValue;
+		        send(data, false);
+		    }
+			reader.readAsArrayBuffer(source.files[0]); // readAsBinaryString would be shorter but not supported on IE
+			return;
 		} else {
 			changedValue[source.id] = source.value;
 			source.valueOnBlur = undefined;
@@ -1173,6 +1198,10 @@ $ICON
 	    var input = document.createElement("input");
 	    input.setAttribute("type", type);
 	    return input.type == type;
+	}
+	
+	function escapeText(s) {
+	  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/\n/g, "<br>");
 	}
 		
 	if (false) { // $CHEERPJ, $CHEERPJ_PATH, $CHEERPJ_MAIN

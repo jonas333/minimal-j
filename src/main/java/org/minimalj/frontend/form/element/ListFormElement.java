@@ -1,5 +1,6 @@
 package org.minimalj.frontend.form.element;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -10,6 +11,7 @@ import org.minimalj.frontend.Frontend.IList;
 import org.minimalj.frontend.action.Action;
 import org.minimalj.frontend.editor.Editor;
 import org.minimalj.frontend.form.Form;
+import org.minimalj.model.Rendering;
 import org.minimalj.model.properties.PropertyInterface;
 import org.minimalj.util.CloneHelper;
 import org.minimalj.util.GenericUtils;
@@ -29,6 +31,7 @@ public abstract class ListFormElement<T> extends AbstractFormElement<List<T>> {
 		super(property);
 		this.editable = editable;
 		list = editable ? Frontend.getInstance().createList(getActions()) : Frontend.getInstance().createList();
+		height(1, 3);
 	}
 	
 	protected final boolean isEditable() {
@@ -69,9 +72,17 @@ public abstract class ListFormElement<T> extends AbstractFormElement<List<T>> {
 
 	protected void showEntry(T entry) {
 		if (isEditable()) {
-			add(entry, new ListEntryEditor(entry), new RemoveEntryAction(entry));
+			add(render(entry), new ListEntryEditor(entry), new RemoveEntryAction(entry));
 		} else {
-			add(entry);
+			add(render(entry));
+		}
+	}
+
+	protected Object render(T value) {
+		if (value instanceof Rendering) {
+			return value;
+		} else {
+			return Rendering.toString(value);
 		}
 	}
 
@@ -154,14 +165,17 @@ public abstract class ListFormElement<T> extends AbstractFormElement<List<T>> {
 			return null;
 		}
 
-		protected void addEntry(T entry) {
-			getValue().add(entry);
-		}
-
 		@Override
 		protected void finished(Void result) {
 			handleChange();
 		}
+	}
+
+	protected void addEntry(T entry) {
+		if (object == null) {
+			object = new ArrayList<>();
+		}
+		object.add(entry);
 	}
 
 	public class ListEntryEditor extends ListFormElementEditor {
@@ -187,16 +201,16 @@ public abstract class ListFormElement<T> extends AbstractFormElement<List<T>> {
 			return null;
 		}
 
-		protected void editEntry(T originalEntry, T entry) {
-			CloneHelper.deepCopy(entry, originalEntry);
-		}
-
 		@Override
 		protected void finished(Void result) {
 			handleChange();
 		}
 	}
 	
+	protected void editEntry(T originalEntry, T entry) {
+		CloneHelper.deepCopy(entry, originalEntry);
+	}
+
 	protected class RemoveEntryAction extends Action {
 		private final T entry;
 		
